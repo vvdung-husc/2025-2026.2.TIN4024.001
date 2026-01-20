@@ -1,9 +1,11 @@
 1. Võ Việt Dũng
 2. Hồ Văn Diễn
-3.Nguyễn Văn Tiến Đạt
-4.Hoàng Văn Quốc Thịnh
-5.Nguyễn Công Thành
-6.Lê Văn Mạnh Quốc 
-7.Ngô Thị Cẩm Ly
-9.Đậu Thiện Nhật
-10.Phạm Thanh Hiếu
+3. Nguyễn Văn Tiến Đạt
+4. Ngô Thị Cẩm Ly
+5. Hoàng Văn Quốc Thịnh
+6. Nguyễn Công Thành
+7. Lê Văn Mạnh Quốc 
+8. Đậu Thiện Nhật
+9. Lê Thị Khánh Ly
+14.Phạm Thanh Hiếu
+18. Phan Minh Nhật Khoa
