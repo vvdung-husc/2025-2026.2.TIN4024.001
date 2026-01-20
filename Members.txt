@@ -9,10 +9,8 @@
 9. Lê Thị Khánh Ly
 18. Phan Minh Nhật Khoa
 11. Trần Khánh
-<<<<<<< HEAD
 14.Phạm Thanh Hiếu
-=======
+19. Phạm Mạnh Lân
 36. Lê Văn Tài
-
-
->>>>>>> 59899299fbe745718191f3a6a52933ba8b9f6906
+41. Bùi Hữu Quốc
+44. Nguyễn Hưng Sang
