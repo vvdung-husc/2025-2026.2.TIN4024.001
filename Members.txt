@@ -33,8 +33,3 @@
 >>>>>>> a41b9a7ea612edf6f01f957ce286af5d16c7fac1
 =======
 20. Phạm Mạnh Lân
->>>>>>> 1fa5c933f084f14484fb698e4fd4c53aa55a8126
-36. Lê Văn Tài
-41. Bùi Hữu Quốc
-44. Nguyễn Hưng Sang
->>>>>>> 94e852af11a4edbf7250a798391d3ba786d057e5
