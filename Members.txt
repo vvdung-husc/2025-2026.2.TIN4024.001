@@ -7,34 +7,22 @@
 7. Lê Văn Mạnh Quốc 
 8. Đậu Thiện Nhật
 9. Lê Thị Khánh Ly
+18. Phan Minh Nhật Khoa
+11. Trần Khánh
 10. Trần Thị Quỳnh Anh
 12. Hồ Tiến Bảo
-<<<<<<< HEAD
 11. Trần Khánh
-14.Phạm Thanh Hiếu
+13. Lê Yến Nhi
+14. Phạm Thanh Hiếu
+15. Phạm Năng
+16. Nguyễn Văn Phong
 19. Phan Minh Nhật Khoa
 36. Lê Văn Tài
 41. Bùi Hữu Quốc
 44. Nguyễn Hưng Sang
-=======
-<<<<<<< HEAD
-11. Trần Khánh
-<<<<<<< HEAD
 19. Phạm Mạnh Lân
 20. Lê Văn Thuần
-=======
-=======
-19. Phan Minh Nhật Khoa
-36. Lê Văn Tài
-28. Châu Đăng Bảo Nguyên
->>>>>>> ef1ab2b17d1f5c50838dca0cd1dc271a27eb3142
-19. Phan Minh Nhật Khoa
-<<<<<<< HEAD
->>>>>>> a41b9a7ea612edf6f01f957ce286af5d16c7fac1
-=======
-20. Phạm Mạnh Lân
->>>>>>> 1fa5c933f084f14484fb698e4fd4c53aa55a8126
-36. Lê Văn Tài
-41. Bùi Hữu Quốc
-44. Nguyễn Hưng Sang
->>>>>>> 94e852af11a4edbf7250a798391d3ba786d057e5
+21. Nguyễn Duy Phong
+42. Trần Văn Quốc Khánh
+28. Nguyễn Ngọc Thành Tài
+52. Nguyễn Đức Tín
