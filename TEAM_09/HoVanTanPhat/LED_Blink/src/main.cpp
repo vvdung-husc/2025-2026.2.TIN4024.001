@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-// Định nghĩa chân (theo sơ đồ dây song song của Công chúa)
+
 #define LED_RED    25
 #define LED_YELLOW 33
 #define LED_GREEN  32
