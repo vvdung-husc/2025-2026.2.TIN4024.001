@@ -17,7 +17,7 @@ void setup() {
 
 //*** Blocking
 // void loop() {
-//   digitalWrite(PIN_LED_RED, HIGH); // Turn LED ON
+//   digitalWrite(PIN_LED_RED, HIGH); // Turn LsED ON
 //   delay(500); // Wait for 500ms
 //   digitalWrite(PIN_LED_RED , LOW); // Turn LED OFF
 //   delay(500); // Wait for 500ms
