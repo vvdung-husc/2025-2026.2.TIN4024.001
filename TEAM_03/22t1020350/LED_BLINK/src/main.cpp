@@ -15,13 +15,6 @@ void setup() {
   pinMode(PIN_LED_RED, OUTPUT); 
 }
 
-//*** Blocking
-// void loop() {
-//   digitalWrite(PIN_LED_RED, HIGH); // Turn LED ON
-//   delay(500); // Wait for 500ms
-//   digitalWrite(PIN_LED_RED , LOW); // Turn LED OFF
-//   delay(500); // Wait for 500ms
-// }
 
 void loop() {
   static int i = 0;
