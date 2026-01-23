@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "author": "Hồ Văn Diễn",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 9.6, "left": -33.56, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -51.6,
+      "left": 157.4,
+      "attrs": { "color": "red" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 42.35,
+      "left": 115.2,
+      "attrs": { "value": "1000" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "led1:C", "esp:GND.2", "black", [ "v38.4", "h0.4" ] ],
+    [ "esp:23", "r1:1", "green", [ "h57.6" ] ],
+    [ "led1:A", "r1:2", "green", [ "v57.6" ] ]
+  ],
+  "dependencies": {}
+}
