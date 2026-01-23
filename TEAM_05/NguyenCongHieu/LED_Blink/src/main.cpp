@@ -11,7 +11,6 @@ bool IsReady(unsigned long &ulTimer, uint32_t millisecond) {
 
 void setup() {
   // put your setup code here, to run once:
-  printf("WELCOME IOT\n");
   pinMode(PIN_LED_RED, OUTPUT); 
 }
 
