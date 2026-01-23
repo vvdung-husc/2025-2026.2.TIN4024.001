@@ -35,6 +35,7 @@ void loop() {
   // 3. ĐÈN VÀNG SÁNG (3 giây)
   Serial.println("LED YELLOW ON => 3 Seconds");
   for (int i = 0; i < 3; i++) {
+    
     digitalWrite(LED_YELLOW, HIGH); // Bật Vàng
     delay(500);                      // Chờ 500ms
     digitalWrite(LED_YELLOW, LOW);  // Tắt Vàng
