@@ -5,7 +5,7 @@
 #define LED_RED 25
 
 unsigned long previousMillis = 0;
-const unsigned long interval = 1000; // 1 giây
+const unsigned long interval = 500; // 0.5 giây
 
 int state = 0; // 0: xanh, 1: đỏ, 2: vàng
 int blinkCount = 0;
