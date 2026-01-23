@@ -17,22 +17,27 @@ void setup() {
 void loop() {
   // 1. ĐÈN ĐỎ SÁNG (5 giây)
   Serial.println("LED RED ON => 5 Seconds");
-  digitalWrite(LED_RED, HIGH);    // Bật Đỏ
-  digitalWrite(LED_YELLOW, LOW);  // Tắt Vàng
-  digitalWrite(LED_GREEN, LOW);   // Tắt Xanh
-  delay(5000);                    // Chờ 5000ms = 5 giây
+  for (int i = 0; i < 3; i++) {
+    digitalWrite(LED_RED, HIGH);   // Bật Đỏ
+    delay(500);                     // Chờ 500ms
+    digitalWrite(LED_RED, LOW);    // Tắt Đỏ
+    delay(500);                     // Chờ 500ms
+  }
 
   // 2. ĐÈN XANH SÁNG (7 giây) - Theo đúng thứ tự trong ảnh của Công chúa
   Serial.println("LED GREEN ON => 7 Seconds");
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_GREEN, HIGH);
-  delay(7000);
-
+  for (int i = 0; i < 7; i++) {
+    digitalWrite(LED_GREEN, HIGH); // Bật Xanh
+    delay(500);                     // Chờ 500ms
+    digitalWrite(LED_GREEN, LOW);  // Tắt Xanh
+    delay(500);                     // Chờ 500ms
+  }
   // 3. ĐÈN VÀNG SÁNG (3 giây)
   Serial.println("LED YELLOW ON => 3 Seconds");
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_YELLOW, HIGH);
-  digitalWrite(LED_GREEN, LOW);
-  delay(3000);
+  for (int i = 0; i < 3; i++) {
+    digitalWrite(LED_YELLOW, HIGH); // Bật Vàng
+    delay(500);                      // Chờ 500ms
+    digitalWrite(LED_YELLOW, LOW);  // Tắt Vàng
+    delay(500);                      // Chờ 500ms
+  }
 }

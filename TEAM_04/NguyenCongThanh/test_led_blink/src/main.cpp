@@ -20,7 +20,6 @@ void handleBlink(unsigned long now);
 void handleStateChange(unsigned long now);
 void resetStateTimer(const char* stateName);
 
-
 // ================= STATE =================
 enum TrafficState {
   GREEN,
