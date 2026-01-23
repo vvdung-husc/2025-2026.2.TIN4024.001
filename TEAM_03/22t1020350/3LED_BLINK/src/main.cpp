@@ -4,9 +4,8 @@
 #define LED_YELLOW  26
 #define LED_GREEN   27
 
-#define BLINK_DELAY 300  // thời gian bật/tắt (ms)
+#define BLINK_DELAY 500  
 
-// Hàm nhấp nháy LED n lần
 void blinkLed(int pin, int times) {
   for (int i = 0; i < times; i++) {
     digitalWrite(pin, HIGH);
@@ -17,21 +16,25 @@ void blinkLed(int pin, int times) {
 }
 
 void setup() {
+  Serial.begin(115200);
+  Serial.println("=== START LED ===");
+
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_YELLOW, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
 }
 
 void loop() {
-  // Red nháy 3 lần
+  // RED
+  Serial.println("RED LED (3)");
   blinkLed(LED_RED, 3);
-  delay(500);
 
-  // Yellow nháy 5 lần
+  // YELLOW
+  Serial.println("YELLOW LED (5)");
   blinkLed(LED_YELLOW, 5);
-  delay(500);
 
-  // Green nháy 7 lần
+  // GREEN
+  Serial.println("GREEN LED (7)");
   blinkLed(LED_GREEN, 7);
   delay(1000);
 }
