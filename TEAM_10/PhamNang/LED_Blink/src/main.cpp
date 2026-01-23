@@ -12,8 +12,6 @@
 
 #define BLINK_INTERVAL 500   // LED toggle mỗi 500ms
 
-
-
 // ===== Function Prototypes =====
 void allLedOff();
 void handleBlink(unsigned long now);
@@ -22,12 +20,13 @@ void resetStateTimer(const char* stateName);
 
 // ================= STATE =================
 enum TrafficState {
-  GREEN,
+  RED,      // Đưa RED lên đầu
   YELLOW,
-  RED
+  GREEN
 };
 
-TrafficState currentState = GREEN;
+// Khởi tạo trạng thái ban đầu là RED (Đỏ)
+TrafficState currentState = RED; 
 
 // ================= TIMER =================
 unsigned long stateStartTime = 0;
@@ -44,6 +43,7 @@ void setup() {
 
   allLedOff();
   stateStartTime = millis();
+  Serial.println("System Start -> RED");
 }
 
 // ====================================================
@@ -62,8 +62,6 @@ void allLedOff() {
   digitalWrite(LED_GREEN, LOW);
 }
 
-// ----------------------------------------------------
-
 void handleBlink(unsigned long now) {
   if (now - lastBlinkTime >= BLINK_INTERVAL) {
     lastBlinkTime = now;
@@ -72,52 +70,48 @@ void handleBlink(unsigned long now) {
     allLedOff();
 
     switch (currentState) {
-      case GREEN:
-        digitalWrite(LED_GREEN, ledBlinkState);
+      case RED:
+        digitalWrite(LED_RED, ledBlinkState);
         break;
-
       case YELLOW:
         digitalWrite(LED_YELLOW, ledBlinkState);
         break;
-
-      case RED:
-        digitalWrite(LED_RED, ledBlinkState);
+      case GREEN:
+        digitalWrite(LED_GREEN, ledBlinkState);
         break;
     }
   }
 }
 
 // ----------------------------------------------------
-
+// PHẦN THAY ĐỔI CHÍNH Ở ĐÂY
+// ----------------------------------------------------
 void handleStateChange(unsigned long now) {
   unsigned long elapsed = now - stateStartTime;
 
   switch (currentState) {
-
-    case GREEN:
-      if (elapsed >= GREEN_TIME) {
-        currentState = YELLOW;
+    case RED:
+      if (elapsed >= RED_TIME) {
+        currentState = YELLOW; // Đỏ xong đến Vàng
         resetStateTimer("YELLOW");
       }
       break;
 
     case YELLOW:
       if (elapsed >= YELLOW_TIME) {
-        currentState = RED;
-        resetStateTimer("RED");
+        currentState = GREEN;  // Vàng xong đến Xanh
+        resetStateTimer("GREEN");
       }
       break;
 
-    case RED:
-      if (elapsed >= RED_TIME) {
-        currentState = GREEN;
-        resetStateTimer("GREEN");
+    case GREEN:
+      if (elapsed >= GREEN_TIME) {
+        currentState = RED;    // Xanh xong quay lại Đỏ
+        resetStateTimer("RED");
       }
       break;
   }
 }
-
-// ----------------------------------------------------
 
 void resetStateTimer(const char* stateName) {
   stateStartTime = millis();
