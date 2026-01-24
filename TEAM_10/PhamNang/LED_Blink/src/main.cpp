@@ -1,73 +1,124 @@
 #include <Arduino.h>
 
-// ===== NON-BLOCKING =====
-bool IsReady(unsigned long &ulTimer, uint32_t millisecond) {
-  if (millis() - ulTimer < millisecond) return false;
-  ulTimer = millis();
-  return true;
-}
+// ================= PIN MAP =================
+#define LED_RED     25
+#define LED_YELLOW  33
+#define LED_GREEN   32
 
-// ===== GPIO =====
-#define PIN_LED_RED     23
-#define PIN_LED_YELLOW  22
-#define PIN_LED_GREEN   21
+// ================= TIME CONFIG (ms) =================
+#define GREEN_TIME   7000
+#define YELLOW_TIME  3000
+#define RED_TIME     5000
 
-// ===== STATE =====
-enum LedState {
-  RED,
+#define BLINK_INTERVAL 500   // LED toggle mỗi 500ms
+
+// ===== Function Prototypes =====
+void allLedOff();
+void handleBlink(unsigned long now);
+void handleStateChange(unsigned long now);
+void resetStateTimer(const char* stateName);
+
+// ================= STATE =================
+enum TrafficState {
+  RED,      // Đưa RED lên đầu
   YELLOW,
   GREEN
 };
 
-void setup() {
-  printf("WELCOME IOT\n");
+// Khởi tạo trạng thái ban đầu là RED (Đỏ)
+TrafficState currentState = RED; 
 
-  pinMode(PIN_LED_RED, OUTPUT);
-  pinMode(PIN_LED_YELLOW, OUTPUT);
-  pinMode(PIN_LED_GREEN, OUTPUT);
+// ================= TIMER =================
+unsigned long stateStartTime = 0;
+unsigned long lastBlinkTime  = 0;
+bool ledBlinkState = false;
+
+// ====================================================
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+
+  allLedOff();
+  stateStartTime = millis();
+  Serial.println("System Start -> RED");
 }
 
+// ====================================================
 void loop() {
-  static LedState state = RED;
-  static unsigned long ulTimer = 0;
-  static bool ledStatus = false;
-  static int blinkCount = 0;
+  unsigned long now = millis();
 
-  if (IsReady(ulTimer, 500)) {   // 500ms giống mẫu 1 đèn
-    ledStatus = !ledStatus;
+  handleBlink(now);
+  handleStateChange(now);
+}
 
-    // Tắt tất cả trước
-    digitalWrite(PIN_LED_RED, LOW);
-    digitalWrite(PIN_LED_YELLOW, LOW);
-    digitalWrite(PIN_LED_GREEN, LOW);
+// ================= LED CONTROL =================
 
-    // Bật LED theo state hiện tại
-    switch (state) {
+void allLedOff() {
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, LOW);
+}
+
+void handleBlink(unsigned long now) {
+  if (now - lastBlinkTime >= BLINK_INTERVAL) {
+    lastBlinkTime = now;
+    ledBlinkState = !ledBlinkState;
+
+    allLedOff();
+
+    switch (currentState) {
       case RED:
-        digitalWrite(PIN_LED_RED, ledStatus ? HIGH : LOW);
+        digitalWrite(LED_RED, ledBlinkState);
         break;
-
       case YELLOW:
-        digitalWrite(PIN_LED_YELLOW, ledStatus ? HIGH : LOW);
+        digitalWrite(LED_YELLOW, ledBlinkState);
         break;
-
       case GREEN:
-        digitalWrite(PIN_LED_GREEN, ledStatus ? HIGH : LOW);
+        digitalWrite(LED_GREEN, ledBlinkState);
         break;
-    }
-
-    // Đếm số lần chớp (chỉ đếm khi vừa OFF)
-    if (!ledStatus) {
-      blinkCount++;
-
-      if (blinkCount >= 7) {
-        blinkCount = 0;
-
-        // Chuyển sang đèn tiếp theo
-        if (state == RED) state = YELLOW;
-        else if (state == YELLOW) state = GREEN;
-        else state = RED;
-      }
     }
   }
+}
+
+// ----------------------------------------------------
+// PHẦN THAY ĐỔI CHÍNH Ở ĐÂY
+// ----------------------------------------------------
+void handleStateChange(unsigned long now) {
+  unsigned long elapsed = now - stateStartTime;
+
+  switch (currentState) {
+    case RED:
+      if (elapsed >= RED_TIME) {
+        currentState = YELLOW; // Đỏ xong đến Vàng
+        resetStateTimer("YELLOW");
+      }
+      break;
+
+    case YELLOW:
+      if (elapsed >= YELLOW_TIME) {
+        currentState = GREEN;  // Vàng xong đến Xanh
+        resetStateTimer("GREEN");
+      }
+      break;
+
+    case GREEN:
+      if (elapsed >= GREEN_TIME) {
+        currentState = RED;    // Xanh xong quay lại Đỏ
+        resetStateTimer("RED");
+      }
+      break;
+  }
+}
+
+void resetStateTimer(const char* stateName) {
+  stateStartTime = millis();
+  lastBlinkTime  = millis();
+  ledBlinkState  = false;
+  allLedOff();
+
+  Serial.print("Change State -> ");
+  Serial.println(stateName);
 }
