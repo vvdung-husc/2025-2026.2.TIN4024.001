@@ -1,7 +1,6 @@
-
 #include <Arduino.h>
 
-// put function declarations here:
+//Non-blocking
 bool IsReady(unsigned long &ulTimer, uint32_t millisecond) {
   if (millis() - ulTimer < millisecond) return false;
   ulTimer = millis();
@@ -12,9 +11,17 @@ bool IsReady(unsigned long &ulTimer, uint32_t millisecond) {
 
 void setup() {
   // put your setup code here, to run once:
-  printf("WELCOME IOT");
+  printf("WELCOME IOT\n");
   pinMode(PIN_LED_RED, OUTPUT); 
 }
+
+//*** Blocking
+// void loop() {
+//   digitalWrite(PIN_LED_RED, HIGH); // Turn LED ON
+//   delay(500); // Wait for 500ms
+//   digitalWrite(PIN_LED_RED , LOW); // Turn LED OFF
+//   delay(500); // Wait for 500ms
+// }
 
 void loop() {
   static int i = 0;
@@ -26,4 +33,5 @@ void loop() {
     status = !status;
     digitalWrite(PIN_LED_RED , status ? HIGH : LOW); // Turn LED ON/OFF
   }
+  
 }
