@@ -15,6 +15,12 @@ TM1637Display display(CLK, DIO);
 
 // ===== BIẾN HỆ THỐNG =====
 unsigned long prevMillis = 0;
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 50;
+
+int buttonState;
+int lastButtonState = HIGH;
+
 int countdown = 5;
 int state = 1; // 1: Xanh | 2: Vàng | 0: Đỏ
 bool isSystemOn = false;
@@ -22,7 +28,7 @@ bool ledToggle = true;
 
 const int NIGHT_THRESHOLD = 1000;
 
-// ===== HÀM ĐIỀU KHIỂN ĐÈN =====
+// Hàm cập nhật đèn LED đơn giản
 void setTrafficLights(bool r, bool y, bool g)
 {
   digitalWrite(LED_RED, r);
@@ -30,12 +36,26 @@ void setTrafficLights(bool r, bool y, bool g)
   digitalWrite(LED_GREEN, g);
 }
 
-// ===== TẮT TOÀN BỘ =====
+// Hàm tắt toàn bộ hệ thống
 void turnOffAll()
 {
   setTrafficLights(LOW, LOW, LOW);
-  digitalWrite(LED_BLUE, LOW); // LED xanh dương TẮT (đấu thuận)
+  digitalWrite(LED_BLUE, LOW);
   display.clear();
+}
+
+// Hàm khởi tạo trạng thái ban đầu khi vừa bật hệ thống
+void resetSystemState()
+{
+  state = 1;     // Bắt đầu từ đèn Xanh
+  countdown = 5; // Đếm từ 5
+  ledToggle = true;
+  prevMillis = millis(); // Đặt mốc thời gian
+
+  // QUAN TRỌNG: Hiển thị ngay lập tức, không chờ hết 1s đầu tiên
+  digitalWrite(LED_BLUE, HIGH);
+  setTrafficLights(LOW, LOW, HIGH);
+  display.showNumberDec(countdown, true);
 }
 
 void setup()
@@ -51,85 +71,113 @@ void setup()
   turnOffAll();
 }
 
-void loop()
+// ===== XỬ LÝ CHẾ ĐỘ BAN ĐÊM =====
+void runNightMode()
 {
-  // ===== 1. NÚT BẬT / TẮT =====
-  if (digitalRead(BUTTON_PIN) == LOW)
+  if (millis() - prevMillis >= 500)
   {
-    delay(50); // chống dội
-    if (digitalRead(BUTTON_PIN) == LOW)
-    {
-      isSystemOn = !isSystemOn;
+    prevMillis = millis();
+    ledToggle = !ledToggle;
+    setTrafficLights(LOW, ledToggle, LOW);
 
-      if (!isSystemOn)
-      {
-        turnOffAll();
-      }
-      else
-      {
-        digitalWrite(LED_BLUE, HIGH); // LED xanh dương SÁNG
-        prevMillis = millis();
-        state = 1;
-        countdown = 5;
-        ledToggle = true;
-      }
-
-      while (digitalRead(BUTTON_PIN) == LOW)
-        ; // chờ thả nút
-    }
-  }
-
-  if (!isSystemOn)
-    return;
-
-  // ===== 2. ĐỌC CẢM BIẾN ÁNH SÁNG =====
-  int lightValue = analogRead(LDR_PIN);
-
-  // ===== CHẾ ĐỘ BAN ĐÊM =====
-  if (lightValue < NIGHT_THRESHOLD)
-  {
-    if (millis() - prevMillis >= 500)
-    {
-      prevMillis = millis();
-      ledToggle = !ledToggle;
-      setTrafficLights(LOW, ledToggle, LOW); // Đèn vàng nhấp nháy
+    // Nhấp nháy dấu hai chấm hoặc tắt màn hình cho đỡ chói
+    if (ledToggle)
+      display.showNumberDec(0, false, 0, 0); // Ví dụ hiển thị gì đó nhẹ
+    else
       display.clear();
-    }
-    return;
   }
+}
 
-  // ===== CHẾ ĐỘ BAN NGÀY =====
+// ===== XỬ LÝ CHẾ ĐỘ BAN NGÀY =====
+void runDayMode()
+{
+  // Logic đếm ngược
   if (millis() - prevMillis >= 1000)
   {
     prevMillis = millis();
-    display.showNumberDec(countdown, true);
+    countdown--; // Giảm trước để chuẩn bị hiển thị số tiếp theo
 
-    if (state == 1)
-      setTrafficLights(LOW, LOW, HIGH); // Xanh
-    else if (state == 2)
-      setTrafficLights(LOW, HIGH, LOW); // Vàng
-    else
-      setTrafficLights(HIGH, LOW, LOW); // Đỏ
-
-    countdown--;
-
+    // Chuyển trạng thái nều hết giờ
     if (countdown < 0)
     {
       if (state == 1)
       {
         state = 2;
         countdown = 2;
-      }
+      } // Xanh -> Vàng (3s)
       else if (state == 2)
       {
         state = 0;
         countdown = 5;
-      }
+      } // Vàng -> Đỏ (5s)
       else
       {
         state = 1;
         countdown = 5;
+      } // Đỏ -> Xanh (5s)
+    }
+
+    // Cập nhật hiển thị
+    display.showNumberDec(countdown, true);
+
+    // Cập nhật đèn
+    if (state == 1)
+      setTrafficLights(LOW, LOW, HIGH); // Xanh
+    else if (state == 2)
+      setTrafficLights(LOW, HIGH, LOW); // Vàng
+    else
+      setTrafficLights(HIGH, LOW, LOW); // Đỏ
+  }
+}
+
+void loop()
+{
+  // ===== 1. ĐỌC NÚT NHẤN (NON-BLOCKING) =====
+  int reading = digitalRead(BUTTON_PIN);
+
+  if (reading != lastButtonState)
+  {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > debounceDelay)
+  {
+    if (reading != buttonState)
+    {
+      buttonState = reading;
+
+      // Chỉ xử lý khi nhấn xuống (LOW)
+      if (buttonState == LOW)
+      {
+        isSystemOn = !isSystemOn;
+
+        if (isSystemOn)
+        {
+          resetSystemState(); // Bật lên -> Hiển thị ngay
+        }
+        else
+        {
+          turnOffAll(); // Tắt đi
+        }
       }
     }
+  }
+  lastButtonState = reading;
+
+  // Nếu tắt, thoát loop sớm để tiết kiệm tài nguyên
+  if (!isSystemOn)
+    return;
+
+  // ===== 2. ĐIỀU KHIỂN TRAFFIC LIGHT =====
+  // Đọc LDR (Nên đọc liên tục để chuyển chế độ mượt mà)
+  if (analogRead(LDR_PIN) < NIGHT_THRESHOLD)
+  {
+    runNightMode();
+  }
+  else
+  {
+    // Nếu đang ở Night mode chuyển sang Day mode, cần setup lại đèn ngay
+    // (Phần này có thể mở rộng logic nếu muốn chuyển đổi mượt hơn)
+    runDayMode();
   }
 }
