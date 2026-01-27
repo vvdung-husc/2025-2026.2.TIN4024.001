@@ -1,18 +1,40 @@
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
+#define LED_RED     27
+#define LED_YELLOW  26
+#define LED_GREEN   25  
+
+void tatTatCa() {
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, LOW);
+}
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  Serial.begin(115200);
+
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  // ===== XANH 7 GIÂY =====
+  tatTatCa();
+  digitalWrite(LED_GREEN, HIGH);
+  Serial.println("DEN XANH");
+  delay(7000);
+
+  // ===== VÀNG 3 GIÂY =====
+  tatTatCa();
+  digitalWrite(LED_YELLOW, HIGH);
+  Serial.println("DEN VANG");
+  delay(3000);
+
+  // ===== ĐỎ 5 GIÂY =====
+  tatTatCa();
+  digitalWrite(LED_RED, HIGH);
+  Serial.println("DEN DO");
+  delay(5000);
 }
