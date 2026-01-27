@@ -1,18 +1,39 @@
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
+#define LED_RED     27
+#define LED_YELLOW  26
+#define LED_GREEN   25
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  Serial.begin(115200);
+
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+
+  digitalWrite(LED_RED, HIGH);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, LOW);
+
+  Serial.println("ESP32 started OK!");
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
+  Serial.println("RED");
+  digitalWrite(LED_RED, HIGH);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, LOW);
+  delay(5000);
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  Serial.println("YELLOW");
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, HIGH);
+  digitalWrite(LED_GREEN, LOW);
+  delay(3000);
+
+  Serial.println("GREEN");
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, HIGH);
+  delay(7000);
 }
