@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
 
-// --- CẤU HÌNH CHÂN (Theo sơ đồ hình ảnh) ---
+// --- CẤU HÌNH CHÂN (Theo sơ đồ chuẩn "đẹp" mới nhất) ---
 #define CLK 18
 #define DIO 19
 
@@ -9,7 +9,7 @@
 #define LED_YELLOW  26
 #define LED_GREEN   25
 
-#define LED_BLUE    22 // Đèn người đi bộ
+#define LED_BLUE    22 // Đèn cho người đi bộ
 #define BTN_WALK    23 // Nút nhấn
 #define LDR_PIN     34 // Cảm biến ánh sáng
 
@@ -19,55 +19,72 @@ TM1637Display display(CLK, DIO);
 void setup() {
   Serial.begin(115200);
   
-  // Cấu hình LED
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_YELLOW, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_BLUE, OUTPUT);
   
-  // Cấu hình Nút nhấn và LDR
   pinMode(BTN_WALK, INPUT_PULLUP);
   pinMode(LDR_PIN, INPUT);
 
-  // Cấu hình độ sáng màn hình (0-7)
-  display.setBrightness(7);
+  display.setBrightness(7); // Độ sáng tối đa
 }
 
-// Hàm đếm ngược hiển thị lên màn hình LED 4 số
-void countdown(int seconds, int ledPin) {
-  // Bật đèn tương ứng
+// Hàm kiểm tra nút nhấn (Trả về true nếu nút được nhấn)
+bool checkPedestrianButton() {
+  if (digitalRead(BTN_WALK) == LOW) {
+    digitalWrite(LED_BLUE, HIGH); // Bật đèn xanh dương báo hiệu
+    return true;
+  }
+  digitalWrite(LED_BLUE, LOW);
+  return false;
+}
+
+/**
+ * Hàm điều khiển đèn giao thông
+ * @param seconds: Số giây đếm ngược
+ * @param ledPin: Chân đèn cần bật (Xanh/Đỏ/Vàng)
+ * @param isBlinking: true = Nhấp nháy, false = Sáng đứng
+ */
+void runTrafficLight(int seconds, int ledPin, bool isBlinking) {
+  // Tắt hết các đèn trước khi bắt đầu pha mới
   digitalWrite(LED_RED, LOW);
   digitalWrite(LED_YELLOW, LOW);
   digitalWrite(LED_GREEN, LOW);
-  digitalWrite(ledPin, HIGH);
 
   for (int i = seconds; i >= 0; i--) {
-    // Hiển thị số lên màn hình
-    display.showNumberDec(i, false); // false để không hiện số 0 vô nghĩa
+    display.showNumberDec(i, false); // Hiện số giây
     
-    // Kiểm tra nút bấm người đi bộ
-    if (digitalRead(BTN_WALK) == LOW) {
-        Serial.println("Nguoi di bo bam nut!");
-        digitalWrite(LED_BLUE, HIGH); // Bật đèn xanh dương
-    } else {
-        digitalWrite(LED_BLUE, LOW);
+    // --- NỬA GIÂY ĐẦU: BẬT ĐÈN ---
+    digitalWrite(ledPin, HIGH);
+    // Thay vì delay(500), ta chia nhỏ để nút bấm nhạy hơn
+    for(int j=0; j<5; j++) { 
+      checkPedestrianButton(); 
+      delay(100); 
     }
 
-    // Đọc cảm biến ánh sáng (Chỉ để in ra cho biết)
-    int lightLevel = analogRead(LDR_PIN);
-    // Serial.printf("Light: %d\n", lightLevel);
+    // --- NỬA GIÂY SAU: TẮT ĐÈN (Nếu chế độ nhấp nháy) ---
+    if (isBlinking) {
+      digitalWrite(ledPin, LOW); // Tắt để tạo hiệu ứng nháy
+    } 
+    // Nếu không phải chế độ nhấp nháy thì đèn vẫn giữ nguyên trạng thái HIGH từ bước trên
 
-    delay(1000);
+    // Chờ tiếp 0.5s (vừa chờ vừa check nút)
+    for(int j=0; j<5; j++) { 
+      checkPedestrianButton(); 
+      delay(100); 
+    }
   }
 }
 
 void loop() {
-  // 1. ĐÈN XANH (10 giây)
-  countdown(10, LED_GREEN);
+  // 1. ĐÈN XANH: 10 giây (Cho phép NHẤP NHÁY: true)
+  // Bạn muốn đèn xanh chớp tắt liên tục thì để true
+  runTrafficLight(10, LED_GREEN, true);
 
-  // 2. ĐÈN VÀNG (3 giây)
-  countdown(3, LED_YELLOW);
+  // 2. ĐÈN VÀNG: 3 giây (Sáng đứng: false)
+  runTrafficLight(3, LED_YELLOW, false);
 
-  // 3. ĐÈN ĐỎ (10 giây)
-  countdown(10, LED_RED);
+  // 3. ĐÈN ĐỎ: 10 giây (Sáng đứng: false)
+  runTrafficLight(10, LED_RED, false);
 }
