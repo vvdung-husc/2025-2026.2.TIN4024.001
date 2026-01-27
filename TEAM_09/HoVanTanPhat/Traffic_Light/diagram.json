@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "author": "Ngô Thị Cẩm Ly",
+  "author": "Dũng Võ Việt",
   "editor": "wokwi",
   "parts": [
     { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 48, "left": -91.16, "attrs": {} },
@@ -72,13 +72,6 @@
       "top": 73.4,
       "left": 48,
       "attrs": { "color": "blue", "xray": "1" }
-    },
-    {
-      "type": "wokwi-photoresistor-sensor",
-      "id": "ldr1",
-      "top": 262.4,
-      "left": -296.8,
-      "attrs": {}
     }
   ],
   "connections": [
@@ -100,10 +93,7 @@
     [ "led4:C", "esp:GND.3", "black", [ "v19.2", "h-0.4" ] ],
     [ "led4:A", "esp:21", "blue", [ "v9.6" ] ],
     [ "btn1:1.l", "esp:GND.2", "black", [ "h0", "v-9.6" ] ],
-    [ "btn1:2.l", "esp:23", "blue", [ "h-9.6", "v-19" ] ],
-    [ "ldr1:VCC", "esp:5V", "red", [ "h38.4" ] ],
-    [ "ldr1:GND", "esp:GND.1", "black", [ "h19.2", "v-86.8" ] ],
-    [ "ldr1:AO", "esp:13", "green", [ "h28.8", "v-96.7" ] ]
+    [ "btn1:2.l", "esp:23", "blue", [ "h-9.6", "v-19" ] ]
   ],
   "dependencies": {}
 }

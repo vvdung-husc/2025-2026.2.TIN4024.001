@@ -1,14 +1,14 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
 
-// Hàm kiểm tra thời gian đã trôi qua - Non-Blocking
+// Kiem tra thoi gian
 bool IsReady(unsigned long &ulTimer, uint32_t millisecond)
 {
   if (millis() - ulTimer < millisecond) return false;
   ulTimer = millis();
   return true;
 }
-// Định dạng chuỗi %s,%d,...
+// Định dạng chuỗi
 String StringFormat(const char *fmt, ...)
 {
   va_list vaArgs;
@@ -30,7 +30,7 @@ String StringFormat(const char *fmt, ...)
 #define PIN_LED_YELLOW  33
 #define PIN_LED_GREEN   32
 
-// Module connection pins (Digital Pins)
+
 #define CLK 15
 #define DIO 2
 
@@ -62,7 +62,7 @@ bool ProcessLEDTraffic()
 {
   static unsigned long ulTimer = 0;
   static uint8_t idxLED = 0;
-  static uint8_t LEDs[3] = {PIN_LED_GREEN, PIN_LED_YELLOW, PIN_LED_RED};
+  static uint8_t LEDs[3] = {PIN_LED_RED,PIN_LED_YELLOW, PIN_LED_GREEN, };
   if (!IsReady(ulTimer, 1000)) return false;
 
   for (size_t i = 0; i < 3; i++)
@@ -80,7 +80,7 @@ bool ProcessLEDTrafficWaitTime()
 {
   static unsigned long ulTimer = 0;
   static uint8_t idxLED = 0;//PIN_LED_GREEN
-  static uint8_t LEDs[3] = {PIN_LED_GREEN, PIN_LED_YELLOW, PIN_LED_RED};
+  static uint8_t LEDs[3] = {PIN_LED_RED,PIN_LED_YELLOW, PIN_LED_GREEN, };
   static uint32_t waitTime[3] = {7000, 3000, 5000};// Green, Yellow, Red
   static uint32_t count = waitTime[idxLED];
   static bool ledStatus = false;
@@ -118,7 +118,7 @@ bool ProcessLEDTrafficWaitTime()
   count -= 500;
   if (count > 0) return true;
 
-  idxLED = (idxLED + 1) % 3;// Next LED => idxLED = 0,1,2,...
+  idxLED = (idxLED + 1) % 3;
   count = waitTime[idxLED];
 
   return true;
@@ -161,8 +161,7 @@ void setup()
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
-  //ProcessLEDTraffic();
+
   ProcessButtonPressed();
   ProcessLEDTrafficWaitTime();
 }
