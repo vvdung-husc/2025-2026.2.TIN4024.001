@@ -26,15 +26,15 @@ void setup() {
 
 void loop() {
   // RED
-  Serial.println("RED LED (3)");
-  blinkLed(LED_RED, 3);
+  Serial.println("LED [RED] on => 5s");
+  blinkLed(LED_RED, 5);
 
   // YELLOW
-  Serial.println("YELLOW LED (5)");
-  blinkLed(LED_YELLOW, 5);
+  Serial.println("LED [YELLOW] on => 3s");
+  blinkLed(LED_YELLOW, 3);
 
   // GREEN
-  Serial.println("GREEN LED (7)");
+  Serial.println("LED [GREEN] on => 7s");
   blinkLed(LED_GREEN, 7);
   delay(1000);
 }
