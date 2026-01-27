@@ -1,12 +1,25 @@
 1. Võ Việt Dũng
 2. Hồ Văn Diễn
-3. Nguyễn Văn Tiến Đạt
+3. Đậu Thiện Nhật
+3.Nguyễn Văn Tiến Đạt
 4. Ngô Thị Cẩm Ly
 5. Hoàng Văn Quốc Thịnh
 6. Nguyễn Công Thành
 7. Lê Văn Mạnh Quốc 
 8. Đậu Thiện Nhật
 9. Lê Thị Khánh Ly
+10. Hồ Tiến Bảo
+11. Trần Khánh
+19. Phạm Mạnh Lân
+20. Lê Văn Thuần
+19. Phan Minh Nhật Khoa
+36. Lê Văn Tài
+28. Châu Đăng Bảo Nguyên
+19. Phan Minh Nhật Khoa
+20. Phạm Mạnh Lân
+36. Lê Văn Tài
+41. Bùi Hữu Quốc
+44. Nguyễn Hưng Sang
 18. Phan Minh Nhật Khoa
 11. Trần Khánh
 10. Trần Thị Quỳnh Anh
@@ -35,3 +48,4 @@
 57. Võ Thị Hằng Nga
 58. Nguyễn Công Hiếu
 60. Trần Văn Tiến
+61. Lương Thanh Ngọc Như
