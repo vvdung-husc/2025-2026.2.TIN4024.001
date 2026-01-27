@@ -1,37 +1,124 @@
 #include <Arduino.h>
 
-//Non-blocking
-bool IsReady(unsigned long &ulTimer, uint32_t millisecond) {
-  if (millis() - ulTimer < millisecond) return false;
-  ulTimer = millis();
-  return true;
-}
+// ================= PIN MAP =================
+#define LED_RED     25
+#define LED_YELLOW  33
+#define LED_GREEN   32
 
-#define PIN_LED_RED 23
+// ================= TIME CONFIG (ms) =================
+#define GREEN_TIME   7000
+#define YELLOW_TIME  3000
+#define RED_TIME     5000
 
+#define BLINK_INTERVAL 500   // LED toggle mỗi 500ms
+
+// ===== Function Prototypes =====
+void allLedOff();
+void handleBlink(unsigned long now);
+void handleStateChange(unsigned long now);
+void resetStateTimer(const char* stateName);
+
+// ================= STATE =================
+enum TrafficState {
+  RED,      // Đưa RED lên đầu
+  YELLOW,
+  GREEN
+};
+
+// Khởi tạo trạng thái ban đầu là RED (Đỏ)
+TrafficState currentState = RED; 
+
+// ================= TIMER =================
+unsigned long stateStartTime = 0;
+unsigned long lastBlinkTime  = 0;
+bool ledBlinkState = false;
+
+// ====================================================
 void setup() {
-  // put your setup code here, to run once:
-  printf("WELCOME IOT\n");
-  pinMode(PIN_LED_RED, OUTPUT); 
+  Serial.begin(115200);
+
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+
+  allLedOff();
+  stateStartTime = millis();
+  Serial.println("System Start -> RED");
 }
 
-//*** Blocking
-// void loop() {
-//   digitalWrite(PIN_LED_RED, HIGH); // Turn LsED ON
-//   delay(500); // Wait for 500ms
-//   digitalWrite(PIN_LED_RED , LOW); // Turn LED OFF
-//   delay(500); // Wait for 500ms
-// }
-
+// ====================================================
 void loop() {
-  static int i = 0;
-  static unsigned long ulTimer = 0;
-  static bool status = false;
-  // put your main code here, to run repeatedly:
-  if (IsReady(ulTimer, 500)) {
-    //printf("Loop running ... %d\n", ++i);
-    status = !status;
-    digitalWrite(PIN_LED_RED , status ? HIGH : LOW); // Turn LED ON/OFF
+  unsigned long now = millis();
+
+  handleBlink(now);
+  handleStateChange(now);
+}
+
+// ================= LED CONTROL =================
+
+void allLedOff() {
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, LOW);
+}
+
+void handleBlink(unsigned long now) {
+  if (now - lastBlinkTime >= BLINK_INTERVAL) {
+    lastBlinkTime = now;
+    ledBlinkState = !ledBlinkState;
+
+    allLedOff();
+
+    switch (currentState) {
+      case RED:
+        digitalWrite(LED_RED, ledBlinkState);
+        break;
+      case YELLOW:
+        digitalWrite(LED_YELLOW, ledBlinkState);
+        break;
+      case GREEN:
+        digitalWrite(LED_GREEN, ledBlinkState);
+        break;
+    }
   }
-  
+}
+
+// ----------------------------------------------------
+// PHẦN THAY ĐỔI CHÍNH Ở ĐÂY
+// ----------------------------------------------------
+void handleStateChange(unsigned long now) {
+  unsigned long elapsed = now - stateStartTime;
+
+  switch (currentState) {
+    case RED:
+      if (elapsed >= RED_TIME) {
+        currentState = YELLOW; // Đỏ xong đến Vàng
+        resetStateTimer("YELLOW");
+      }
+      break;
+
+    case YELLOW:
+      if (elapsed >= YELLOW_TIME) {
+        currentState = GREEN;  // Vàng xong đến Xanh
+        resetStateTimer("GREEN");
+      }
+      break;
+
+    case GREEN:
+      if (elapsed >= GREEN_TIME) {
+        currentState = RED;    // Xanh xong quay lại Đỏ
+        resetStateTimer("RED");
+      }
+      break;
+  }
+}
+
+void resetStateTimer(const char* stateName) {
+  stateStartTime = millis();
+  lastBlinkTime  = millis();
+  ledBlinkState  = false;
+  allLedOff();
+
+  Serial.print("Change State -> ");
+  Serial.println(stateName);
 }
