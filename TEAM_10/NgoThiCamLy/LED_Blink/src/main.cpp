@@ -1,73 +1,90 @@
 #include <Arduino.h>
 
-// ===== NON-BLOCKING =====
-bool IsReady(unsigned long &ulTimer, uint32_t millisecond) {
-  if (millis() - ulTimer < millisecond) return false;
-  ulTimer = millis();
-  return true;
-}
+// ================= PIN MAP =================
+#define LED_RED     25
+#define LED_YELLOW  33
+#define LED_GREEN   32
 
-// ===== GPIO =====
-#define PIN_LED_RED     23
-#define PIN_LED_YELLOW  22
-#define PIN_LED_GREEN   21
+// ================= CONFIG =================
+#define BLINK_INTERVAL 500   
+#define BLINK_COUNT   7     
 
-// ===== STATE =====
-enum LedState {
+// ================= STATE =================
+enum TrafficState {
   RED,
   YELLOW,
   GREEN
 };
 
-void setup() {
-  printf("WELCOME IOT\n");
+TrafficState currentState = RED;
 
-  pinMode(PIN_LED_RED, OUTPUT);
-  pinMode(PIN_LED_YELLOW, OUTPUT);
-  pinMode(PIN_LED_GREEN, OUTPUT);
+// ================= TIMER & COUNTER =================
+unsigned long lastBlinkTime = 0;
+bool ledState = false;
+int blinkCounter = 0;
+
+// ====================================================
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+
+  Serial.println("Start -> RED");
 }
 
+// ====================================================
 void loop() {
-  static LedState state = RED;
-  static unsigned long ulTimer = 0;
-  static bool ledStatus = false;
-  static int blinkCount = 0;
+  unsigned long now = millis();
 
-  if (IsReady(ulTimer, 500)) {   // 500ms giống mẫu 1 đèn
-    ledStatus = !ledStatus;
+  if (now - lastBlinkTime >= BLINK_INTERVAL) {
+    lastBlinkTime = now;
+    ledState = !ledState;
 
-    // Tắt tất cả trước
-    digitalWrite(PIN_LED_RED, LOW);
-    digitalWrite(PIN_LED_YELLOW, LOW);
-    digitalWrite(PIN_LED_GREEN, LOW);
+    // Tắt hết trước
+    digitalWrite(LED_RED, LOW);
+    digitalWrite(LED_YELLOW, LOW);
+    digitalWrite(LED_GREEN, LOW);
 
-    // Bật LED theo state hiện tại
-    switch (state) {
+    // Bật LED theo trạng thái hiện tại
+    switch (currentState) {
       case RED:
-        digitalWrite(PIN_LED_RED, ledStatus ? HIGH : LOW);
+        digitalWrite(LED_RED, ledState);
         break;
-
       case YELLOW:
-        digitalWrite(PIN_LED_YELLOW, ledStatus ? HIGH : LOW);
+        digitalWrite(LED_YELLOW, ledState);
         break;
-
       case GREEN:
-        digitalWrite(PIN_LED_GREEN, ledStatus ? HIGH : LOW);
+        digitalWrite(LED_GREEN, ledState);
         break;
     }
 
-    // Đếm số lần chớp (chỉ đếm khi vừa OFF)
-    if (!ledStatus) {
-      blinkCount++;
+    // Đếm số lần nhấp nháy (chỉ đếm khi vừa TẮT xong)
+    if (!ledState) {
+      blinkCounter++;
 
-      if (blinkCount >= 7) {
-        blinkCount = 0;
+      if (blinkCounter >= BLINK_COUNT) {
+        blinkCounter = 0;
 
-        // Chuyển sang đèn tiếp theo
-        if (state == RED) state = YELLOW;
-        else if (state == YELLOW) state = GREEN;
-        else state = RED;
+        // Chuyển trạng thái
+        switch (currentState) {
+          case RED:
+            currentState = YELLOW;
+            Serial.println("Change -> YELLOW");
+            break;
+          case YELLOW:
+            currentState = GREEN;
+            Serial.println("Change -> GREEN");
+            break;
+          case GREEN:
+            currentState = RED;
+            Serial.println("Change -> RED");
+            break;
+        }
       }
     }
   }
 }
+
+
