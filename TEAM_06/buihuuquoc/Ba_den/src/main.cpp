@@ -54,12 +54,12 @@ void setup()
 void loop()
 {
 
-  // 🔴 ĐỎ nhấp nháy 3 giây
+  // Đỏ nhấp nháy 3 giây
   blinkBySecond(LED_RED, 3);
 
-  // 🟢 XANH nhấp nháy 4 giây
+  // Xanh nhấp nháy 4 giây
   blinkBySecond(LED_GREEN, 4);
 
-  // 🟡 VÀNG nhấp nháy 2 giây
+  // Vàng nhấp nháy 2 giây
   blinkBySecond(LED_YELLOW, 2);
 }
