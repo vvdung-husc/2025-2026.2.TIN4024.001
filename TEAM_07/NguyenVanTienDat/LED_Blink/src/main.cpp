@@ -1,40 +1,101 @@
-#include <Arduino.h>
+#include <TM1637Display.h>
 
-#define LED_RED     27
-#define LED_YELLOW  26
-#define LED_GREEN   25  
+// ===== PIN SETUP =====
+#define LED_GREEN 25
+#define LED_YELLOW 26
+#define LED_RED 27
+#define LED_STREET 21
+#define BUTTON_PIN 23
+#define LDR_PIN 13
 
-void tatTatCa() {
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_GREEN, LOW);
+#define CLK 18
+#define DIO 19
+
+TM1637Display display(CLK, DIO);
+
+// ===== TRAFFIC LIGHT TIMES =====
+const int GREEN_TIME = 7;
+const int YELLOW_TIME = 3;
+const int RED_TIME = 5;
+
+bool showCountdown = true;
+bool lastButtonState = HIGH;
+
+unsigned long previousMillis = 0;
+int countdown = GREEN_TIME;
+int state = 0; 
+// 0 = GREEN, 1 = YELLOW, 2 = RED
+
+// ===== SET TRAFFIC LIGHT =====
+void setLights(bool g, bool y, bool r) {
+  digitalWrite(LED_GREEN, g);
+  digitalWrite(LED_YELLOW, y);
+  digitalWrite(LED_RED, r);
 }
 
 void setup() {
-  Serial.begin(115200);
-
-  pinMode(LED_RED, OUTPUT);
-  pinMode(LED_YELLOW, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_STREET, OUTPUT);
+
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+
+  display.setBrightness(7);
+
+  setLights(HIGH, LOW, LOW); // bắt đầu đèn xanh
 }
 
 void loop() {
 
-  // ===== XANH 7 GIÂY =====
-  tatTatCa();
-  digitalWrite(LED_GREEN, HIGH);
-  Serial.println("DEN XANH");
-  delay(7000);
+  // ===== PUSH BUTTON: TOGGLE DISPLAY =====
+  bool buttonState = digitalRead(BUTTON_PIN);
+  if (buttonState == LOW && lastButtonState == HIGH) {
+    showCountdown = !showCountdown;
+    delay(200); // chống dội nút
+  }
+  lastButtonState = buttonState;
 
-  // ===== VÀNG 3 GIÂY =====
-  tatTatCa();
-  digitalWrite(LED_YELLOW, HIGH);
-  Serial.println("DEN VANG");
-  delay(3000);
+  // ===== LDR: STREET LIGHT CONTROL =====
+  int lightValue = analogRead(LDR_PIN);
 
-  // ===== ĐỎ 5 GIÂY =====
-  tatTatCa();
-  digitalWrite(LED_RED, HIGH);
-  Serial.println("DEN DO");
-  delay(5000);
+  if (lightValue < 2000) { // trời tối
+    digitalWrite(LED_STREET, LOW);   // LED mắc ngược → LOW = sáng
+  } else {
+    digitalWrite(LED_STREET, HIGH);  // tắt
+  }
+
+  // ===== TRAFFIC LIGHT TIMER (NON-BLOCKING) =====
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= 1000) {
+    previousMillis = currentMillis;
+    countdown--;
+
+    if (countdown <= 0) {
+      state++;
+      if (state > 2) state = 0;
+
+      switch (state) {
+        case 0:
+          setLights(HIGH, LOW, LOW);
+          countdown = GREEN_TIME;
+          break;
+        case 1:
+          setLights(LOW, HIGH, LOW);
+          countdown = YELLOW_TIME;
+          break;
+        case 2:
+          setLights(LOW, LOW, HIGH);
+          countdown = RED_TIME;
+          break;
+      }
+    }
+  }
+
+  // ===== DISPLAY COUNTDOWN =====
+  if (showCountdown) {
+    display.showNumberDec(countdown, true);
+  } else {
+    display.clear();
+  }
 }
