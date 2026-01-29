@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "author": "DAO VAN LOI",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0 },
+    { "type": "wokwi-led", "id": "led-red", "top": -120, "left": 120, "attrs": { "color": "red" } },
+    { "type": "wokwi-led", "id": "led-yellow", "top": -80, "left": 120, "attrs": { "color": "yellow" } },
+    { "type": "wokwi-led", "id": "led-green", "top": -40, "left": 120, "attrs": { "color": "limegreen" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": -110, "left": 50, "attrs": { "value": "1000" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": -70, "left": 50, "attrs": { "value": "1000" } },
+    { "type": "wokwi-resistor", "id": "r3", "top": -30, "left": 50, "attrs": { "value": "1000" } }
+  ],
+  "connections": [
+    [ "esp:GND.1", "led-red:C", "black", [ "v-20", "h-100", "v120" ] ],
+    [ "esp:GND.1", "led-yellow:C", "black", [ "v-20", "h-100", "v80" ] ],
+    [ "esp:GND.1", "led-green:C", "black", [ "v-20", "h-100", "v40" ] ],
+    [ "esp:D25", "r1:1", "red", [] ],
+    [ "r1:2", "led-red:A", "red", [] ],
+    [ "esp:D26", "r2:1", "yellow", [] ],
+    [ "r2:2", "led-yellow:A", "yellow", [] ],
+    [ "esp:D27", "r3:1", "green", [] ],
+    [ "r3:2", "led-green:A", "green", [] ]
+  ]
+}
