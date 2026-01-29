@@ -5,7 +5,8 @@ void setup() {
   pinMode(25, OUTPUT);
   pinMode(26, OUTPUT);
   pinMode(27, OUTPUT);
-  Serial.println("--- KHOI DONG HE THONG ---");
+  delay(1000); 
+  Serial.println("--- LED_BLINK SYSTEM READY ---");
 }
 
 void loop() {
