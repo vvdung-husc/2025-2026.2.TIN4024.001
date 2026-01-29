@@ -1,18 +1,47 @@
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
+// CẤU HÌNH CHÂN
+#define LED_RED     25
+#define LED_YELLOW  33
+#define LED_GREEN   32
+
+// Hàm nhấp nháy + đếm giây
+void blinkLed(int ledPin, int seconds, const char* label) {
+  Serial.println(label);
+
+  for (int i = seconds; i > 0; i--) {
+    Serial.print("Con lai: ");
+    Serial.print(i);
+    Serial.println(" giay");
+
+    digitalWrite(ledPin, HIGH);
+    delay(500);
+    digitalWrite(ledPin, LOW);
+    delay(500);
+  }
+}
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  Serial.begin(115200);
+
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
+  // ĐÈN XANH
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  blinkLed(LED_GREEN, 10, "--- DEN XANH (NHAP NHAY) ---");
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  // ĐÈN VÀNG
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_GREEN, LOW);
+  blinkLed(LED_YELLOW, 3, "--- DEN VANG (NHAP NHAY) ---");
+
+  // ĐÈN ĐỎ
+  digitalWrite(LED_GREEN, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  blinkLed(LED_RED, 10, "--- DEN DO (NHAP NHAY) ---");
 }
