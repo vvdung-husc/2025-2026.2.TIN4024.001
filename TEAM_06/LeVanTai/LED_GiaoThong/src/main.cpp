@@ -1,168 +1,196 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
 
-// Hàm kiểm tra thời gian đã trôi qua - Non-Blocking
-bool IsReady(unsigned long &ulTimer, uint32_t millisecond)
-{
-  if (millis() - ulTimer < millisecond) return false;
-  ulTimer = millis();
-  return true;
-}
-// Định dạng chuỗi %s,%d,...
-String StringFormat(const char *fmt, ...)
-{
-  va_list vaArgs;
-  va_start(vaArgs, fmt);
-  va_list vaArgsCopy;
-  va_copy(vaArgsCopy, vaArgs);
-  const int iLen = vsnprintf(NULL, 0, fmt, vaArgsCopy);
-  va_end(vaArgsCopy);
-  int iSize = iLen + 1;
-  char *buff = (char *)malloc(iSize);
-  vsnprintf(buff, iSize, fmt, vaArgs);
-  va_end(vaArgs);
-  String s = buff;
-  free(buff);
-  return String(s);
-}
-
-#define PIN_LED_RED     25
-#define PIN_LED_YELLOW  33
-#define PIN_LED_GREEN   32
-
-// Module connection pins (Digital Pins)
-#define CLK 15
-#define DIO 2
-
-#define PIN_BUTTON_DISPLAY 23
-#define PIN_LED_BLUE      21
+// ===== CHÂN KẾT NỐI =====
+#define LED_RED 27
+#define LED_YELLOW 26
+#define LED_GREEN 25
+#define LED_BLUE 21
+#define BUTTON_PIN 23
+#define LDR_PIN 13
+#define CLK 18
+#define DIO 19
 
 TM1637Display display(CLK, DIO);
-int valueButtonDisplay = LOW;
 
-const char* LEDString(uint8_t pin)
+// ===== TIMER =====
+unsigned long dayMillis = 0;
+unsigned long nightMillis = 0;
+unsigned long debounceMillis = 0;
+
+// ===== BUTTON =====
+bool isSystemOn = false;
+int lastButtonState = HIGH;
+int buttonState = HIGH;
+const unsigned long debounceDelay = 50;
+
+// ===== TRAFFIC LIGHT =====
+int state = 1; // 1:Xanh | 2:Vàng | 0:Đỏ
+int countdown = 5;
+bool ledToggle = false;
+
+// ===== LDR =====
+const int NIGHT_THRESHOLD = 2000;
+int lastLdrValue = -1;
+const int LDR_DELTA = 20;
+
+// ================== HÀM TIỆN ÍCH ==================
+void setTrafficLights(bool r, bool y, bool g)
 {
-  switch (pin)
-  {
-    case PIN_LED_RED:     return "RED";
-    case PIN_LED_YELLOW:  return "YELLOW";
-    case PIN_LED_GREEN:   return "GREEN";
-    default:              return "UNKNOWN";
-  }  
+  digitalWrite(LED_RED, r);
+  digitalWrite(LED_YELLOW, y);
+  digitalWrite(LED_GREEN, g);
 }
 
-void Init_LED_Traffic()
+void turnOffAll()
 {
-  pinMode(PIN_LED_RED, OUTPUT);
-  pinMode(PIN_LED_YELLOW, OUTPUT);  
-  pinMode(PIN_LED_GREEN, OUTPUT);
+  setTrafficLights(LOW, LOW, LOW);
+  digitalWrite(LED_BLUE, LOW);
+  display.clear();
 }
 
-bool ProcessLEDTraffic()
+void resetSystem()
 {
-  static unsigned long ulTimer = 0;
-  static uint8_t idxLED = 0;
-  static uint8_t LEDs[3] = {PIN_LED_GREEN, PIN_LED_YELLOW, PIN_LED_RED};
-  if (!IsReady(ulTimer, 1000)) return false;
+  state = 1;
+  countdown = 5;
+  ledToggle = false;
 
-  for (size_t i = 0; i < 3; i++)
+  dayMillis = millis();
+  nightMillis = millis();
+
+  digitalWrite(LED_BLUE, HIGH);
+  setTrafficLights(LOW, LOW, HIGH);
+  display.showNumberDec(countdown, true);
+}
+
+// ================== NIGHT MODE ==================
+void runNightMode()
+{
+  if (millis() - nightMillis >= 500)
   {
-    if (i == idxLED) digitalWrite(LEDs[i], HIGH);
-    else digitalWrite(LEDs[i], LOW);
+    nightMillis = millis();
+    ledToggle = !ledToggle;
+
+    setTrafficLights(LOW, ledToggle, LOW);
+
+    if (ledToggle)
+      display.clear();
+    else
+      display.showNumberDec(0, false);
   }
-  
-  idxLED = (idxLED + 1) % 3;// Next LED => idxLED = 0,1,2,...
-  
-  return true;
 }
 
-bool ProcessLEDTrafficWaitTime()
+// ================== DAY MODE ==================
+void runDayMode()
 {
-  static unsigned long ulTimer = 0;
-  static uint8_t idxLED = 0;//PIN_LED_GREEN
-  static uint8_t LEDs[3] = {PIN_LED_GREEN, PIN_LED_YELLOW, PIN_LED_RED};
-  static uint32_t waitTime[3] = {7000, 3000, 5000};// Green, Yellow, Red
-  static uint32_t count = waitTime[idxLED];
-  static bool ledStatus = false;
-  static int secondCount = 0;
-
-  if (!IsReady(ulTimer, 500)) return false;
-
-  if (count == waitTime[idxLED])
+  if (millis() - dayMillis >= 1000)
   {
-    secondCount = (count / 1000) - 1;
+    dayMillis = millis();
+    countdown--;
+    ledToggle = !ledToggle; // <<< NHÁY MỖI GIÂY
 
-    ledStatus = true;
-    for (size_t i = 0; i < 3; i++)
+    if (countdown < 0)
     {
-      if (i == idxLED){
-        digitalWrite(LEDs[i], HIGH);
-        printf("LED [%-6s] ON => %d Seconds\n", LEDString(LEDs[i]), count/1000);
+      if (state == 1)
+      {
+        state = 2;
+        countdown = 2;
       }
-      else digitalWrite(LEDs[i], LOW);
-    }    
+      else if (state == 2)
+      {
+        state = 0;
+        countdown = 5;
+      }
+      else
+      {
+        state = 1;
+        countdown = 5;
+      }
+    }
+
+    display.showNumberDec(countdown, true);
+
+    // ===== LED NHÁY THEO STATE =====
+    if (state == 1) // GREEN
+    {
+      setTrafficLights(LOW, LOW, ledToggle);
+      Serial.print("MODE=DAY | STATE=GREEN | COUNTDOWN=");
+    }
+    else if (state == 2) // YELLOW
+    {
+      setTrafficLights(LOW, ledToggle, LOW);
+      Serial.print("MODE=DAY | STATE=YELLOW | COUNTDOWN=");
+    }
+    else // RED
+    {
+      setTrafficLights(ledToggle, LOW, LOW);
+      Serial.print("MODE=DAY | STATE=RED | COUNTDOWN=");
+    }
+
+    Serial.println(countdown);
   }
-  else {
-    ledStatus = !ledStatus;
-    digitalWrite(LEDs[idxLED], ledStatus ? HIGH : LOW);
-  }
-
-  if (ledStatus) {
-    if (valueButtonDisplay == HIGH){
-       printf(" [%s] => seconds: %d \n",LEDString(LEDs[idxLED]), secondCount);
-       display.showNumberDec(secondCount);  
-    }  
-    --secondCount;
-  }
-
-  count -= 500;
-  if (count > 0) return true;
-
-  idxLED = (idxLED + 1) % 3;// Next LED => idxLED = 0,1,2,...
-  count = waitTime[idxLED];
-
-  return true;
 }
 
-void ProcessButtonPressed(){
-  static ulong ulTimer = 0;
-  
-  if (!IsReady(ulTimer, 10)) return;
-
-  int newValue = digitalRead(PIN_BUTTON_DISPLAY);
-  if (newValue == valueButtonDisplay) return;
-  
-  if (newValue == HIGH){
-    digitalWrite(PIN_LED_BLUE, HIGH);
-    printf("*** DISPLAY ON ***\n");
-  }
-  else {
-    digitalWrite(PIN_LED_BLUE, LOW);
-    display.clear();
-    printf("*** DISPLAY OFF ***\n");
-  }
-
-  valueButtonDisplay = newValue;
-}
-
+// ================== SETUP ==================
 void setup()
 {
-  // put your setup code here, to run once:
-  printf("*** PROJECT LED TRAFFIC ***\n");
-  Init_LED_Traffic();
-  
-  display.setBrightness(0x0a);
-  display.clear();
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_BLUE, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(LDR_PIN, INPUT);
 
-  pinMode(PIN_BUTTON_DISPLAY, INPUT);
-  pinMode(PIN_LED_BLUE, OUTPUT);
+  Serial.begin(115200);
+  display.setBrightness(7);
+  turnOffAll();
 }
 
-
+// ================== LOOP ==================
 void loop()
 {
-  // put your main code here, to run repeatedly:
-  //ProcessLEDTraffic();
-  ProcessButtonPressed();
-  ProcessLEDTrafficWaitTime();
+  // ===== BUTTON =====
+  int reading = digitalRead(BUTTON_PIN);
+
+  if (reading != lastButtonState)
+    debounceMillis = millis();
+
+  if (millis() - debounceMillis > debounceDelay)
+  {
+    if (reading != buttonState)
+    {
+      buttonState = reading;
+
+      if (buttonState == LOW)
+      {
+        isSystemOn = !isSystemOn;
+        if (isSystemOn)
+          resetSystem();
+        else
+          turnOffAll();
+      }
+    }
+  }
+  lastButtonState = reading;
+
+  if (!isSystemOn)
+    return;
+
+  // ===== LDR READ =====
+  int ldrValue = analogRead(LDR_PIN);
+
+  if (lastLdrValue < 0 || abs(ldrValue - lastLdrValue) > LDR_DELTA)
+  {
+    lastLdrValue = ldrValue;
+    Serial.print("LDR = ");
+    Serial.print(ldrValue);
+    Serial.print(" | MODE = ");
+    Serial.println(ldrValue > NIGHT_THRESHOLD ? "NIGHT" : "DAY");
+  }
+
+  // ===== MODE SELECT =====
+  if (ldrValue > NIGHT_THRESHOLD)
+    runNightMode();
+  else
+    runDayMode();
 }

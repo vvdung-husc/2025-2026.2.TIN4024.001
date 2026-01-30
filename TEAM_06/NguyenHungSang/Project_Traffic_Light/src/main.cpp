@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
 
-
+// ===== CHÂN KẾT NỐI =====
 #define LED_RED 27
 #define LED_YELLOW 26
 #define LED_GREEN 25
@@ -13,16 +13,28 @@
 
 TM1637Display display(CLK, DIO);
 
+// ===== TIMER =====
+unsigned long dayMillis = 0;
+unsigned long nightMillis = 0;
+unsigned long debounceMillis = 0;
 
-unsigned long prevMillis = 0;
-int countdown = 5;
-int state = 1; 
+// ===== BUTTON =====
 bool isSystemOn = false;
-bool ledToggle = true;
+int lastButtonState = HIGH;
+int buttonState = HIGH;
+const unsigned long debounceDelay = 50;
 
-const int NIGHT_THRESHOLD = 1000;
+// ===== TRAFFIC LIGHT =====
+int state = 1; // 1:Xanh | 2:Vàng | 0:Đỏ
+int countdown = 5;
+bool ledToggle = false;
 
+// ===== LDR =====
+const int NIGHT_THRESHOLD = 2000;
+int lastLdrValue = -1;
+const int LDR_DELTA = 20;
 
+// ================== HÀM TIỆN ÍCH ==================
 void setTrafficLights(bool r, bool y, bool g)
 {
   digitalWrite(LED_RED, r);
@@ -30,86 +42,52 @@ void setTrafficLights(bool r, bool y, bool g)
   digitalWrite(LED_GREEN, g);
 }
 
-
 void turnOffAll()
 {
   setTrafficLights(LOW, LOW, LOW);
-  digitalWrite(LED_BLUE, LOW); 
+  digitalWrite(LED_BLUE, LOW);
   display.clear();
 }
 
-void setup()
+void resetSystem()
 {
-  pinMode(LED_RED, OUTPUT);
-  pinMode(LED_YELLOW, OUTPUT);
-  pinMode(LED_GREEN, OUTPUT);
-  pinMode(LED_BLUE, OUTPUT);
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
-  pinMode(LDR_PIN, INPUT);
+  state = 1;
+  countdown = 5;
+  ledToggle = false;
 
-  display.setBrightness(7);
-  turnOffAll();
+  dayMillis = millis();
+  nightMillis = millis();
+
+  digitalWrite(LED_BLUE, HIGH);
+  setTrafficLights(LOW, LOW, HIGH);
+  display.showNumberDec(countdown, true);
 }
 
-void loop()
+// ================== NIGHT MODE ==================
+void runNightMode()
 {
-  
-  if (digitalRead(BUTTON_PIN) == LOW)
+  if (millis() - nightMillis >= 500)
   {
-    delay(50); 
-    if (digitalRead(BUTTON_PIN) == LOW)
-    {
-      isSystemOn = !isSystemOn;
+    nightMillis = millis();
+    ledToggle = !ledToggle;
 
-      if (!isSystemOn)
-      {
-        turnOffAll();
-      }
-      else
-      {
-        digitalWrite(LED_BLUE, HIGH); 
-        prevMillis = millis();
-        state = 1;
-        countdown = 5;
-        ledToggle = true;
-      }
+    setTrafficLights(LOW, ledToggle, LOW);
 
-      while (digitalRead(BUTTON_PIN) == LOW)
-        ; 
-    }
-  }
-
-  if (!isSystemOn)
-    return;
-
-  int lightValue = analogRead(LDR_PIN);
-
-
-  if (lightValue < NIGHT_THRESHOLD)
-  {
-    if (millis() - prevMillis >= 500)
-    {
-      prevMillis = millis();
-      ledToggle = !ledToggle;
-      setTrafficLights(LOW, ledToggle, LOW); 
+    if (ledToggle)
       display.clear();
-    }
-    return;
-  }
-
-  if (millis() - prevMillis >= 1000)
-  {
-    prevMillis = millis();
-    display.showNumberDec(countdown, true);
-
-    if (state == 1)
-      setTrafficLights(LOW, LOW, HIGH); 
-    else if (state == 2)
-      setTrafficLights(LOW, HIGH, LOW); 
     else
-      setTrafficLights(HIGH, LOW, LOW); 
+      display.showNumberDec(0, false);
+  }
+}
 
+// ================== DAY MODE ==================
+void runDayMode()
+{
+  if (millis() - dayMillis >= 1000)
+  {
+    dayMillis = millis();
     countdown--;
+    ledToggle = !ledToggle; // <<< NHÁY MỖI GIÂY
 
     if (countdown < 0)
     {
@@ -129,5 +107,90 @@ void loop()
         countdown = 5;
       }
     }
+
+    display.showNumberDec(countdown, true);
+
+    // ===== LED NHÁY THEO STATE =====
+    if (state == 1) // GREEN
+    {
+      setTrafficLights(LOW, LOW, ledToggle);
+      Serial.print("MODE=DAY | STATE=GREEN | COUNTDOWN=");
+    }
+    else if (state == 2) // YELLOW
+    {
+      setTrafficLights(LOW, ledToggle, LOW);
+      Serial.print("MODE=DAY | STATE=YELLOW | COUNTDOWN=");
+    }
+    else // RED
+    {
+      setTrafficLights(ledToggle, LOW, LOW);
+      Serial.print("MODE=DAY | STATE=RED | COUNTDOWN=");
+    }
+
+    Serial.println(countdown);
   }
+}
+
+// ================== SETUP ==================
+void setup()
+{
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_BLUE, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(LDR_PIN, INPUT);
+
+  Serial.begin(115200);
+  display.setBrightness(7);
+  turnOffAll();
+}
+
+// ================== LOOP ==================
+void loop()
+{
+  // ===== BUTTON =====
+  int reading = digitalRead(BUTTON_PIN);
+
+  if (reading != lastButtonState)
+    debounceMillis = millis();
+
+  if (millis() - debounceMillis > debounceDelay)
+  {
+    if (reading != buttonState)
+    {
+      buttonState = reading;
+
+      if (buttonState == LOW)
+      {
+        isSystemOn = !isSystemOn;
+        if (isSystemOn)
+          resetSystem();
+        else
+          turnOffAll();
+      }
+    }
+  }
+  lastButtonState = reading;
+
+  if (!isSystemOn)
+    return;
+
+  // ===== LDR READ =====
+  int ldrValue = analogRead(LDR_PIN);
+
+  if (lastLdrValue < 0 || abs(ldrValue - lastLdrValue) > LDR_DELTA)
+  {
+    lastLdrValue = ldrValue;
+    Serial.print("LDR = ");
+    Serial.print(ldrValue);
+    Serial.print(" | MODE = ");
+    Serial.println(ldrValue > NIGHT_THRESHOLD ? "NIGHT" : "DAY");
+  }
+
+  // ===== MODE SELECT =====
+  if (ldrValue > NIGHT_THRESHOLD)
+    runNightMode();
+  else
+    runDayMode();
 }

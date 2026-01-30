@@ -1,38 +1,37 @@
-#include <Arduino.h>
+#include "main.h"
 
-//Non-blocking
-bool IsReady(unsigned long &ulTimer, uint32_t millisecond) {
-  if (millis() - ulTimer < millisecond) return false;
-  ulTimer = millis();
-  return true;
-}
+//Định nghĩa chân cho đèn LED
+#define PIN_LED_RED     18
+#define PIN_LED_YELLOW  5
+#define PIN_LED_GREEN    17
 
-#define PIN_LED_RED 23
+//Định nghĩa cho LDR (Light Dependent Resistor)
+#define PIN_LDR 34 // Analog ADC1 GPIO34 connected to LDR
+
+int DAY_ADC_THRESHOLD = 2000; // Ngưỡng ánh sáng ban ngày
+
+//LED_Blink ledYellow;
+Trafic_Blink traficLight;
+LDR ldrSensor;
 
 void setup() {
   // put your setup code here, to run once:
-  printf("WELCOME IOT\n");
-  pinMode(PIN_LED_RED, OUTPUT); 
-}
+  printf("Welcome IoT\n");
 
-//*** Blocking
-// void loop() {
-//   digitalWrite(PIN_LED_RED, HIGH); // Turn LED ON
-//   delay(500); // Wait for 500ms
-//   digitalWrite(PIN_LED_RED , LOW); // Turn LED OFF
-//   delay(500); // Wait for 500ms
-// }
+  ldrSensor.setup(PIN_LDR, false); // VCC = 3.3V
+
+  traficLight.setupPin(PIN_LED_RED, PIN_LED_YELLOW, PIN_LED_GREEN);
+  traficLight.setupWaitTime(5, 3, 7); // seconds
+}
 
 void loop() {
-  static int i = 0;
-  static unsigned long ulTimer = 0;
-  static bool status = false;
-  // put your main code here, to run repeatedly:
-  if (IsReady(ulTimer, 500)) {
-    //printf("Loop running ... %d\n", ++i);
-    status = !status;
-    digitalWrite(PIN_LED_RED , status ? HIGH : LOW); // Turn LED ON/OFF
-  }
-  
+  //ledYellow.blink(500);
+  int analogValue = 0;
+  float lux =ldrSensor.readLux(&analogValue);
+  bool isDark = (analogValue > DAY_ADC_THRESHOLD);
+  traficLight.blink(500, isDark);
+
 }
+
+
 
