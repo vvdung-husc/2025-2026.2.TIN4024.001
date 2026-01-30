@@ -1,238 +1,138 @@
-// #include <Arduino.h>
-
-// // put function declarations here:
-// int myFunction(int, int);
-
-// void setup() {
-//   // put your setup code here, to run once:
-//   int result = myFunction(2, 3);
-// }
-
-// void loop() {
-//   // put your main code here, to run repeatedly:
-// }
-
-// // put function definitions here:
-// int myFunction(int x, int y) {
-//   return x + y;
-// }
-#include <Arduino.h>
 #include <TM1637Display.h>
+#include <Arduino.h>
 
-// ===== CẤU HÌNH CHÂN =====
-const uint8_t PIN_LED_RED = 14;
-const uint8_t PIN_LED_YELLOW = 27;
-const uint8_t PIN_LED_GREEN = 26;
-const uint8_t PIN_LED_BLUE = 21;
-const uint8_t PIN_BUTTON = 23;
-const uint8_t PIN_LDR = 13;
-const uint8_t PIN_CLK = 18;
-const uint8_t PIN_DIO = 19;
+// --- 1. CẤU HÌNH CHÂN (PINOUT) ---
+#define LED_RED     27
+#define LED_YELLOW  26
+#define LED_GREEN   25
+#define LED_BLUE    21
 
-// ===== THỜI GIAN (giây) =====
-const int TIME_RED = 5;
-const int TIME_GREEN = 7;
-const int TIME_YELLOW = 3;
+#define CLK 19
+#define DIO 18
 
-const int LDR_THRESHOLD = 1500;
-const int DEBOUNCE_TIME = 50;
+#define SENSOR_PIN  13  // Chân đọc Analog cảm biến ánh sáng (THAY ĐỔI TỪ 34 SANG 13)
+#define BUTTON_PIN  23  // Chân nút nhấn
 
-// ===== KHỞI TẠO =====
-TM1637Display display(PIN_CLK, PIN_DIO);
+// Ngưỡng ánh sáng để phân biệt Ngày/Đêm (0-4095)
+// Trên Wokwi: Kéo thanh trượt sang phải là Tối (Giá trị cao), sang trái là Sáng (Giá trị thấp)
+#define LIGHT_THRESHOLD 2000 
 
-// ===== BIẾN TRẠNG THÁI =====
-bool showCountdown = true;
-bool lastButtonState = HIGH;
-unsigned long lastDebounceTime = 0;
+// Khởi tạo màn hình
+TM1637Display display(CLK, DIO);
 
-// ===== KHAI BÁO HÀM TRƯỚC =====
-void checkButton();
-void runRedLight();
-void runGreenLight();
-void runYellowLight();
-void runNightMode();
-
-// ===== HÀM CHÍNH =====
 void setup() {
   Serial.begin(115200);
   
-  // Cấu hình chân
-  pinMode(PIN_LED_RED, OUTPUT);
-  pinMode(PIN_LED_YELLOW, OUTPUT);
-  pinMode(PIN_LED_GREEN, OUTPUT);
-  pinMode(PIN_LED_BLUE, OUTPUT);
-  pinMode(PIN_BUTTON, INPUT_PULLUP);
+  // Cấu hình chân đèn là Output
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_BLUE, OUTPUT);
   
-  // Khởi tạo màn hình
-  display.setBrightness(7);
-  display.clear();
+  // Cấu hình chân cảm biến là Input
+  pinMode(SENSOR_PIN, INPUT);
   
-  // LED xanh dương báo trạng thái countdown
-  digitalWrite(PIN_LED_BLUE, HIGH);
+  // Cấu hình chân nút nhấn với INPUT_PULLUP
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
   
-  // Tắt hết đèn giao thông
-  digitalWrite(PIN_LED_RED, LOW);
-  digitalWrite(PIN_LED_YELLOW, LOW);
-  digitalWrite(PIN_LED_GREEN, LOW);
+  // Cài đặt độ sáng màn hình (0-7)
+  display.setBrightness(0x0f);
   
-  Serial.println("=================================");
-  Serial.println("   ĐÈN GIAO THÔNG THÔNG MINH");
-  Serial.println("=================================");
-  Serial.println("Thứ tự: ĐỎ(5s) → XANH(7s) → VÀNG(3s)");
-  Serial.println("Nhấn nút: BẬT/TẮT đếm ngược");
-  Serial.println("=================================\n");
+  Serial.println("HE THONG DEN GIAO THONG KET HOP CAM BIEN KHOI DONG...");
+  Serial.println("Pinout: LED_RED=27, LED_YELLOW=26, LED_GREEN=25, LED_BLUE=21");
+  Serial.println("        SENSOR=13, BUTTON=23, CLK=19, DIO=18");
+}
+
+// Hàm tắt hết tất cả đèn
+void tatHetDen() {
+  digitalWrite(LED_GREEN, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_BLUE, LOW);
+}
+
+// Hàm kiểm tra xem có phải ban đêm không
+bool laBanDem() {
+  int sensorValue = analogRead(SENSOR_PIN);
+  Serial.print("Gia tri cam bien anh sang: ");
+  Serial.println(sensorValue);
+  return (sensorValue > LIGHT_THRESHOLD); // Nếu giá trị > 2000 là Đêm
+}
+
+// Hàm xử lý đèn sáng liên tục và đếm ngược (CHẾ ĐỘ BAN NGÀY)
+// pin: Chân đèn cần sáng
+// soLan: Số lần đếm (Ví dụ: 7)
+// soDemBatDau: Số bắt đầu hiển thị trên màn hình (Ví dụ: 6)
+void chayCheDo(int pin, int soLan, int soDemBatDau) {
+  
+  // Bật đèn sáng liên tục
+  digitalWrite(pin, HIGH);
+  
+  for (int i = 0; i < soLan; i++) {
+    // 1. Kiểm tra LDR ngay lập tức
+    // Nếu đột ngột chuyển sang đêm -> Tắt đèn và thoát ngay
+    if (laBanDem()) {
+      digitalWrite(pin, LOW);
+      return; 
+    }
+    
+    // 2. Hiển thị số đếm ngược
+    int soHienThi = soDemBatDau - i;
+    display.showNumberDec(soHienThi);
+    Serial.print("Den: "); 
+    Serial.print(pin); 
+    Serial.print(" | Dem nguoc: "); 
+    Serial.println(soHienThi);
+    
+    // 3. Chờ 1 giây (đèn vẫn sáng liên tục)
+    delay(1000); 
+  }
+  
+  // Tắt đèn sau khi hết thời gian
+  digitalWrite(pin, LOW);
 }
 
 void loop() {
-  checkButton();
-  
-  int lightLevel = analogRead(PIN_LDR);
-  
-  if (lightLevel >= LDR_THRESHOLD) {
-    // CHẾ ĐỘ NGÀY
-    Serial.println("☀️ CHẾ ĐỘ NGÀY");
-    runRedLight();
-    runGreenLight();
-    runYellowLight();
+  // --- KIỂM TRA CHẾ ĐỘ ---
+  if (laBanDem()) {
+    // === CHẾ ĐỘ BAN ĐÊM ===
+    Serial.println("--- CHE DO BAN DEM (Night Mode) ---");
+    
+    // Tắt đèn đỏ và xanh
+    digitalWrite(LED_RED, LOW);
+    digitalWrite(LED_GREEN, LOW);
+    digitalWrite(LED_BLUE, LOW);
+    
+    // Màn hình hiện gạch ngang hoặc tắt
+    uint8_t data[] = { 0x40, 0x40, 0x40, 0x40 }; // Ký tự gạch ngang (-)
+    display.setSegments(data);
+    
+    // Nhấp nháy đèn vàng
+    digitalWrite(LED_YELLOW, HIGH);
+    delay(500);
+    digitalWrite(LED_YELLOW, LOW);
+    delay(500);
+    
   } else {
-    // CHẾ ĐỘ ĐÊM
-    Serial.println("🌙 CHẾ ĐỘ ĐÊM - Đèn vàng nhấp nháy");
-    runNightMode();
-  }
-}
-
-// ===== XỬ LÝ NÚT NHẤN =====
-void checkButton() {
-  bool reading = digitalRead(PIN_BUTTON);
-  
-  if (reading != lastButtonState) {
-    lastDebounceTime = millis();
-  }
-  
-  if ((millis() - lastDebounceTime) > DEBOUNCE_TIME) {
-    if (reading == LOW && lastButtonState == HIGH) {
-      // Nhấn nút → Đổi trạng thái
-      showCountdown = !showCountdown;
-      digitalWrite(PIN_LED_BLUE, showCountdown ? HIGH : LOW);
-      
-      Serial.println("━━━━━━━━━━━━━━━━━━━━━━━");
-      Serial.print("🔵 Đếm ngược: ");
-      Serial.println(showCountdown ? "BẬT ✓" : "TẮT ✗");
-      Serial.println("━━━━━━━━━━━━━━━━━━━━━━━\n");
-    }
-    lastButtonState = reading;
-  }
-}
-
-// ===== ĐÈN ĐỎ =====
-void runRedLight() {
-  Serial.println("🔴 ĐÈN ĐỎ - DỪNG LẠI");
-  
-  // BẬT đèn đỏ, TẮT đèn khác
-  digitalWrite(PIN_LED_RED, HIGH);
-  digitalWrite(PIN_LED_YELLOW, LOW);
-  digitalWrite(PIN_LED_GREEN, LOW);
-  
-  // Đếm ngược từ 5 → 1
-  for (int i = TIME_RED; i >= 1; i--) {
-    checkButton();
+    // === CHẾ ĐỘ BAN NGÀY ===
+    Serial.println("--- CHE DO BAN NGAY (Day Mode) ---");
     
-    Serial.print("  ⏱️  ");
-    Serial.println(i);
+    // Đảm bảo các đèn khác tắt trước khi vào pha mới
+    tatHetDen();
     
-    // Hiển thị số
-    if (showCountdown) {
-      display.showNumberDec(i, false);
-    } else {
-      display.clear();
-    }
+    // 1. ĐÈN XANH: Nháy 7 lần, Đếm 6 -> 0
+    Serial.println("-> PHA XANH");
+    chayCheDo(LED_GREEN, 7, 6);
+    if (laBanDem()) return; // Nếu đang chạy mà chuyển đêm thì reset loop
     
-    delay(1000); // 1 giây
-  }
-  
-  digitalWrite(PIN_LED_RED, LOW);
-  Serial.println();
-}
-
-// ===== ĐÈN XANH =====
-void runGreenLight() {
-  Serial.println("🟢 ĐÈN XANH - ĐI");
-  
-  // BẬT đèn xanh, TẮT đèn khác
-  digitalWrite(PIN_LED_GREEN, HIGH);
-  digitalWrite(PIN_LED_RED, LOW);
-  digitalWrite(PIN_LED_YELLOW, LOW);
-  
-  // Đếm ngược từ 7 → 1
-  for (int i = TIME_GREEN; i >= 1; i--) {
-    checkButton();
+    // 2. ĐÈN VÀNG: Nháy 3 lần, Đếm 2 -> 0
+    Serial.println("-> PHA VANG");
+    chayCheDo(LED_YELLOW, 3, 2);
+    if (laBanDem()) return;
     
-    Serial.print("  ⏱️  ");
-    Serial.println(i);
-    
-    if (showCountdown) {
-      display.showNumberDec(i, false);
-    } else {
-      display.clear();
-    }
-    
-    delay(1000);
-  }
-  
-  digitalWrite(PIN_LED_GREEN, LOW);
-  Serial.println();
-}
-
-// ===== ĐÈN VÀNG =====
-void runYellowLight() {
-  Serial.println("🟡 ĐÈN VÀNG - CHỜ");
-  
-  // BẬT đèn vàng, TẮT đèn khác
-  digitalWrite(PIN_LED_YELLOW, HIGH);
-  digitalWrite(PIN_LED_RED, LOW);
-  digitalWrite(PIN_LED_GREEN, LOW);
-  
-  // Đếm ngược từ 3 → 1
-  for (int i = TIME_YELLOW; i >= 1; i--) {
-    checkButton();
-    
-    Serial.print("  ⏱️  ");
-    Serial.println(i);
-    
-    if (showCountdown) {
-      display.showNumberDec(i, false);
-    } else {
-      display.clear();
-    }
-    
-    delay(1000);
-  }
-  
-  digitalWrite(PIN_LED_YELLOW, LOW);
-  Serial.println();
-}
-
-// ===== CHẾ ĐỘ ĐÊM =====
-void runNightMode() {
-  // Tắt đèn đỏ và xanh
-  digitalWrite(PIN_LED_RED, LOW);
-  digitalWrite(PIN_LED_GREEN, LOW);
-  
-  // Nhấp nháy đèn vàng
-  while (analogRead(PIN_LDR) < LDR_THRESHOLD) {
-    checkButton();
-    
-    // Hiển thị 0 hoặc tắt màn hình
-    if (showCountdown) {
-      display.showNumberDec(0, false);
-    } else {
-      display.clear();
-    }
-    
-    digitalWrite(PIN_LED_YELLOW, HIGH);
-    delay(500);
-    
-    digitalWrite(PIN_LED_YELLOW, LOW);
-    delay(500);
+    // 3. ĐÈN ĐỎ: Nháy 5 lần, Đếm 4 -> 0
+    Serial.println("-> PHA DO");
+    chayCheDo(LED_RED, 5, 4);
+    if (laBanDem()) return;
   }
 }

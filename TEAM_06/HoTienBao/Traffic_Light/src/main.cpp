@@ -1,21 +1,80 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
 
-// --- CẤU HÌNH CHÂN ---
+// ===== 1. CẤU HÌNH CHÂN (THEO DIAGRAM) =====
 #define CLK 18
 #define DIO 19
 
 #define LED_RED     27
 #define LED_YELLOW  26
 #define LED_GREEN   25
-#define LED_BLUE    22
-#define BTN_WALK    23
-#define LDR_PIN     34 
+#define LED_BLUE    21  // Đèn báo trạng thái nút/người đi bộ
+#define BUTTON_PIN  23
+#define LDR_PIN     13  // Cảm biến ánh sáng
 
-// Ngưỡng ánh sáng
-#define LIGHT_THRESHOLD 2000 
+// ===== 2. CẤU HÌNH THỜI GIAN (GIÂY) =====
+#define TIME_GREEN  5
+#define TIME_YELLOW 2
+#define TIME_RED    3
+
+// ===== 3. CẤU HÌNH NGƯỠNG ÁNH SÁNG =====
+// Bạn hãy bật Serial Monitor để xem giá trị thực tế
+// Giả định mới: Giá trị CAO = TỐI, Giá trị THẤP = SÁNG
+const int NIGHT_THRESHOLD = 2000; 
 
 TM1637Display display(CLK, DIO);
+
+// ===== 4. BIẾN HỆ THỐNG =====
+unsigned long lastBlinkTime = 0; // Timer cho nhấp nháy đèn
+const int BLINK_INTERVAL = 500;  // Nhấp nháy mỗi 0.5 giây
+
+int countdown = 0;
+int trafficState = 0; // 0: Xanh | 1: Vàng | 2: Đỏ
+
+bool isSystemOn = false;   // Bật/Tắt hệ thống
+bool isLedOn = false;      // Trạng thái nhấp nháy (Sáng/Tối)
+bool isNightMode = false;  // Trạng thái Ngày/Đêm
+
+// Biến nút nhấn
+int lastButtonState = HIGH;
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 50;
+
+// ===== 5. CÁC HÀM HỖ TRỢ =====
+
+void turnOffAll() {
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, LOW);
+  display.clear();
+}
+
+// Hàm điều khiển đèn (Dùng chung cho cả logic đếm giờ và nhấp nháy)
+void updateTrafficLeds(bool turnOn) {
+  // Luôn tắt hết trước khi bật lại
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, LOW);
+
+  if (!turnOn) return; // Nếu đang ở pha tắt của nhịp nháy thì thoát
+
+  // Bật đèn theo pha hiện tại
+  if (trafficState == 0) digitalWrite(LED_GREEN, HIGH);
+  else if (trafficState == 1) digitalWrite(LED_YELLOW, HIGH);
+  else if (trafficState == 2) digitalWrite(LED_RED, HIGH);
+}
+
+// Reset hệ thống về trạng thái ban đầu
+void resetSystemState() {
+  trafficState = 0; // Bắt đầu Xanh
+  countdown = TIME_GREEN;
+  isLedOn = true;
+  lastBlinkTime = millis();
+  
+  digitalWrite(LED_BLUE, HIGH); // Báo hiệu bật
+  display.showNumberDec(countdown, true);
+  updateTrafficLeds(true);
+}
 
 void setup() {
   Serial.begin(115200);
@@ -24,105 +83,105 @@ void setup() {
   pinMode(LED_YELLOW, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_BLUE, OUTPUT);
-  
-  pinMode(BTN_WALK, INPUT_PULLUP);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
   pinMode(LDR_PIN, INPUT);
 
   display.setBrightness(7);
+  turnOffAll();
+  Serial.println("HE THONG BAT DAU");
 }
 
-// Kiểm tra nút đi bộ
-void checkPedestrianButton() {
-  if (digitalRead(BTN_WALK) == LOW) {
-    digitalWrite(LED_BLUE, HIGH);
-  } else {
-    digitalWrite(LED_BLUE, LOW);
+// ===== LOGIC BAN ĐÊM =====
+void runNightModeLogic() {
+  display.clear(); // Tắt màn hình
+  
+  // Nhấp nháy đèn Vàng mỗi 0.5s
+  if (millis() - lastBlinkTime >= BLINK_INTERVAL) {
+    lastBlinkTime = millis();
+    isLedOn = !isLedOn;
+
+    digitalWrite(LED_RED, LOW);
+    digitalWrite(LED_GREEN, LOW);
+    digitalWrite(LED_YELLOW, isLedOn ? HIGH : LOW);
   }
 }
 
-// --- HÀM CHẠY ĐÈN (Hỗ trợ nhấp nháy) ---
-// isBlinking = true: Đèn sẽ chớp tắt (dùng cho đèn Xanh)
-// isBlinking = false: Đèn sáng đứng (dùng cho đèn Đỏ/Vàng)
-void runTrafficLight(int seconds, int ledPin, bool isBlinking) {
-  // Tắt hết đèn trước khi chạy pha này
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_GREEN, LOW);
+// ===== LOGIC BAN NGÀY =====
+void runDayModeLogic() {
+  // Timer 0.5 giây để xử lý nhấp nháy
+  if (millis() - lastBlinkTime >= BLINK_INTERVAL) {
+    lastBlinkTime = millis();
+    isLedOn = !isLedOn; // Đảo trạng thái đèn (Sáng -> Tắt -> Sáng...)
 
-  for (int i = seconds; i >= 0; i--) {
-    // Nếu ánh sáng thay đổi đột ngột (đang chạy mà trời tối) -> Thoát ngay
-    // Lưu ý: Logic ở đây phải khớp với logic trong loop()
-    if (analogRead(LDR_PIN) > LIGHT_THRESHOLD) return; 
+    // CHỈ ĐẾM NGƯỢC KHI BẮT ĐẦU 1 GIÂY MỚI (Khi đèn bật sáng lại)
+    if (isLedOn) {
+      countdown--;
+      
+      // Hết giờ -> Chuyển đèn
+      if (countdown < 0) {
+        trafficState++;
+        if (trafficState > 2) trafficState = 0; // Quay lại Xanh
 
-    display.showNumberDec(i, false);
-    
-    // --- GIAI ĐOẠN 1: ĐÈN SÁNG (0.5 giây đầu) ---
-    digitalWrite(ledPin, HIGH);
-    for(int j=0; j<5; j++) { // Chờ 0.5s
-      checkPedestrianButton();
-      delay(100); 
+        // Cài đặt thời gian mới
+        if (trafficState == 0) countdown = TIME_GREEN;       // 5s
+        else if (trafficState == 1) countdown = TIME_YELLOW; // 2s
+        else if (trafficState == 2) countdown = TIME_RED;    // 3s
+      }
+      
+      // Cập nhật màn hình (chỉ khi số thay đổi)
+      display.showNumberDec(countdown, true);
     }
 
-    // --- GIAI ĐOẠN 2: XỬ LÝ NHẤP NHÁY (0.5 giây sau) ---
-    if (isBlinking) {
-      digitalWrite(ledPin, LOW); // Tắt đèn để tạo hiệu ứng nháy
-    } 
-    // Nếu không nhấp nháy thì đèn vẫn giữ nguyên là HIGH
-
-    for(int j=0; j<5; j++) { // Chờ tiếp 0.5s
-      checkPedestrianButton();
-      delay(100); 
-    }
+    // Cập nhật trạng thái đèn (Nhấp nháy theo biến isLedOn)
+    updateTrafficLeds(isLedOn);
   }
-}
-
-// --- CHẾ ĐỘ BAN ĐÊM (Nháy Vàng) ---
-void runNightMode() {
-  Serial.println("--- CHE DO BAN DEM (Nhay Vang) ---");
-  
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_GREEN, LOW);
-  digitalWrite(LED_BLUE, LOW);
-  
-  // Hiện gạch ngang
-  uint8_t data[] = { 0x40, 0x40, 0x40, 0x40 }; 
-  display.setSegments(data);
-
-  // Nháy Vàng
-  digitalWrite(LED_YELLOW, HIGH);
-  delay(500);
-  digitalWrite(LED_YELLOW, LOW);
-  delay(500);
 }
 
 void loop() {
-  int lightLevel = analogRead(LDR_PIN);
-  Serial.print("Anh sang: ");
-  Serial.println(lightLevel);
+  // 1. XỬ LÝ NÚT BẤM (BẬT/TẮT)
+  int reading = digitalRead(BUTTON_PIN);
+  if (reading != lastButtonState) {
+    lastDebounceTime = millis();
+  }
 
-  // --- SỬA LỖI NGƯỢC: Đổi dấu < thành > ---
-  // Nếu giá trị lớn (Thanh trượt bên Phải - Sáng) -> Chạy chế độ Đêm (theo logic của bạn đang bị ngược)
-  // Nếu logic vẫn chưa đúng ý, bạn chỉ cần đổi dấu > thành < tại dòng dưới đây:
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    static int stableState = HIGH;
+    if (reading != stableState) {
+      stableState = reading;
+      if (stableState == LOW) { // Nhấn xuống
+        isSystemOn = !isSystemOn;
+        if (isSystemOn) resetSystemState();
+        else turnOffAll();
+      }
+    }
+  }
+  lastButtonState = reading;
+
+  if (!isSystemOn) return;
+
+  // 2. ĐỌC CẢM BIẾN & XỬ LÝ NGÀY/ĐÊM
+  int lightVal = analogRead(LDR_PIN);
   
-  if (lightLevel > LIGHT_THRESHOLD) { 
-    // === TRỜI TỐI (Ban đêm) ===
-    runNightMode();
+  // Debug: In giá trị ra Serial để kiểm tra
+  // Serial.print("LDR Value: "); Serial.println(lightVal);
+
+  // --- SỬA LỖI NGƯỢC SÁNG/TỐI TẠI ĐÂY ---
+  // Nếu Lux Cao bị nhận là Đêm -> Lux Cao trả về giá trị thấp.
+  // Vậy: Giá trị CAO (> 2000) mới là ĐÊM (Trời tối điện trở tăng -> áp tăng/giảm tùy mạch)
+  // Logic sửa đổi: Nếu giá trị đọc được > 2000 là ĐÊM. Ngược lại là NGÀY.
+  
+  bool currentIsNight = (lightVal > NIGHT_THRESHOLD); 
+
+  // Reset nhịp nháy nếu chế độ thay đổi đột ngột
+  if (currentIsNight != isNightMode) {
+    isNightMode = currentIsNight;
+    lastBlinkTime = millis();
+    isLedOn = false;
+  }
+
+  if (isNightMode) {
+    runNightModeLogic();
   } else {
-    // === TRỜI SÁNG (Ban ngày) ===
-    Serial.println("--- CHE DO BAN NGAY ---");
-    
-    // 1. ĐÈN XANH: 10 giây - CÓ NHẤP NHÁY (true)
-    runTrafficLight(10, LED_GREEN, true);
-    
-    // Kiểm tra lại ánh sáng để thoát nhanh nếu cần
-    if (analogRead(LDR_PIN) > LIGHT_THRESHOLD) return;
-
-    // 2. ĐÈN VÀNG: 3 giây - KHÔNG NHÁY (false)
-    runTrafficLight(3, LED_YELLOW, true);
-
-    if (analogRead(LDR_PIN) > LIGHT_THRESHOLD) return;
-
-    // 3. ĐÈN ĐỎ: 10 giây - KHÔNG NHÁY (false)
-    runTrafficLight(10, LED_RED, true);
+    runDayModeLogic();
   }
 }
