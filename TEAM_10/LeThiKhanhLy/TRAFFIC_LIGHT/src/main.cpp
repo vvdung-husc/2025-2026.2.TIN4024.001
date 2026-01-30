@@ -1,28 +1,44 @@
 #include "main.h"
-#include "utils.h"
 
-TM1637Display display(CLK, DIO);
 
-// ====== BIẾN TOÀN CỤC ======
-bool blueEnabled = true;
-bool lastButton = HIGH;
+//Định nghĩa chân cho đèn LED
+#define PIN_LED_RED     27
+#define PIN_LED_YELLOW  26
+#define PIN_LED_GREEN    25
+
+//Định nghĩa cho LDR (Light Dependent Resistor)
+#define PIN_LDR 34 // Analog ADC1 GPIO34 connected to LDR
+
+#define PIN_CLK  18
+#define PIN_DIO  19
+
+#define PIN_LED_BLUE      21
+#define PIN_BUTTON_BLUE   23
+
+
+Trafic_Blink traficLight;
+LDR ldrSensor;
+
+TM1637Display display(PIN_CLK, PIN_DIO);
 
 void setup() {
-    pinMode(LED_RED, OUTPUT);
-    pinMode(LED_YELLOW, OUTPUT);
-    pinMode(LED_GREEN, OUTPUT);
-    pinMode(LED_BLUE, OUTPUT);
+  // put your setup code here, to run once:
+  printf("Welcome IoT\n");
 
-    pinMode(BUTTON_BLUE, INPUT_PULLUP);
+  ldrSensor.DAY_THRESHOLD = 2000; // Ngưỡng ánh sáng ban ngày
 
-    display.setBrightness(7);
-    display.clear();
+  ldrSensor.setup(PIN_LDR, false); // VCC = 3.3V
 
-    digitalWrite(LED_BLUE, HIGH); // mặc định bật
+  traficLight.setupPin(PIN_LED_RED, PIN_LED_YELLOW, PIN_LED_GREEN, PIN_LED_BLUE, PIN_BUTTON_BLUE);
+  traficLight.setupWaitTime(5, 3, 7); // seconds
+
+  display.setBrightness(0x0A);
+  display.clear();
+
 }
 
 void loop() {
-    blinkWithCountdown(LED_RED, 5);
-    blinkWithCountdown(LED_YELLOW, 3);
-    blinkWithCountdown(LED_GREEN, 7);
+
+  traficLight.run(ldrSensor, display);
+  
 }
