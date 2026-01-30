@@ -24,7 +24,7 @@ void loop() {
   static bool status = false;
   static int state = 0;
 
-  // Nhấp nháy mỗi 1s
+  // Nhấp nháy mỗi 1 giây
   if (IsReady(tBlink, 1000)) {
     status = !status;
     digitalWrite(leds[state], status);
@@ -32,7 +32,7 @@ void loop() {
 
   // Đổi LED theo thời gian riêng
   if (IsReady(tChange, durations[state])) {
-    digitalWrite(leds[state], LOW); // tắt LED cũ đi
+    digitalWrite(leds[state], LOW); // tắt LED cũ
     state = (state + 1) % 3;
     status = false;                // reset cho LED mới
   }
