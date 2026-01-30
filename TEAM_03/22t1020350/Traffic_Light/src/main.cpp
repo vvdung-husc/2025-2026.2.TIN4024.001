@@ -5,9 +5,8 @@
 #define LED_RED     25
 #define LED_YELLOW  26
 #define LED_GREEN   27
+#define LED_BLUE    21
 #define BTN_PIN     23
-#define LED_BLUE 21
-
 
 #define CLK 18
 #define DIO 19
@@ -17,7 +16,6 @@
 #define TIME_YELLOW  3
 #define TIME_GREEN   7
 
-// ===== DISPLAY =====
 TM1637Display display(CLK, DIO);
 
 // ===== STATE =====
@@ -30,38 +28,36 @@ enum TrafficState {
 TrafficState currentState = STATE_RED;
 
 // ===== TIMER =====
-unsigned long lastMillis = 0;
+unsigned long timerSecond = 0;
+unsigned long timerBlink  = 0;
+
 int countdown = TIME_RED;
+bool blinkState = false;
 
 // ===== BUTTON =====
 bool showCountdown = true;
 bool lastButtonState = HIGH;
 
 // ===== FUNCTIONS =====
-void setLights(bool red, bool yellow, bool green) {
-  digitalWrite(LED_RED, red);
-  digitalWrite(LED_YELLOW, yellow);
-  digitalWrite(LED_GREEN, green);
+void setLights(bool r, bool y, bool g) {
+  digitalWrite(LED_RED, r);
+  digitalWrite(LED_YELLOW, y);
+  digitalWrite(LED_GREEN, g);
 }
 
-void changeState(TrafficState newState, int timeSec) {
-  currentState = newState;
+void changeState(TrafficState state, int timeSec) {
+  currentState = state;
   countdown = timeSec;
 
-  switch (newState) {
+  switch (state) {
     case STATE_RED:
-      setLights(HIGH, LOW, LOW);
-      Serial.println("[RED] - 5s");
+      Serial.println("[RED] 5 seconds");
       break;
-
     case STATE_YELLOW:
-      setLights(LOW, HIGH, LOW);
-      Serial.println("[YELLOW] - 3s");
+      Serial.println("[YELLOW] 3 seconds");
       break;
-
     case STATE_GREEN:
-      setLights(LOW, LOW, HIGH);
-      Serial.println("[GREEN] - 7s");
+      Serial.println("[GREEN] 7 seconds");
       break;
   }
 }
@@ -72,12 +68,13 @@ void setup() {
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_YELLOW, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
-  pinMode(BTN_PIN, INPUT_PULLUP);
   pinMode(LED_BLUE, OUTPUT);
-  digitalWrite(LED_BLUE, HIGH);
+  pinMode(BTN_PIN, INPUT_PULLUP);
 
   display.setBrightness(7);
   display.clear();
+
+  digitalWrite(LED_BLUE, HIGH);
 
   changeState(STATE_RED, TIME_RED);
 }
@@ -88,23 +85,33 @@ void loop() {
   // ===== BUTTON TOGGLE DISPLAY =====
   bool btnState = digitalRead(BTN_PIN);
   if (lastButtonState == HIGH && btnState == LOW) {
-  showCountdown = !showCountdown;
+    showCountdown = !showCountdown;
+    digitalWrite(LED_BLUE, showCountdown ? HIGH : LOW);
 
-  digitalWrite(LED_BLUE, showCountdown ? HIGH : LOW);
+    Serial.println(showCountdown ?
+      "DISPLAY ON" :
+      "DISPLAY OFF"
+    );
 
-  Serial.println(showCountdown ? 
-    "DISPLAY ON - BLUE LED ON" : 
-    "DISPLAY OFF - BLUE LED OFF"
-  );
-
-  delay(200); // debounce
+    delay(200);
   }
-
   lastButtonState = btnState;
 
-  // ===== COUNTDOWN EVERY 1s =====
-  if (now - lastMillis >= 1000) {
-    lastMillis = now;
+  // ===== BLINK LED (300ms) =====
+  if (now - timerBlink >= 300) {
+    timerBlink = now;
+    blinkState = !blinkState;
+
+    setLights(
+      currentState == STATE_RED    && blinkState,
+      currentState == STATE_YELLOW && blinkState,
+      currentState == STATE_GREEN  && blinkState
+    );
+  }
+
+  // ===== COUNTDOWN EVERY 1 SECOND =====
+  if (now - timerSecond >= 1000) {
+    timerSecond = now;
     countdown--;
 
     if (showCountdown) {
@@ -113,7 +120,6 @@ void loop() {
       display.clear();
     }
 
-    // ===== CHANGE STATE =====
     if (countdown <= 0) {
       if (currentState == STATE_RED)
         changeState(STATE_GREEN, TIME_GREEN);
