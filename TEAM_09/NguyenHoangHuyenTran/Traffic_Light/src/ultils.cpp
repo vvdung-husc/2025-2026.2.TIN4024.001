@@ -1,5 +1,4 @@
 #include "ultils.h"
-
 //----- LED -----
 LED::LED()
 {
@@ -7,13 +6,11 @@ LED::LED()
     _state = false;
     _previousMillis = 0;
 }
-
 void LED::setup(int pin)
 {
     _pin = pin;
     pinMode(_pin, OUTPUT);
 }
-
 void LED::blink(unsigned long interval)
 {
     if (!IsReady(_previousMillis, interval))
@@ -21,7 +18,6 @@ void LED::blink(unsigned long interval)
     _state = !_state;
     digitalWrite(_pin, _state ? HIGH : LOW);
 }
-
 void LED::set(bool bON){
     digitalWrite(_pin, bON ? HIGH : LOW);
 }
@@ -32,7 +28,6 @@ Trafic_Blink::Trafic_Blink()
     _ledStatus = false;
     _previousMillis = 0;
 }
-
 void Trafic_Blink::setupPin(int pinRed, int pinYellow, int pinGreen, int pinBlue, int pinButton)
 {
     _LEDs[0] = pinGreen;
@@ -51,7 +46,6 @@ void Trafic_Blink::setupPin(int pinRed, int pinYellow, int pinGreen, int pinBlue
     pinMode(_pinButton, INPUT); 
     
 }
-
 void Trafic_Blink::setupWaitTime(uint32_t redWait, uint32_t yellowWait, uint32_t greenWait)
 {
     _waitTime[0] = greenWait * 1000;
@@ -174,14 +168,12 @@ LDR::LDR()
     _value = 0;
     _vcc5Volt = true;
 }
-
 void LDR::setup(int pin, bool vcc5Volt)
 {
     _pin = pin;
     _vcc5Volt = vcc5Volt;
     pinMode(_pin, INPUT);
 }
-
 int LDR::getValue()
 {
     _value = analogRead(_pin);
@@ -255,4 +247,3 @@ String StringFormat(const char *fmt, ...)
     free(buff);
     return String(s);
 }
-
