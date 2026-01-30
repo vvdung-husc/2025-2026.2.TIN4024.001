@@ -14,10 +14,8 @@
 #define PIN_LED_YELLOW  5
 #define PIN_LED_GREEN    17
 
-
 Trafic_Blink traficLight;
 LDR ldrSensor;
-
 TM1637Display display(PIN_CLK, PIN_DIO);
 
 void setup() {
@@ -36,9 +34,5 @@ void setup() {
 }
 
 void loop() {
-
   traficLight.run(ldrSensor, display);
-  
 }
-
-
