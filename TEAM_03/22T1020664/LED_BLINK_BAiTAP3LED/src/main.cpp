@@ -11,7 +11,7 @@ bool IsReady(unsigned long &t, uint32_t ms) {
 #define PIN_LED_YELLOW 33
 #define PIN_LED_RED    25
 
-const uint32_t PERIOD_MS = 2000; // 2 giây / 1 lần nháy
+const uint32_t PERIOD_MS = 1000; // 2 giây / 1 lần nháy
 const uint32_t PULSE_MS  = 200;  // sáng 200ms (tùy chỉnh)
 
 const int ledPins[3] = { PIN_LED_GREEN, PIN_LED_YELLOW, PIN_LED_RED };

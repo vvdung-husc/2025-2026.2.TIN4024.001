@@ -1,9 +1,9 @@
 #include <Arduino.h> // <--- DÒNG NÀY SẼ SỬA TOÀN BỘ LỖI CỦA BẠN
 
 // Khai báo chân (Khớp với file diagram.json 3 đèn)
-#define LED_RED     25
-#define LED_YELLOW  33
-#define LED_GREEN   32  
+#define LED_RED     27
+#define LED_YELLOW  26
+#define LED_GREEN   25  
 
 // Thời gian nghỉ giữa các giai đoạn chuyển màu (500ms)
 #define DELAY_GIAI_DOAN 500 

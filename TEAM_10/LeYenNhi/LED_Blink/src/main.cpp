@@ -1,44 +1,36 @@
-#include <Arduino.h>
+#include "main.h"
 
-// Định nghĩa chân nối (khớp với file diagram ở trên)
-#define LED_RED    25  // Đèn đỏ nối chân 23
-#define LED_YELLOW 33  // Đèn vàng nối chân 22
-#define LED_GREEN  32  // Đèn xanh nối chân 21
+//Định nghĩa chân cho đèn LED
+#define PIN_LED_RED     18
+#define PIN_LED_YELLOW  5
+#define PIN_LED_GREEN    17
+
+//Định nghĩa cho LDR (Light Dependent Resistor)
+#define PIN_LDR 34 // Analog ADC1 GPIO34 connected to LDR
+
+int DAY_ADC_THRESHOLD = 2000; // Ngưỡng ánh sáng ban ngày
+
+//LED_Blink ledYellow;
+Trafic_Blink traficLight;
+LDR ldrSensor;
 
 void setup() {
-  Serial.begin(115200);
-  
-  // Cài đặt 3 chân này là chân xuất tín hiệu
-  pinMode(LED_RED, OUTPUT);
-  pinMode(LED_YELLOW, OUTPUT);
-  pinMode(LED_GREEN, OUTPUT);
+  // put your setup code here, to run once:
+  printf("Welcome IoT\n");
+
+  ldrSensor.setup(PIN_LDR, false); // VCC = 3.3V
+
+  traficLight.setupPin(PIN_LED_RED, PIN_LED_YELLOW, PIN_LED_GREEN);
+  traficLight.setupWaitTime(5, 3, 7); // seconds
 }
 
 void loop() {
-  // 1. ĐÈN ĐỎ SÁNG (5 giây)
-  Serial.println("LED RED ON => 5 Seconds");
-  for (int i = 0; i < 3; i++) {
-    digitalWrite(LED_RED, HIGH);   // Bật Đỏ
-    delay(500);                     // Chờ 500ms
-    digitalWrite(LED_RED, LOW);    // Tắt Đỏ
-    delay(500);                     // Chờ 500ms
-  }
+  //ledYellow.blink(500);
+  int analogValue = 0;
+  float lux =ldrSensor.readLux(&analogValue);
+  bool isDark = (analogValue > DAY_ADC_THRESHOLD);
+  traficLight.blink(500, isDark);
 
-  // 2. ĐÈN XANH SÁNG (7 giây) - Theo đúng thứ tự trong ảnh của Công chúa
-  Serial.println("LED GREEN ON => 7 Seconds");
-  for (int i = 0; i < 7; i++) {
-    digitalWrite(LED_GREEN, HIGH); // Bật Xanh
-    delay(500);                     // Chờ 500ms
-    digitalWrite(LED_GREEN, LOW);  // Tắt Xanh
-    delay(500);                     // Chờ 500ms
-  }
-  // 3. ĐÈN VÀNG SÁNG (3 giây)
-  Serial.println("LED YELLOW ON => 3 Seconds");
-  for (int i = 0; i < 3; i++) {
-    
-    digitalWrite(LED_YELLOW, HIGH); // Bật Vàng
-    delay(500);                      // Chờ 500ms
-    digitalWrite(LED_YELLOW, LOW);  // Tắt Vàng
-    delay(500);                      // Chờ 500ms
-  }
 }
+
+
