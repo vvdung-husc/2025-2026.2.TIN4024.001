@@ -153,7 +153,8 @@ void ProcessLDRSensor(){
   
   // === 1. TỰ ĐỘNG BẬT/TẮT ĐÈN LED XANH (ĐÈN ĐƯỜNG) ===
   // Ngưỡng ánh sáng: < 2000 = tối (bật đèn), >= 2000 = sáng (tắt đèn)
-  bool shouldLEDOn = (ldrValue < 2000);
+  // Chỉ bật đèn khi Display đang BẬT
+  bool shouldLEDOn = (ldrValue < 2000) && (valueButtonDisplay == HIGH);
   
   if (shouldLEDOn != lastLEDState) {
     digitalWrite(PIN_LED_BLUE, shouldLEDOn ? HIGH : LOW);
@@ -175,6 +176,7 @@ void ProcessLDRSensor(){
 
 void setup()
 {
+  Init_LED_Traffic();  // Khởi tạo các chân LED giao thông
   
   display.setBrightness(0x0a);
   display.clear();
