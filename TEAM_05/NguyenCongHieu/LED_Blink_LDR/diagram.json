@@ -1,4 +1,4 @@
-﻿{
+{
   "version": 1,
   "author": "Nguyễn Công Hiếu",
   "editor": "wokwi",
@@ -51,6 +51,13 @@
       "left": -67.75,
       "rotate": 90,
       "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": 204.8,
+      "left": -172,
+      "attrs": {}
     }
   ],
   "connections": [
@@ -64,7 +71,10 @@
     [ "r2:1", "led2:A", "gold", [ "v-67.2", "h86.4" ] ],
     [ "r2:2", "esp:33", "gold", [ "v27.6", "h211.05" ] ],
     [ "led1:A", "r3:1", "green", [ "h-38.4", "v38.4" ] ],
-    [ "r3:2", "esp:32", "green", [ "h0" ] ]
+    [ "r3:2", "esp:32", "green", [ "h0" ] ],
+    [ "ldr1:VCC", "esp:3V3", "red", [ "h38.4", "v-153.6" ] ],
+    [ "ldr1:GND", "esp:GND.1", "black", [ "h57.6", "v-38.8" ] ],
+    [ "ldr1:AO", "esp:34", "violet", [ "h67.2", "v-144.7" ] ]
   ],
   "dependencies": {}
 }
