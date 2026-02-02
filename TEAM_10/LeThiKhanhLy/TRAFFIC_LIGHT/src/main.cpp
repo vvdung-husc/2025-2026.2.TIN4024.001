@@ -1,86 +1,44 @@
-#include <Arduino.h>
-#include <TM1637Display.h>
+#include "main.h"
 
-// ====== LED GIAO THÔNG ======
-#define LED_RED     27
-#define LED_YELLOW  26
-#define LED_GREEN   25
 
-// ====== LED & BUTTON XANH DƯƠNG ======
-#define LED_BLUE    21
-#define BUTTON_BLUE 23
+//Định nghĩa chân cho đèn LED
+#define PIN_LED_RED     27
+#define PIN_LED_YELLOW  26
+#define PIN_LED_GREEN    25
 
-// ====== TM1637 ======
-#define CLK 18
-#define DIO 19
-TM1637Display display(CLK, DIO);
+//Định nghĩa cho LDR (Light Dependent Resistor)
+#define PIN_LDR 34 // Analog ADC1 GPIO34 connected to LDR
 
-// ====== BIẾN TRẠNG THÁI ======
-bool countdownEnabled = true;
-bool lastButton = HIGH;
+#define PIN_CLK  18
+#define PIN_DIO  19
 
-// ====== XỬ LÝ NÚT (ĐƠN GIẢN – CHẮC CHẮN ĂN) ======
-void handleButton() {
-  bool current = digitalRead(BUTTON_BLUE);
+#define PIN_LED_BLUE      21
+#define PIN_BUTTON_BLUE   23
 
-  // phát hiện cạnh nhấn
-  if (lastButton == HIGH && current == LOW) {
-    countdownEnabled = !countdownEnabled;
 
-    digitalWrite(LED_BLUE, countdownEnabled ? HIGH : LOW);
+Trafic_Blink traficLight;
+LDR ldrSensor;
 
-    if (!countdownEnabled) {
-      display.clear();
-    }
-
-    delay(200); // debounce đơn giản
-  }
-
-  lastButton = current;
-}
-
-// ====== NHẤP NHÁY + ĐẾM NGƯỢC ======
-void blinkWithCountdown(int ledPin, int seconds) {
-  for (int i = seconds; i >= 0; i--) {
-
-    if (countdownEnabled) {
-      display.showNumberDec(i, true);
-    }
-
-    digitalWrite(ledPin, HIGH);
-    for (int t = 0; t < 50; t++) {
-      handleButton();
-      delay(10);
-    }
-
-    digitalWrite(ledPin, LOW);
-    for (int t = 0; t < 50; t++) {
-      handleButton();
-      delay(10);
-    }
-  }
-}
+TM1637Display display(PIN_CLK, PIN_DIO);
 
 void setup() {
-  Serial.begin(115200);
+  // put your setup code here, to run once:
+  printf("Welcome IoT\n");
 
-  pinMode(LED_RED, OUTPUT);
-  pinMode(LED_YELLOW, OUTPUT);
-  pinMode(LED_GREEN, OUTPUT);
-  pinMode(LED_BLUE, OUTPUT);
+  ldrSensor.DAY_THRESHOLD = 2000; // Ngưỡng ánh sáng ban ngày
 
-  pinMode(BUTTON_BLUE, INPUT_PULLUP);
+  ldrSensor.setup(PIN_LDR, false); // VCC = 3.3V
 
-  display.setBrightness(7);
+  traficLight.setupPin(PIN_LED_RED, PIN_LED_YELLOW, PIN_LED_GREEN, PIN_LED_BLUE, PIN_BUTTON_BLUE);
+  traficLight.setupWaitTime(5, 3, 7); // seconds
+
+  display.setBrightness(0x0A);
   display.clear();
 
-  digitalWrite(LED_BLUE, HIGH);
-
-  Serial.println("SYSTEM READY");
 }
 
 void loop() {
-  blinkWithCountdown(LED_RED, 5);
-  blinkWithCountdown(LED_YELLOW, 3);
-  blinkWithCountdown(LED_GREEN, 7);
+
+  traficLight.run(ldrSensor, display);
+  
 }

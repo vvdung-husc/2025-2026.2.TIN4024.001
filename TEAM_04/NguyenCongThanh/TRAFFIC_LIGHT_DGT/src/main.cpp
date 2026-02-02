@@ -20,6 +20,13 @@
 // Khởi tạo màn hình
 TM1637Display display(CLK, DIO);
 
+// Biến trạng thái màn hình
+bool displayOn = true; // true = Hiển thị, false = Tắt màn hình
+
+// Biến cho debounce nút nhấn
+unsigned long lastButtonPress = 0;
+const unsigned long debounceDelay = 200; // 200ms
+
 void setup() {
   Serial.begin(115200);
   
@@ -59,6 +66,35 @@ bool laBanDem() {
   return (sensorValue > LIGHT_THRESHOLD); // Nếu giá trị > 2000 là Đêm
 }
 
+// Hàm kiểm tra nút nhấn và toggle trạng thái màn hình
+void kiemTraButton() {
+  // Đọc trạng thái nút (LOW = đang nhấn vì dùng INPUT_PULLUP)
+  if (digitalRead(BUTTON_PIN) == LOW) {
+    unsigned long currentTime = millis();
+    
+    // Debounce: Chỉ xử lý nếu đã qua thời gian debounce
+    if (currentTime - lastButtonPress > debounceDelay) {
+      lastButtonPress = currentTime;
+      
+      // Toggle trạng thái màn hình
+      displayOn = !displayOn;
+      
+      if (displayOn) {
+        Serial.println("*** MAN HINH BAT ***");
+        display.setBrightness(0x0f); // Bật sáng lại
+      } else {
+        Serial.println("*** MAN HINH TAT ***");
+        display.clear(); // Xóa màn hình
+      }
+      
+      // Chờ người dùng thả nút
+      while(digitalRead(BUTTON_PIN) == LOW) {
+        delay(10);
+      }
+    }
+  }
+}
+
 // Hàm xử lý đèn sáng liên tục và đếm ngược (CHẾ ĐỘ BAN NGÀY)
 // pin: Chân đèn cần sáng
 // soLan: Số lần đếm (Ví dụ: 7)
@@ -69,22 +105,31 @@ void chayCheDo(int pin, int soLan, int soDemBatDau) {
   digitalWrite(pin, HIGH);
   
   for (int i = 0; i < soLan; i++) {
-    // 1. Kiểm tra LDR ngay lập tức
+    // 1. Kiểm tra nút nhấn để toggle màn hình
+    kiemTraButton();
+    
+    // 2. Kiểm tra LDR ngay lập tức
     // Nếu đột ngột chuyển sang đêm -> Tắt đèn và thoát ngay
     if (laBanDem()) {
       digitalWrite(pin, LOW);
       return; 
     }
     
-    // 2. Hiển thị số đếm ngược
+    // 3. Hiển thị số đếm ngược (CHỈ KHI displayOn = true)
     int soHienThi = soDemBatDau - i;
-    display.showNumberDec(soHienThi);
+    
+    if (displayOn) {
+      display.showNumberDec(soHienThi);
+    }
+    
     Serial.print("Den: "); 
     Serial.print(pin); 
     Serial.print(" | Dem nguoc: "); 
-    Serial.println(soHienThi);
+    Serial.print(soHienThi);
+    Serial.print(" | Man hinh: ");
+    Serial.println(displayOn ? "BAT" : "TAT");
     
-    // 3. Chờ 1 giây (đèn vẫn sáng liên tục)
+    // 4. Chờ 1 giây (đèn vẫn sáng liên tục)
     delay(1000); 
   }
   
@@ -98,14 +143,18 @@ void loop() {
     // === CHẾ ĐỘ BAN ĐÊM ===
     Serial.println("--- CHE DO BAN DEM (Night Mode) ---");
     
+    // Kiểm tra nút nhấn
+    kiemTraButton();
+    
     // Tắt đèn đỏ và xanh
     digitalWrite(LED_RED, LOW);
     digitalWrite(LED_GREEN, LOW);
     digitalWrite(LED_BLUE, LOW);
     
-    // Màn hình hiện gạch ngang hoặc tắt
-    uint8_t data[] = { 0x40, 0x40, 0x40, 0x40 }; // Ký tự gạch ngang (-)
-    display.setSegments(data);
+    // Hiển thị trên màn hình (CHỈ KHI displayOn = true)
+    if (displayOn) {
+      display.showNumberDec(0); // Hiển thị số 0
+    }
     
     // Nhấp nháy đèn vàng
     digitalWrite(LED_YELLOW, HIGH);
