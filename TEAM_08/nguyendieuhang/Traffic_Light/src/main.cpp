@@ -74,13 +74,6 @@ uint16_t ReadLDR()
   static unsigned long ldrTimer = 0;
   static uint16_t value = 0;
 
-  if (IsReady(ldrTimer, 500))
-  {
-    value = analogRead(PIN_LDR);
-    Serial.print("LDR Value: ");
-    Serial.println(value);
-  }
-
   return value;
 }
 
@@ -163,19 +156,9 @@ void loop()
 
   uint16_t ldrValue = ReadLDR();
 
-  // 🌙 Trời rất tối → NIGHT MODE
-  if (ldrValue > NIGHT_LDR_THRESHOLD)
-  {
-    digitalWrite(PIN_LED_BLUE, HIGH);
-    NightModeBlinkRed();
-    return;
-  }
+
 
   // ☀️ Trời sáng → đèn giao thông bình thường
   digitalWrite(PIN_LED_BLUE, isPause ? HIGH : LOW);
 
-  if (!isPause)
-  {
-    TrafficLightNormal();
-  }
 }
