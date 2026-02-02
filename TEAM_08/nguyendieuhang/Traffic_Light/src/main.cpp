@@ -67,7 +67,6 @@ void ProcessButtonPressed()
   lastButtonState = currentState;
 }
 
-
 void ProcessLEDTraffic()
 {
   static unsigned long timerBlink = 0;
