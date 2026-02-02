@@ -67,7 +67,7 @@ void ProcessButtonPressed()
   lastButtonState = currentState;
 }
 
-/* ================== LED TRAFFIC + COUNTDOWN ================== */
+
 void ProcessLEDTraffic()
 {
   static unsigned long timerBlink = 0;
