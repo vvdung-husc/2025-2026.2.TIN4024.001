@@ -1,7 +1,7 @@
 /*
 THÔNG TIN NHÓM 08
 1. Nguyễn Ngọc Thành Tài
-2. ...
+2. Trần Văn Quốc Khánh 
 3. ...
 */
 
