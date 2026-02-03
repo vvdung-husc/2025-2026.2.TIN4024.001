@@ -1,6 +1,6 @@
 /*
 THÔNG TIN NHÓM 5
-1.
+1. Nguyễn Công Hiếu
 2.
 3.
 4.
