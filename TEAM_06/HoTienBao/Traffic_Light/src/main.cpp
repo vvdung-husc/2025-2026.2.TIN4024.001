@@ -1,83 +1,79 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
 
-// --- CẤU HÌNH CHÂN (Giữ nguyên theo code bạn gửi) ---
+// ===== 1. CẤU HÌNH CHÂN (THEO DIAGRAM) =====
 #define CLK 18
 #define DIO 19
 
 #define LED_RED     27
 #define LED_YELLOW  26
 #define LED_GREEN   25
+#define LED_BLUE    21  // Đèn báo trạng thái nút/người đi bộ
+#define BUTTON_PIN  23
+#define LDR_PIN     13  // Cảm biến ánh sáng
 
-#define LED_BLUE    22 // Đèn báo trạng thái nút nhấn
-#define BTN_WALK    23 // Nút nhấn (Dùng trở kéo lên - INPUT_PULLUP)
-#define LDR_PIN     34 // Cảm biến ánh sáng
+// ===== 2. CẤU HÌNH THỜI GIAN (GIÂY) =====
+#define TIME_GREEN  5
+#define TIME_YELLOW 2
+#define TIME_RED    3
 
-// Khởi tạo màn hình
+// ===== 3. CẤU HÌNH NGƯỠNG ÁNH SÁNG =====
+// Bạn hãy bật Serial Monitor để xem giá trị thực tế
+// Giả định mới: Giá trị CAO = TỐI, Giá trị THẤP = SÁNG
+const int NIGHT_THRESHOLD = 2000; 
+
 TM1637Display display(CLK, DIO);
 
-// Biến trạng thái hệ thống (true = đang chạy, false = tắt)
-bool systemState = true; 
+// ===== 4. BIẾN HỆ THỐNG =====
+unsigned long lastBlinkTime = 0; // Timer cho nhấp nháy đèn
+const int BLINK_INTERVAL = 500;  // Nhấp nháy mỗi 0.5 giây
 
-// Hàm xử lý nút bấm (Trả về true nếu trạng thái hệ thống vừa thay đổi)
-bool checkButton() {
-  // Nút nhấn nối đất (GND) nên khi nhấn sẽ là LOW
-  if (digitalRead(BTN_WALK) == LOW) {
-    delay(20); // Chống dội phím (Debounce)
-    if (digitalRead(BTN_WALK) == LOW) {
-      // 1. Đảo trạng thái hệ thống
-      systemState = !systemState;
-      
-      // 2. Nháy đèn xanh dương 1 lần báo hiệu
-      digitalWrite(LED_BLUE, HIGH);
-      delay(200);
-      digitalWrite(LED_BLUE, LOW);
+int countdown = 0;
+int trafficState = 0; // 0: Xanh | 1: Vàng | 2: Đỏ
 
-      // 3. Chờ thả nút để tránh nhảy trạng thái liên tục
-      while(digitalRead(BTN_WALK) == LOW); 
-      
-      return true; // Có thay đổi trạng thái
-    }
-  }
-  return false; // Không nhấn nút
+bool isSystemOn = false;   // Bật/Tắt hệ thống
+bool isLedOn = false;      // Trạng thái nhấp nháy (Sáng/Tối)
+bool isNightMode = false;  // Trạng thái Ngày/Đêm
+
+// Biến nút nhấn
+int lastButtonState = HIGH;
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 50;
+
+// ===== 5. CÁC HÀM HỖ TRỢ =====
+
+void turnOffAll() {
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, LOW);
+  display.clear();
 }
 
-// Hàm delay thông minh: Vừa chờ vừa kiểm tra nút bấm
-// Trả về true nếu hệ thống bị TẮT giữa chừng
-bool smartWait(int ms) {
-  int steps = ms / 10; // Chia nhỏ thời gian check mỗi 10ms
-  for (int j = 0; j < steps; j++) {
-    if (checkButton()) return true; // Nếu có nhấn nút -> Thoát ngay
-    // Nếu hệ thống đang tắt, trả về true để thoát vòng lặp chính
-    if (!systemState) return true; 
-    delay(10);
-  }
-  return false;
+// Hàm điều khiển đèn (Dùng chung cho cả logic đếm giờ và nhấp nháy)
+void updateTrafficLeds(bool turnOn) {
+  // Luôn tắt hết trước khi bật lại
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, LOW);
+
+  if (!turnOn) return; // Nếu đang ở pha tắt của nhịp nháy thì thoát
+
+  // Bật đèn theo pha hiện tại
+  if (trafficState == 0) digitalWrite(LED_GREEN, HIGH);
+  else if (trafficState == 1) digitalWrite(LED_YELLOW, HIGH);
+  else if (trafficState == 2) digitalWrite(LED_RED, HIGH);
 }
 
-// Hàm đếm ngược và nhấp nháy đèn
-// Trả về false nếu bị ngắt bởi nút bấm
-bool runPhase(int seconds, int ledPin) {
-  // Nếu hệ thống đang tắt thì không chạy
-  if (!systemState) return false;
-
-  for (int i = seconds; i >= 0; i--) {
-    display.showNumberDec(i, false); 
-    
-    // --- NỬA GIÂY ĐẦU: BẬT ĐÈN ---
-    digitalWrite(ledPin, HIGH);
-    if (smartWait(500)) { // Chờ 500ms, nếu bấm nút thì thoát
-        digitalWrite(ledPin, LOW); // Tắt đèn ngay
-        return false; 
-    }
-
-    // --- NỬA GIÂY SAU: TẮT ĐÈN (Tạo hiệu ứng nhấp nháy) ---
-    digitalWrite(ledPin, LOW);
-    if (smartWait(500)) { // Chờ 500ms tiếp
-        return false;
-    }
-  }
-  return true; // Chạy xong pha này trọn vẹn
+// Reset hệ thống về trạng thái ban đầu
+void resetSystemState() {
+  trafficState = 0; // Bắt đầu Xanh
+  countdown = TIME_GREEN;
+  isLedOn = true;
+  lastBlinkTime = millis();
+  
+  digitalWrite(LED_BLUE, HIGH); // Báo hiệu bật
+  display.showNumberDec(countdown, true);
+  updateTrafficLeds(true);
 }
 
 void setup() {
@@ -87,36 +83,105 @@ void setup() {
   pinMode(LED_YELLOW, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_BLUE, OUTPUT);
-  
-  pinMode(BTN_WALK, INPUT_PULLUP);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
   pinMode(LDR_PIN, INPUT);
 
   display.setBrightness(7);
-  Serial.println("HE THONG BAT DAU...");
+  turnOffAll();
+  Serial.println("HE THONG BAT DAU");
+}
+
+// ===== LOGIC BAN ĐÊM =====
+void runNightModeLogic() {
+  display.clear(); // Tắt màn hình
+  
+  // Nhấp nháy đèn Vàng mỗi 0.5s
+  if (millis() - lastBlinkTime >= BLINK_INTERVAL) {
+    lastBlinkTime = millis();
+    isLedOn = !isLedOn;
+
+    digitalWrite(LED_RED, LOW);
+    digitalWrite(LED_GREEN, LOW);
+    digitalWrite(LED_YELLOW, isLedOn ? HIGH : LOW);
+  }
+}
+
+// ===== LOGIC BAN NGÀY =====
+void runDayModeLogic() {
+  // Timer 0.5 giây để xử lý nhấp nháy
+  if (millis() - lastBlinkTime >= BLINK_INTERVAL) {
+    lastBlinkTime = millis();
+    isLedOn = !isLedOn; // Đảo trạng thái đèn (Sáng -> Tắt -> Sáng...)
+
+    // CHỈ ĐẾM NGƯỢC KHI BẮT ĐẦU 1 GIÂY MỚI (Khi đèn bật sáng lại)
+    if (isLedOn) {
+      countdown--;
+      
+      // Hết giờ -> Chuyển đèn
+      if (countdown < 0) {
+        trafficState++;
+        if (trafficState > 2) trafficState = 0; // Quay lại Xanh
+
+        // Cài đặt thời gian mới
+        if (trafficState == 0) countdown = TIME_GREEN;       // 5s
+        else if (trafficState == 1) countdown = TIME_YELLOW; // 2s
+        else if (trafficState == 2) countdown = TIME_RED;    // 3s
+      }
+      
+      // Cập nhật màn hình (chỉ khi số thay đổi)
+      display.showNumberDec(countdown, true);
+    }
+
+    // Cập nhật trạng thái đèn (Nhấp nháy theo biến isLedOn)
+    updateTrafficLeds(isLedOn);
+  }
 }
 
 void loop() {
-  // Kiểm tra nút bấm liên tục nếu hệ thống đang tắt
-  if (!systemState) {
-    display.clear(); // Tắt màn hình
-    digitalWrite(LED_RED, LOW);
-    digitalWrite(LED_YELLOW, LOW);
-    digitalWrite(LED_GREEN, LOW);
-    checkButton(); // Chỉ ngồi chờ bấm nút
-    return;
+  // 1. XỬ LÝ NÚT BẤM (BẬT/TẮT)
+  int reading = digitalRead(BUTTON_PIN);
+  if (reading != lastButtonState) {
+    lastDebounceTime = millis();
   }
 
-  // Nếu hệ thống đang BẬT, chạy tuần tự các đèn
-  // Các hàm runPhase sẽ tự thoát nếu nút được nhấn giữa chừng
-  if (systemState) {
-    if (!runPhase(7, LED_GREEN)) return;  // Đèn Xanh 10s
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    static int stableState = HIGH;
+    if (reading != stableState) {
+      stableState = reading;
+      if (stableState == LOW) { // Nhấn xuống
+        isSystemOn = !isSystemOn;
+        if (isSystemOn) resetSystemState();
+        else turnOffAll();
+      }
+    }
   }
+  lastButtonState = reading;
+
+  if (!isSystemOn) return;
+
+  // 2. ĐỌC CẢM BIẾN & XỬ LÝ NGÀY/ĐÊM
+  int lightVal = analogRead(LDR_PIN);
   
-  if (systemState) {
-    if (!runPhase(3, LED_YELLOW)) return;  // Đèn Vàng 3s
+  // Debug: In giá trị ra Serial để kiểm tra
+  // Serial.print("LDR Value: "); Serial.println(lightVal);
+
+  // --- SỬA LỖI NGƯỢC SÁNG/TỐI TẠI ĐÂY ---
+  // Nếu Lux Cao bị nhận là Đêm -> Lux Cao trả về giá trị thấp.
+  // Vậy: Giá trị CAO (> 2000) mới là ĐÊM (Trời tối điện trở tăng -> áp tăng/giảm tùy mạch)
+  // Logic sửa đổi: Nếu giá trị đọc được > 2000 là ĐÊM. Ngược lại là NGÀY.
+  
+  bool currentIsNight = (lightVal > NIGHT_THRESHOLD); 
+
+  // Reset nhịp nháy nếu chế độ thay đổi đột ngột
+  if (currentIsNight != isNightMode) {
+    isNightMode = currentIsNight;
+    lastBlinkTime = millis();
+    isLedOn = false;
   }
-  
-  if (systemState) {
-    if (!runPhase(5, LED_RED)) return;    // Đèn Đỏ 10s
+
+  if (isNightMode) {
+    runNightModeLogic();
+  } else {
+    runDayModeLogic();
   }
 }
