@@ -19,6 +19,10 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 DHT dht(DHTPIN, DHTTYPE);
 
+int readingCount = 0;
+float lastTemp = -999.0;
+float lastHum = -999.0;
+
 int getSystemStatus(float temp, String &msg) {
   if (temp < 13) {
     msg = "TOO COLD";
@@ -43,6 +47,71 @@ int getSystemStatus(float temp, String &msg) {
   
   msg = "TOO HOT";
   return LED_RED;
+}
+
+String drawProgressBar(float value, float maxVal) {
+  String bar = "[";
+  int totalBars = 20;
+  int numBars = map((long)value, 0, (long)maxVal, 0, totalBars);
+  
+  if (numBars > totalBars) numBars = totalBars;
+  
+  for (int i = 0; i < totalBars; i++) {
+    if (i < numBars) bar += "|";
+    else bar += ".";
+  }
+  bar += "]";
+  return bar;
+}
+
+void logToSerialdashboard(float t, float h, String status) {
+  readingCount++;
+
+  String icon = "";
+  if (status == "TOO COLD") icon = "❄️";
+  else if (status == "COLD") icon = "☂️";
+  else if (status == "COOL") icon = "☁️";
+  else if (status == "WARM") icon = "☀️";
+  else if (status == "HOT") icon = "🌞";
+  else if (status == "TOO HOT") icon = "🔥";
+
+  Serial.println("\n");
+  Serial.println("╔══════════════════════════════════╗");
+  Serial.println("║      NHOM 10 - TRAM IOT          ║");
+  Serial.println("╠══════════════════════════════════╣");
+  
+  Serial.print("║  Lan do: #"); 
+  if(readingCount < 10) Serial.print("00");
+  else if(readingCount < 100) Serial.print("0");
+  Serial.print(readingCount);
+  Serial.println("                          ║");
+  
+  Serial.println("╟──────────────────────────────────╢");
+
+  if (isnan(t) || isnan(h)) {
+    Serial.println("║  ⚠ LOI: KHONG DOC DUOC CAM BIEN  ║");
+  } else {
+    Serial.print("║  Nhiet do: "); Serial.print(t, 2); Serial.println(" °C             ║");
+    Serial.print("║  "); Serial.print(drawProgressBar(t, 50));
+    Serial.println("        ║");
+    
+    Serial.println("║                                  ║");
+
+    Serial.print("║  Do am:    "); Serial.print(h, 2); Serial.println(" %              ║");
+    Serial.print("║  "); Serial.print(drawProgressBar(h, 100));
+    Serial.println("        ║");
+  }
+
+  Serial.println("╟──────────────────────────────────╢");
+  
+  Serial.print("║  TRANG THAI: "); Serial.print(status); Serial.print(" "); Serial.print(icon);
+  
+  int padding = 19 - status.length();
+  if (icon != "") padding -= 2;
+  for(int k=0; k<padding; k++) Serial.print(" ");
+  Serial.println("║");
+
+  Serial.println("╚══════════════════════════════════╝");
 }
 
 void displayInfo(float t, float h, String statusMsg) {
@@ -76,7 +145,6 @@ void displayInfo(float t, float h, String statusMsg) {
 
 void setup() {
   Serial.begin(115200);
-
   Wire.begin(13, 12);
 
   setupLED();
@@ -84,7 +152,6 @@ void setup() {
   dht.begin();
 
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println("OLED FAIL");
     while (1);
   }
 
@@ -101,9 +168,15 @@ void loop() {
 
   if (!isnan(temp) && !isnan(hum)) {
     activeLed = getSystemStatus(temp, currentStatus);
-  }
 
-  displayInfo(temp, hum, currentStatus);
+    if (temp != lastTemp || hum != lastHum) {
+      displayInfo(temp, hum, currentStatus);
+      logToSerialdashboard(temp, hum, currentStatus);
+      
+      lastTemp = temp;
+      lastHum = hum;
+    }
+  }
 
   offAllLED();
   if (activeLed != -1) {
