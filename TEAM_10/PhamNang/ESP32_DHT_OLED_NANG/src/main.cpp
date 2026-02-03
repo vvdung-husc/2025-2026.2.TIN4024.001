@@ -68,40 +68,77 @@ void logToSerialdashboard(float t, float h, String status) {
   else if (status == "HOT") icon = "🌞";
   else if (status == "TOO HOT") icon = "🔥";
 
-  Serial.println("\n");
+  Serial.println();
   Serial.println("╔══════════════════════════════════╗");
-  Serial.println("║      NANG - TRAM IOT          ║");
+  Serial.println("║      NANG - TRAM IOT             ║");
   Serial.println("╠══════════════════════════════════╣");
   
   Serial.print("║  Lan do: #"); 
   if(readingCount < 10) Serial.print("00");
   else if(readingCount < 100) Serial.print("0");
   Serial.print(readingCount);
-  Serial.println("                          ║");
+  
+  for(int i=0; i<20; i++) Serial.print(' ');
+  Serial.println("║");
   
   Serial.println("╟──────────────────────────────────╢");
 
   if (isnan(t) || isnan(h)) {
     Serial.println("║  ⚠ LOI: KHONG DOC DUOC CAM BIEN  ║");
   } else {
-    Serial.print("║  Nhiet do: "); Serial.print(t, 2); Serial.println(" °C             ║");
+    Serial.print("║  Nhiet do: "); 
+    Serial.print(t, 2); 
+    Serial.print(" *C"); 
+    
+    int valLen = 5; 
+    if(t >= 100.0 || t <= -10.0) valLen = 6;
+    else if(t < 10.0 && t >= 0) valLen = 4;
+    
+    int currentLen = 12 + valLen + 3; 
+    int padding = 34 - currentLen;
+    
+    for(int i=0; i<padding; i++) Serial.print(' ');
+    Serial.println("║");
+
     Serial.print("║  "); Serial.print(drawProgressBar(t, 50));
-    Serial.println("        ║");
+    for(int i=0; i<10; i++) Serial.print(' '); 
+    Serial.println("║");
     
     Serial.println("║                                  ║");
 
-    Serial.print("║  Do am:    "); Serial.print(h, 2); Serial.println(" %              ║");
+    Serial.print("║  Do am:    "); 
+    Serial.print(h, 2); 
+    Serial.print(" %");
+    
+    valLen = 5;
+    if(h == 100.00) valLen = 6;
+    else if(h < 10.0) valLen = 4;
+    
+    currentLen = 12 + valLen + 2; 
+    padding = 34 - currentLen;
+    
+    for(int i=0; i<padding; i++) Serial.print(' ');
+    Serial.println("║");
+
     Serial.print("║  "); Serial.print(drawProgressBar(h, 100));
-    Serial.println("        ║");
+    for(int i=0; i<10; i++) Serial.print(' '); 
+    Serial.println("║");
   }
 
   Serial.println("╟──────────────────────────────────╢");
   
-  Serial.print("║  TRANG THAI: "); Serial.print(status); Serial.print(" "); Serial.print(icon);
+  Serial.print("║  TRANG THAI: "); 
+  Serial.print(status);
+  Serial.print(' '); 
+  Serial.print(icon);
   
-  int padding = 19 - status.length();
-  if (icon != "") padding -= 2;
-  for(int k=0; k<padding; k++) Serial.print(" ");
+  int iconVisualWidth = 2; 
+  int usedWidth = 14 + status.length() + 1 + iconVisualWidth;
+  int spaces = 34 - usedWidth;
+  
+  if(spaces < 0) spaces = 0;
+
+  for(int k=0; k<spaces; k++) Serial.print(' ');
   Serial.println("║");
 
   Serial.println("╚══════════════════════════════════╝");
