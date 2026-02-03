@@ -1,9 +1,9 @@
-/*  THÔNG TIN NHÓM 10
-1. Lê Thị Khánh Ly
-2. Ngô Thị Cẩm Ly
-3. Phạm Năng
-4. Trần Thị Quỳnh Anh
-5. Lê Yến Nhi
+/* THONG TIN NHOM 10
+1. Le Thi Khanh Ly
+2. Ngo Thi Cam Ly
+3. Pham Nang
+4. Tran Thi Quynh Anh
+5. Le Yen Nhi
 */
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -19,55 +19,33 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 DHT dht(DHTPIN, DHTTYPE);
 
-void setup() {
-  Serial.begin(115200);
-
-  // I2C theo diagram
-  Wire.begin(13, 12);
-
-  setupLED();
-  offAllLED();
-  dht.begin();
-
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println("OLED FAIL");
-    while (1);
-  }
-
-  display.clearDisplay();
-  display.display();
+int getSystemStatus(float temp, String &msg) {
+  if (temp < 13) {
+    msg = "TOO COLD";
+    return LED_GREEN;
+  } 
+  if (temp < 20) {
+    msg = "COLD";
+    return LED_GREEN;
+  } 
+  if (temp < 25) {
+    msg = "COOL";
+    return LED_YELLOW;
+  } 
+  if (temp < 30) {
+    msg = "WARM";
+    return LED_YELLOW;
+  } 
+  if (temp < 35) {
+    msg = "HOT";
+    return LED_RED;
+  } 
+  
+  msg = "TOO HOT";
+  return LED_RED;
 }
 
-void loop() {
-  float t = dht.readTemperature();
-  float h = dht.readHumidity();
-
-  String status = "READING...";
-  int ledPin = -1;
-
-  if (!isnan(t) && !isnan(h)) {
-    if (t < 13) {
-      status = "TOO COLD";
-      ledPin = LED_GREEN;
-    } else if (t < 20) {
-      status = "COLD";
-      ledPin = LED_GREEN;
-    } else if (t < 25) {
-      status = "COOL";
-      ledPin = LED_YELLOW;
-    } else if (t < 30) {
-      status = "WARM";
-      ledPin = LED_YELLOW;
-    } else if (t < 35) {
-      status = "HOT";
-      ledPin = LED_RED;
-    } else {
-      status = "TOO HOT";
-      ledPin = LED_RED;
-    }
-  }
-
-  // OLED luôn hiển thị
+void displayInfo(float t, float h, String statusMsg) {
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
@@ -91,12 +69,46 @@ void loop() {
   display.setCursor(0, 35);
   display.print("Status:");
   display.setCursor(0, 50);
-  display.println(status);
+  display.println(statusMsg);
 
   display.display();
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  Wire.begin(13, 12);
+
+  setupLED();
+  offAllLED();
+  dht.begin();
+
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println("OLED FAIL");
+    while (1);
+  }
+
+  display.clearDisplay();
+  display.display();
+}
+
+void loop() {
+  float temp = dht.readTemperature();
+  float hum = dht.readHumidity();
+
+  String currentStatus = "READING...";
+  int activeLed = -1;
+
+  if (!isnan(temp) && !isnan(hum)) {
+    activeLed = getSystemStatus(temp, currentStatus);
+  }
+
+  displayInfo(temp, hum, currentStatus);
 
   offAllLED();
-  if (ledPin != -1) blinkLED(ledPin, 500);
+  if (activeLed != -1) {
+    blinkLED(activeLed, 1000); 
+  }
 
   delay(2000);
 }
