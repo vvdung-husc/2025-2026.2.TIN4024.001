@@ -3,102 +3,178 @@
 #include <Adafruit_SSD1306.h>
 #include <DHT.h>
 
+#include "main.h"
+#include "ultils.h"
+
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
-#define OLED_RESET    -1
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-#define DHTPIN 15
-#define DHTTYPE DHT22
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 DHT dht(DHTPIN, DHTTYPE);
 
-#define LED_RED    5
-#define LED_YELLOW 18
-#define LED_GREEN  19
+int readingCount = 0;
+float lastTemp = -999.0;
+float lastHum = -999.0;
+
+int getSystemStatus(float temp, String &msg) {
+  if (temp < 13) {
+    msg = "TOO COLD";
+    return LED_GREEN;
+  } 
+  if (temp < 20) {
+    msg = "COLD";
+    return LED_GREEN;
+  } 
+  if (temp < 25) {
+    msg = "COOL";
+    return LED_YELLOW;
+  } 
+  if (temp < 30) {
+    msg = "WARM";
+    return LED_YELLOW;
+  } 
+  if (temp < 35) {
+    msg = "HOT";
+    return LED_RED;
+  } 
+  
+  msg = "TOO HOT";
+  return LED_RED;
+}
+
+String drawProgressBar(float value, float maxVal) {
+  String bar = "[";
+  int totalBars = 20;
+  int numBars = map((long)value, 0, (long)maxVal, 0, totalBars);
+  
+  if (numBars > totalBars) numBars = totalBars;
+  
+  for (int i = 0; i < totalBars; i++) {
+    if (i < numBars) bar += "|";
+    else bar += ".";
+  }
+  bar += "]";
+  return bar;
+}
+
+void logToSerialdashboard(float t, float h, String status) {
+  readingCount++;
+
+  String icon = "";
+  if (status == "TOO COLD") icon = "❄️";
+  else if (status == "COLD") icon = "☂️";
+  else if (status == "COOL") icon = "☁️";
+  else if (status == "WARM") icon = "☀️";
+  else if (status == "HOT") icon = "🌞";
+  else if (status == "TOO HOT") icon = "🔥";
+
+  Serial.println("\n");
+  Serial.println("╔══════════════════════════════════╗");
+  Serial.println("║      NANG - TRAM IOT          ║");
+  Serial.println("╠══════════════════════════════════╣");
+  
+  Serial.print("║  Lan do: #"); 
+  if(readingCount < 10) Serial.print("00");
+  else if(readingCount < 100) Serial.print("0");
+  Serial.print(readingCount);
+  Serial.println("                          ║");
+  
+  Serial.println("╟──────────────────────────────────╢");
+
+  if (isnan(t) || isnan(h)) {
+    Serial.println("║  ⚠ LOI: KHONG DOC DUOC CAM BIEN  ║");
+  } else {
+    Serial.print("║  Nhiet do: "); Serial.print(t, 2); Serial.println(" °C             ║");
+    Serial.print("║  "); Serial.print(drawProgressBar(t, 50));
+    Serial.println("        ║");
+    
+    Serial.println("║                                  ║");
+
+    Serial.print("║  Do am:    "); Serial.print(h, 2); Serial.println(" %              ║");
+    Serial.print("║  "); Serial.print(drawProgressBar(h, 100));
+    Serial.println("        ║");
+  }
+
+  Serial.println("╟──────────────────────────────────╢");
+  
+  Serial.print("║  TRANG THAI: "); Serial.print(status); Serial.print(" "); Serial.print(icon);
+  
+  int padding = 19 - status.length();
+  if (icon != "") padding -= 2;
+  for(int k=0; k<padding; k++) Serial.print(" ");
+  Serial.println("║");
+
+  Serial.println("╚══════════════════════════════════╝");
+}
+
+void displayInfo(float t, float h, String statusMsg) {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+
+  display.setCursor(0, 0);
+  display.print("Temp: ");
+  if (isnan(t)) display.println("--");
+  else {
+    display.print(t);
+    display.println(" C");
+  }
+
+  display.setCursor(0, 15);
+  display.print("Humi: ");
+  if (isnan(h)) display.println("--");
+  else {
+    display.print(h);
+    display.println(" %");
+  }
+
+  display.setCursor(0, 35);
+  display.print("Status:");
+  display.setCursor(0, 50);
+  display.println(statusMsg);
+
+  display.display();
+}
 
 void setup() {
   Serial.begin(115200);
+  Wire.begin(13, 12);
 
+  setupLED();
+  offAllLED();
   dht.begin();
 
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
-    for(;;);
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    while (1);
   }
-  
-  pinMode(LED_RED, OUTPUT);
-  pinMode(LED_YELLOW, OUTPUT);
-  pinMode(LED_GREEN, OUTPUT);
 
   display.clearDisplay();
-  display.setTextColor(WHITE);
+  display.display();
 }
 
 void loop() {
-  float t = dht.readTemperature();
-  float h = dht.readHumidity();
+  float temp = dht.readTemperature();
+  float hum = dht.readHumidity();
 
-  if (isnan(h) || isnan(t)) {
-    display.clearDisplay();
-    display.setCursor(0,0);
-    display.setTextSize(1);
-    display.println("Sensor Error!");
-    display.display();
-    return;
-  }
-
-  String statusText = "";
+  String currentStatus = "READING...";
   int activeLed = -1;
 
-  if (t < 13) {
-    statusText = "TOO COLD";
-    activeLed = LED_GREEN;
-  } 
-  else if (t >= 13 && t < 20) {
-    statusText = "COLD";
-    activeLed = LED_GREEN;
-  }
-  else if (t >= 20 && t < 25) {
-    statusText = "COOL";
-    activeLed = LED_YELLOW;
-  }
-  else if (t >= 25 && t < 30) {
-    statusText = "WARM";
-    activeLed = LED_YELLOW;
-  }
-  else if (t >= 30 && t <= 35) {
-    statusText = "HOT";
-    activeLed = LED_RED;
-  }
-  else if (t > 35) {
-    statusText = "TOO HOT";
-    activeLed = LED_RED;
-  }
+  if (!isnan(temp) && !isnan(hum)) {
+    activeLed = getSystemStatus(temp, currentStatus);
 
-  display.clearDisplay();
-  
-  display.setTextSize(1);
-  display.setCursor(0, 0);
-  display.print("Temp: "); display.print(t, 1); display.println(" C");
-  display.print("Hum:  "); display.print(h, 1); display.println(" %");
-
-  display.setCursor(0, 30);
-  display.setTextSize(2);
-  display.println(statusText);
-  
-  display.display();
-
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_GREEN, LOW);
-
-  if (activeLed != -1) {
-    for(int i = 0; i < 2; i++) {
-      digitalWrite(activeLed, HIGH);
-      delay(500);
-      digitalWrite(activeLed, LOW);
-      delay(500);
+    if (temp != lastTemp || hum != lastHum) {
+      displayInfo(temp, hum, currentStatus);
+      logToSerialdashboard(temp, hum, currentStatus);
+      
+      lastTemp = temp;
+      lastHum = hum;
     }
-  } else {
-    delay(2000); 
   }
+
+  offAllLED();
+  if (activeLed != -1) {
+    blinkLED(activeLed, 1000); 
+  }
+
+  delay(2000);
 }
