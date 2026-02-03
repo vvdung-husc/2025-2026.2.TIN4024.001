@@ -13,6 +13,7 @@
       "left": 61.4,
       "attrs": { "color": "yellow" }
     },
+    
     {
       "type": "wokwi-resistor",
       "id": "r1",
