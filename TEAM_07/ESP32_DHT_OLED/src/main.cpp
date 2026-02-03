@@ -6,112 +6,139 @@ THÔNG TIN NHÓM 07
 4. Nguyễn Văn Tiến Đạt
 5. Lương Thanh Ngọc Như
 */
+#include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <DHT.h>
 
-// ===== OLED =====
+// --- CẤU HÌNH CHÂN (PINOUT) ---
+#define PIN_DHT      15  // DHT22 Data
+
+// Lưu ý: Sơ đồ mạch bạn dùng LED Blue ở chân 5, 
+// nhưng bảng yêu cầu gọi là Green. Tôi sẽ dùng chân 5 cho mức "Lạnh".
+#define PIN_LED_GREEN  5   
+#define PIN_LED_YELLOW 18  
+#define PIN_LED_RED    19  
+
+// --- CẤU HÌNH OLED ---
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
-#define OLED_SDA 13
-#define OLED_SCL 12
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-// ===== DHT22 =====
-#define DHTPIN 16
+// --- CẤU HÌNH SENSOR ---
 #define DHTTYPE DHT22
-DHT dht(DHTPIN, DHTTYPE);
-
-// ===== LED =====
-#define LED_GREEN 15
-#define LED_YELLOW 2
-#define LED_RED 4
+DHT dht(PIN_DHT, DHTTYPE);
 
 void setup() {
   Serial.begin(115200);
 
-  pinMode(LED_GREEN, OUTPUT);
-  pinMode(LED_YELLOW, OUTPUT);
-  pinMode(LED_RED, OUTPUT);
+  // Cấu hình LED
+  pinMode(PIN_LED_GREEN, OUTPUT);
+  pinMode(PIN_LED_YELLOW, OUTPUT);
+  pinMode(PIN_LED_RED, OUTPUT);
 
-  Wire.begin(OLED_SDA, OLED_SCL);
+  // Khởi động Sensor & OLED
   dht.begin();
-
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println("OLED failed");
-    while (true);
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    Serial.println(F("OLED Init Failed"));
+    for(;;);
   }
-
+  
   display.clearDisplay();
-}
-
-void blinkLED(int pin) {
-  digitalWrite(pin, LOW);
-  delay(300);
-  digitalWrite(pin, HIGH);
-  delay(300);
+  display.setTextColor(WHITE);
+  display.setTextSize(1);
+  display.setCursor(20, 20);
+  display.println("HE THONG BAT DAU");
+  display.display();
+  delay(2000);
 }
 
 void loop() {
-  float humi = dht.readHumidity();
-  float temp = dht.readTemperature();
+  // 1. Đọc dữ liệu
+  float t = dht.readTemperature();
+  float h = dht.readHumidity();
 
-  if (isnan(temp) || isnan(humi)) {
+  // Kiểm tra lỗi đọc
+  if (isnan(t) || isnan(h)) {
+    Serial.println("Loi doc DHT!");
     return;
   }
 
+  // 2. Xác định Trạng thái, Chữ hiển thị và Đèn cần nháy
   String statusText = "";
-  int ledPin = -1;
+  int activeLed = -1; // -1 nghĩa là không đèn nào sáng
 
-  // ===== TEMPERATURE LOGIC =====
-  if (temp < 13) {
+  // --- LOGIC THEO BẢNG YÊU CẦU ---
+  if (t < 13.0) {
     statusText = "TOO COLD";
-    ledPin = LED_GREEN;
-  }
-  else if (temp < 20) {
+    activeLed = PIN_LED_GREEN;
+  } 
+  else if (t >= 13.0 && t < 20.0) {
     statusText = "COLD";
-    ledPin = LED_GREEN;
+    activeLed = PIN_LED_GREEN;
   }
-  else if (temp < 25) {
+  else if (t >= 20.0 && t < 25.0) {
     statusText = "COOL";
-    ledPin = LED_YELLOW;
+    activeLed = PIN_LED_YELLOW;
   }
-  else if (temp < 30) {
+  else if (t >= 25.0 && t < 30.0) {
     statusText = "WARM";
-    ledPin = LED_YELLOW;
+    activeLed = PIN_LED_YELLOW;
   }
-  else if (temp < 35) {
+  else if (t >= 30.0 && t <= 35.0) {
     statusText = "HOT";
-    ledPin = LED_RED;
+    activeLed = PIN_LED_RED;
   }
-  else {
+  else { // > 35 độ
     statusText = "TOO HOT";
-    ledPin = LED_RED;
+    activeLed = PIN_LED_RED;
   }
 
-  // ===== OLED DISPLAY =====
+  // 3. Hiển thị thông tin lên OLED
   display.clearDisplay();
-  display.setTextColor(WHITE);
 
+  // Dòng 1: Nhiệt độ & Độ ẩm
   display.setTextSize(1);
-  display.setCursor(0, 5);
-  display.print("Temp: ");
-  display.print(temp);
-  display.println(" C");
+  display.setCursor(0, 0);
+  display.print("Temp: "); display.print(t, 1); display.print(" C");
+  display.setCursor(0, 10);
+  display.print("Hum:  "); display.print(h, 1); display.print(" %");
 
-  display.print("Humi: ");
-  display.print(humi);
-  display.println(" %");
+  // Dòng 2: Đường kẻ ngang
+  display.drawLine(0, 25, 128, 25, WHITE);
 
+  // Dòng 3: Trạng thái (In Chữ To)
   display.setTextSize(2);
-  display.setCursor(0, 35);
+  
+  // Căn giữa chữ (tương đối)
+  int16_t x1, y1;
+  uint16_t w, h_text;
+  display.getTextBounds(statusText, 0, 0, &x1, &y1, &w, &h_text);
+  display.setCursor((128 - w) / 2, 35); // Căn giữa màn hình
+  
   display.print(statusText);
-
   display.display();
 
-  // ===== LED BLINK =====
-  blinkLED(ledPin);
+  // 4. Xử lý NHẤP NHÁY đèn (Blinking)
+  // Tắt tất cả đèn trước
+  digitalWrite(PIN_LED_GREEN, LOW);
+  digitalWrite(PIN_LED_YELLOW, LOW);
+  digitalWrite(PIN_LED_RED, LOW);
+
+  // Bật đèn cần sáng
+  if (activeLed != -1) {
+    digitalWrite(activeLed, HIGH);
+  }
+  
+  delay(500); // Sáng trong 0.5s
+
+  // Tắt đèn (tạo hiệu ứng nháy)
+  if (activeLed != -1) {
+    digitalWrite(activeLed, LOW);
+  }
+  
+  delay(500); // Tắt trong 0.5s -> Tổng chu kỳ 1 giây
 }
 
 
