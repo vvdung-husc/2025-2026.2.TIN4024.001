@@ -1,39 +1,44 @@
-#include <Arduino.h>
+#include "main.h"
 
-#define LED_RED     27
-#define LED_YELLOW  26
-#define LED_GREEN   25
+
+//Định nghĩa chân cho đèn LED
+#define PIN_LED_RED     27
+#define PIN_LED_YELLOW  26
+#define PIN_LED_GREEN    25
+
+//Định nghĩa cho LDR (Light Dependent Resistor)
+#define PIN_LDR 34 // Analog ADC1 GPIO34 connected to LDR
+
+#define PIN_CLK  18
+#define PIN_DIO  19
+
+#define PIN_LED_BLUE      21
+#define PIN_BUTTON_BLUE   23
+
+
+Trafic_Blink traficLight;
+LDR ldrSensor;
+
+TM1637Display display(PIN_CLK, PIN_DIO);
 
 void setup() {
-  Serial.begin(115200);
+  // put your setup code here, to run once:
+  printf("Welcome IoT\n");
 
-  pinMode(LED_RED, OUTPUT);
-  pinMode(LED_YELLOW, OUTPUT);
-  pinMode(LED_GREEN, OUTPUT);
+  ldrSensor.DAY_THRESHOLD = 2000; // Ngưỡng ánh sáng ban ngày
 
-  digitalWrite(LED_RED, HIGH);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_GREEN, LOW);
+  ldrSensor.setup(PIN_LDR, false); // VCC = 3.3V
 
-  Serial.println("ESP32 started OK!");
+  traficLight.setupPin(PIN_LED_RED, PIN_LED_YELLOW, PIN_LED_GREEN, PIN_LED_BLUE, PIN_BUTTON_BLUE);
+  traficLight.setupWaitTime(5, 3, 7); // seconds
+
+  display.setBrightness(0x0A);
+  display.clear();
+
 }
 
 void loop() {
-  Serial.println("RED");
-  digitalWrite(LED_RED, HIGH);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_GREEN, LOW);
-  delay(5000);
 
-  Serial.println("YELLOW");
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_YELLOW, HIGH);
-  digitalWrite(LED_GREEN, LOW);
-  delay(3000);
-
-  Serial.println("GREEN");
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_GREEN, HIGH);
-  delay(7000);
+  traficLight.run(ldrSensor, display);
+  
 }

@@ -1,37 +1,107 @@
 #include <Arduino.h>
-#include <TM1637Display.h>
 
 // ===== PIN =====
-#define LED_RED     14
-#define LED_YELLOW  27
-#define LED_GREEN   26
-#define LED_BLUE    21
-
+#define LED_RED     18
+#define LED_YELLOW  5
+#define LED_GREEN   17
+#define LDR_PIN     34
 #define BUTTON_PIN  23
-#define LDR_PIN     13
 
-#define CLK 18
-#define DIO 19
+// ===== NIGHT THRESHOLD =====
+#define NIGHT_LUX_THRESHOLD 80   // chỉnh theo môi trường
 
-TM1637Display display(CLK, DIO);
+// ===== SENSOR =====
+int adcValue = 0;
+float voltage = 0;
+float lux = 0;
 
-// ===== KHAI BÁO HÀM =====
-void checkButton();
-void runTrafficCycle();
-void dayMode();
-void nightMode();
-void redPhase(int speed);
-void yellowPhase(int speed);
-void greenPhase(int speed);
-void smartDelay(int ms);
+// ===== MODE =====
+bool isNight = false;
+bool manualMode = false;
 
-// ===== BIẾN =====
-bool displayEnabled = true;
+// ===== TRAFFIC =====
+int currentLight = 0; // 0=GREEN, 1=YELLOW, 2=RED
+int countdown = 0;
 
-int buttonState = HIGH;
-int lastButtonState = HIGH;
-unsigned long lastDebounceTime = 0;
-const unsigned long debounceDelay = 50;
+// ===== TIMER =====
+unsigned long trafficTimer = 0;
+unsigned long printTimer = 0;
+unsigned long blinkTimer = 0;
+
+// ===== TIME CONFIG =====
+int greenTime = 7;
+int yellowTime = 3;
+int redTime = 5;
+
+// ===== LUX CONVERT (AUTO FIX) =====
+float estimateLux(int adc) {
+  float normalized = adc / 4095.0;
+  return normalized * 500;  // ADC cao = sáng
+}
+
+// ===== LED CONTROL =====
+void setLights(bool red, bool yellow, bool green) {
+  digitalWrite(LED_RED, red);
+  digitalWrite(LED_YELLOW, yellow);
+  digitalWrite(LED_GREEN, green);
+}
+
+// ===== NIGHT MODE =====
+void nightModeBlink() {
+  if (millis() - blinkTimer >= 500) {
+    blinkTimer = millis();
+    digitalWrite(LED_YELLOW, !digitalRead(LED_YELLOW));
+  }
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_GREEN, LOW);
+}
+
+// ===== TRAFFIC MODE =====
+void trafficMode() {
+  if (millis() - trafficTimer >= 1000) {
+    trafficTimer = millis();
+    countdown--;
+
+    if (countdown <= 0) {
+      currentLight = (currentLight + 1) % 3;
+
+      if (currentLight == 0) countdown = greenTime;
+      if (currentLight == 1) countdown = yellowTime;
+      if (currentLight == 2) countdown = redTime;
+    }
+  }
+
+  if (currentLight == 0) setLights(false, false, true);
+  if (currentLight == 1) setLights(false, true, false);
+  if (currentLight == 2) setLights(true, false, false);
+}
+
+// ===== BUTTON (FAST + DEBOUNCE) =====
+void handleButton() {
+  static bool lastState = HIGH;
+  static unsigned long lastTime = 0;
+
+  bool state = digitalRead(BUTTON_PIN);
+
+  if (lastState == HIGH && state == LOW && millis() - lastTime > 150) {
+    lastTime = millis();
+
+    if (!manualMode) {
+      manualMode = true;
+      Serial.println("MODE = MANUAL ENABLED");
+    } else {
+      currentLight = (currentLight + 1) % 3;
+
+      if (currentLight == 0) countdown = greenTime;
+      if (currentLight == 1) countdown = yellowTime;
+      if (currentLight == 2) countdown = redTime;
+
+      Serial.println("MANUAL = SWITCH LIGHT");
+    }
+  }
+
+  lastState = state;
+}
 
 // ===== SETUP =====
 void setup() {
@@ -40,165 +110,65 @@ void setup() {
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_YELLOW, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
-  pinMode(LED_BLUE, OUTPUT);
-
+  pinMode(LDR_PIN, INPUT);
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
-  display.setBrightness(7);
-  display.clear();
+  countdown = greenTime;
 
-  digitalWrite(LED_BLUE, HIGH);
-
-  Serial.println("🚦 Traffic Light Ready!");
-  Serial.println("🔵 Blue LED ON = Countdown Enabled");
+  Serial.println("=======================================");
+  Serial.println("🚦 ESP32 SMART TRAFFIC LIGHT READY!");
+  Serial.println("🌞 AUTO DAY / 🌙 NIGHT + BUTTON");
+  Serial.println("=======================================");
 }
 
 // ===== LOOP =====
 void loop() {
-  checkButton();
-  runTrafficCycle();
-}
+  handleButton();
 
-// ===== NÚT =====
-void checkButton() {
-  int reading = digitalRead(BUTTON_PIN);
+  // ===== READ SENSOR =====
+  adcValue = 2013;//analogRead(LDR_PIN);
+  voltage = adcValue * (3.3 / 4095.0);
+  lux = estimateLux(adcValue);
 
-  if (reading != lastButtonState) {
-    lastDebounceTime = millis();
-  }
+  // ===== AUTO DAY/NIGHT SWITCH INSTANT =====
+  if (!manualMode) {
+    bool newNight = lux < NIGHT_LUX_THRESHOLD;
 
-  if ((millis() - lastDebounceTime) > debounceDelay) {
-    if (reading != buttonState) {
-      buttonState = reading;
+    if (newNight != isNight) {
+      isNight = newNight;
 
-      if (buttonState == LOW) {
-        displayEnabled = !displayEnabled;
-
-        Serial.print("🔵 Countdown: ");
-        Serial.println(displayEnabled ? "ON" : "OFF");
-
-        digitalWrite(LED_BLUE, displayEnabled ? HIGH : LOW);
+      if (!isNight) {
+        countdown = greenTime;
+        currentLight = 0;
       }
+
+      Serial.println("⚡ MODE CHANGED!");
     }
   }
 
-  lastButtonState = reading;
-}
+  // ===== SERIAL PRINT (EVERY 1S) =====
+  if (millis() - printTimer >= 1000) {
+    printTimer = millis();
 
-// ===== MAIN =====
-void runTrafficCycle() {
-  int ldrValue = analogRead(LDR_PIN);
+    Serial.print("ADC=");
+    Serial.print(adcValue);
+    Serial.print(" | Volt=");
+    Serial.print(voltage, 2);
+    Serial.print("V | Lux=");
+    Serial.print(lux, 1);
+    Serial.print(" | Countdown=");
+    Serial.print(countdown);
+    Serial.print(" | Mode=");
 
-  Serial.print("🌞 LDR Value = ");
-  Serial.println(ldrValue);
+    if (manualMode) Serial.println("MANUAL");
+    else Serial.println(isNight ? "AUTO NIGHT" : "AUTO DAY");
+  }
 
-  if (ldrValue < 1500) {
-    nightMode();
+  // ===== LOGIC =====
+  if (!manualMode) {
+    if (isNight) nightModeBlink();
+    else trafficMode();
   } else {
-    dayMode();
-  }
-}
-
-// ===== DAY MODE =====
-void dayMode() {
-  Serial.println("🌞 DAY MODE");
-
-  redPhase(500);
-  yellowPhase(500);
-  greenPhase(500);
-}
-
-// ===== NIGHT MODE =====
-void nightMode() {
-  Serial.println("🌙 NIGHT MODE");
-
-  digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_GREEN, LOW);
-
-  while (true) {
-    checkButton();
-
-    int ldrValue = analogRead(LDR_PIN);
-    if (ldrValue >= 1500) return;
-
-    Serial.println("🟡 Yellow Blink");
-
-    if (displayEnabled)
-      display.showNumberDec(0, false);
-    else
-      display.clear();
-
-    digitalWrite(LED_YELLOW, HIGH);
-    smartDelay(500);
-
-    digitalWrite(LED_YELLOW, LOW);
-    smartDelay(500);
-  }
-}
-
-// ===== RED =====
-void redPhase(int speed) {
-  for (int i = 5; i >= 1; i--) {
-    checkButton();
-
-    Serial.print("🔴 RED: ");
-    Serial.println(i);
-
-    if (displayEnabled) display.showNumberDec(i, false);
-    else display.clear();
-
-    digitalWrite(LED_RED, HIGH);
-    smartDelay(speed);
-    digitalWrite(LED_RED, LOW);
-    smartDelay(speed);
-  }
-}
-
-// ===== YELLOW =====
-void yellowPhase(int speed) {
-  for (int i = 3; i >= 1; i--) {
-    checkButton();
-
-    Serial.print("🟡 YELLOW: ");
-    Serial.println(i);
-
-    if (displayEnabled) display.showNumberDec(i, false);
-    else display.clear();
-
-    digitalWrite(LED_YELLOW, HIGH);
-    smartDelay(speed);
-    digitalWrite(LED_YELLOW, LOW);
-    smartDelay(speed);
-  }
-}
-
-// ===== GREEN =====
-void greenPhase(int speed) {
-  digitalWrite(LED_GREEN, HIGH);
-
-  for (int i = 7; i >= 1; i--) {
-    checkButton();
-
-    Serial.print("🟢 GREEN: ");
-    Serial.println(i);
-
-    if (displayEnabled) display.showNumberDec(i, false);
-    else display.clear();
-
-    smartDelay(speed);
-
-    digitalWrite(LED_GREEN, LOW);
-    smartDelay(speed);
-    digitalWrite(LED_GREEN, HIGH);
-  }
-
-  digitalWrite(LED_GREEN, LOW);
-}
-
-// ===== SMART DELAY =====
-void smartDelay(int ms) {
-  unsigned long start = millis();
-  while (millis() - start < ms) {
-    checkButton();
+    trafficMode();
   }
 }
