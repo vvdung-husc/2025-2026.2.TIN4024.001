@@ -31,37 +31,21 @@ DHT dht(DHTPIN, DHTTYPE);
 #define LED_YELLOW 2
 #define LED_RED    4
 
-<<<<<<< HEAD
 // SYSTEM TIMER
 unsigned long startMillis;
 bool systemReady = false;
 
 // LOOP TIMER
-=======
-// ===== SYSTEM TIMER =====
-unsigned long startMillis;
-bool systemReady = false;
-
-// ===== LOOP TIMER =====
->>>>>>> 591110c198c3f381e24b3f9b0d88a6d55c8804c1
 unsigned long lastReadMillis = 0;
 unsigned long lastDisplayMillis = 0;
 unsigned long lastBlinkMillis = 0;
 
-<<<<<<< HEAD
 // INTERVAL
-=======
-// ===== INTERVAL =====
->>>>>>> 591110c198c3f381e24b3f9b0d88a6d55c8804c1
 const unsigned long READ_INTERVAL = 2000;
 const unsigned long DISPLAY_INTERVAL = 2000;
 const unsigned long BLINK_INTERVAL = 500;
 
-<<<<<<< HEAD
 // DATA
-=======
-// ===== DATA =====
->>>>>>> 591110c198c3f381e24b3f9b0d88a6d55c8804c1
 float t = 0, h = 0;
 String statusMsg = "";
 int activeLed = -1;
@@ -103,11 +87,7 @@ void setup() {
 void loop()
 {
 
-<<<<<<< HEAD
     // NON-BLOCKING: Đợi hệ thống ổn định và lấy giá trị trong 2 giây 
-=======
-    // ===== NON-BLOCKING: ĐỢI 2s KHỞI ĐỘNG =====
->>>>>>> 591110c198c3f381e24b3f9b0d88a6d55c8804c1
     if (!systemReady)
     {
         if (millis() - startMillis >= 2000)
@@ -118,7 +98,6 @@ void loop()
         }
         return;
     }
-<<<<<<< HEAD
 
     unsigned long now = millis();
 
@@ -215,85 +194,3 @@ void loop()
         }
     }
 }
-=======
-
-    unsigned long now = millis();
-
-    /* ========= PHẦN 1: ĐỌC DỮ LIỆU ========= */
-    if (now - lastReadMillis >= READ_INTERVAL)
-    {
-        lastReadMillis = now;
-
-        h = dht.readHumidity();
-        t = dht.readTemperature();
-
-        if (isnan(h) || isnan(t))
-        {
-            statusMsg = "SENSOR ERR";
-            activeLed = -1;
-            return;
-        }
-    }
-
-    /* ========= PHẦN 2: XỬ LÝ LOGIC + CHỌN LED ========= */
-    if (t < 13)
-    {
-        statusMsg = "TOO COLD";
-        activeLed = LED_GREEN;
-    }
-    else if (t < 20)
-    {
-        statusMsg = "COLD";
-        activeLed = LED_GREEN;
-    }
-    else if (t < 25)
-    {
-        statusMsg = "COOL";
-        activeLed = LED_YELLOW;
-    }
-    else if (t < 30)
-    {
-        statusMsg = "WARM";
-        activeLed = LED_YELLOW;
-    }
-    else if (t < 35)
-    {
-        statusMsg = "HOT";
-        activeLed = LED_RED;
-    }
-    else
-    {
-        statusMsg = "TOO HOT";
-        activeLed = LED_RED;
-    }
-
-    /* ========= PHẦN 3: HIỂN THỊ OLED ========= */
-    if (now - lastDisplayMillis >= DISPLAY_INTERVAL)
-    {
-        lastDisplayMillis = now;
-
-        display.clearDisplay();
-        display.setTextSize(1);
-        display.setCursor(0, 0);
-        display.print("Temp: ");
-        display.print(t, 1);
-        display.print(" C");
-
-        display.setCursor(0, 12);
-        display.print("Hum : ");
-        display.print(h, 1);
-        display.print(" %");
-
-        display.drawLine(0, 25, 128, 25, WHITE);
-
-        display.setTextSize(2);
-        int16_t x1, y1;
-        uint16_t w, h_text;
-        display.getTextBounds(statusMsg, 0, 0, &x1, &y1, &w, &h_text);
-        display.setCursor((SCREEN_WIDTH - w) / 2, 35);
-        display.println(statusMsg);
-
-        display.display();
-    }
-
->>>>>>> 591110c198c3f381e24b3f9b0d88a6d55c8804c1
