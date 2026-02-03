@@ -1,8 +1,8 @@
 #include <Arduino.h>
 
-#define LED_RED    18
-#define LED_YELLOW 5
-#define LED_GREEN  17
+#define LED_RED    25
+#define LED_YELLOW 33
+#define LED_GREEN  32
 
 void setup() {
   pinMode(LED_RED, OUTPUT);
@@ -15,15 +15,15 @@ void setup() {
   digitalWrite(LED_GREEN, LOW);
 }
 
-// Hàm nhấp nháy LED trong khoảng thời gian xác định
-void blinkLED(int pin, unsigned long timeMs) {
-  unsigned long start = millis();
+// Hàm nhấp nháy LED theo thời gian (ms)
+void blinkLED(int pin, unsigned long durationMs) {
+  unsigned long startTime = millis();
 
-  while (millis() - start < timeMs) {
+  while (millis() - startTime < durationMs) {
     digitalWrite(pin, HIGH);
-    delay(500);
+    delay(500);              // bật 0.5s
     digitalWrite(pin, LOW);
-    delay(500);
+    delay(500);              // tắt 0.5s
   }
 }
 
