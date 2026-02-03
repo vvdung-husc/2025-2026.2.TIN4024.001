@@ -58,7 +58,7 @@
       "left": 176.6,
       "attrs": { "color": "blue", "flip": "1" }
     },
-    { "type": "wokwi-lm393", "id": "sensor", "top": 120, "left": -120, "attrs": {} },
+    
     {
       "type": "wokwi-tm1637-7segment",
       "id": "sevseg1",
@@ -82,10 +82,6 @@
     [ "esp:GND.1", "led1:C", "black", [ "h-220.65", "v-269.2" ] ],
     [ "esp:GND.1", "led2:C", "black", [ "h-220.65", "v-221.2" ] ],
     [ "esp:GND.1", "led3:C", "black", [ "h-220.65", "v-173.2" ] ],
-    [ "sensor:VCC", "esp:5V", "red", [] ],
-    [ "sensor:GND", "esp:GND.2", "black", [] ],
-    [ "sensor:DO", "esp:34", "green", [] ],
-    [ "sensor:AO", "esp:35", "green", [] ],
     [ "esp:GND.2", "btn:1.l", "black", [ "v0" ] ],
     [ "btn:2.l", "esp:23", "blue", [ "h0" ] ],
     [ "ledBlue:A", "esp:21", "blue", [ "v0" ] ],

@@ -8,31 +8,32 @@ void setup() {
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_YELLOW, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
+
+  // Tắt tất cả LED ban đầu
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, LOW);
+}
+
+// Hàm nhấp nháy LED theo thời gian (ms)
+void blinkLED(int pin, unsigned long durationMs) {
+  unsigned long startTime = millis();
+
+  while (millis() - startTime < durationMs) {
+    digitalWrite(pin, HIGH);
+    delay(500);              // bật 0.5s
+    digitalWrite(pin, LOW);
+    delay(500);              // tắt 0.5s
+  }
 }
 
 void loop() {
-  
-  
-  for (int i = 0; i < 5; i++) {
-    digitalWrite(LED_RED, HIGH);
-    delay(500); 
-    digitalWrite(LED_RED, LOW);
-    delay(500); 
-  }
+  // 🔴 Đỏ nhấp nháy 5 giây
+  blinkLED(LED_RED, 5000);
 
+  // 🟡 Vàng nhấp nháy 3 giây
+  blinkLED(LED_YELLOW, 3000);
 
-  for (int i = 0; i < 7; i++) {
-    digitalWrite(LED_GREEN, HIGH);
-    delay(500);
-    digitalWrite(LED_GREEN, LOW);
-    delay(500);
-  }
-
-
-  for (int i = 0; i < 3; i++) {
-    digitalWrite(LED_YELLOW, HIGH);
-    delay(500);
-    digitalWrite(LED_YELLOW, LOW);
-    delay(500);
-  }
+  // 🟢 Xanh nhấp nháy 7 giây
+  blinkLED(LED_GREEN, 7000);
 }
