@@ -1,110 +1,95 @@
-/*
-1. Trần Thị Quỳnh Anh
-2. Lê Yến Nhi
-3. Ngô Thị Cẩm Ly
-*/
-
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include "DHT.h"
+#include <DHT.h>
 
-// ===== OLED =====
+#include "main.h"
+#include "ultils.h"
+
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
-#define OLED_RESET    -1
-#define OLED_ADDRESS  0x3C
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-// ===== DHT =====
-#define DHTPIN 16
-#define DHTTYPE DHT22
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 DHT dht(DHTPIN, DHTTYPE);
-
-// ===== LED =====
-#define LED_GREEN  15
-#define LED_YELLOW 2
-#define LED_RED    4
-
-unsigned long lastBlink = 0;
-bool ledState = false;
 
 void setup() {
   Serial.begin(115200);
 
-  pinMode(LED_GREEN, OUTPUT);
-  pinMode(LED_YELLOW, OUTPUT);
-  pinMode(LED_RED, OUTPUT);
+  // I2C theo diagram
+  Wire.begin(13, 12);
 
-  Wire.begin(13, 12); // SDA, SCL
+  setupLED();
+  offAllLED();
+  dht.begin();
 
-  if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
-    while (true);
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println("OLED FAIL");
+    while (1);
   }
 
-  dht.begin();
+  display.clearDisplay();
+  display.display();
 }
 
 void loop() {
   float t = dht.readTemperature();
   float h = dht.readHumidity();
-  if (isnan(t) || isnan(h)) return;
 
-  // ===== Xác định trạng thái =====
-  String status = "";
-  int ledColor = 0; // 1=GREEN, 2=YELLOW, 3=RED
+  String status = "READING...";
+  int ledPin = -1;
 
-  if (t < 13) {
-    status = "TOO COLD";
-    ledColor = 1;
-  } else if (t < 20) {
-    status = "COLD";
-    ledColor = 1;
-  } else if (t < 25) {
-    status = "COOL";
-    ledColor = 2;
-  } else if (t < 30) {
-    status = "WARM";
-    ledColor = 2;
-  } else if (t < 35) {
-    status = "HOT";
-    ledColor = 3;
-  } else {
-    status = "TOO HOT";
-    ledColor = 3;
+  if (!isnan(t) && !isnan(h)) {
+    if (t < 13) {
+      status = "TOO COLD";
+      ledPin = LED_GREEN;
+    } else if (t < 20) {
+      status = "COLD";
+      ledPin = LED_GREEN;
+    } else if (t < 25) {
+      status = "COOL";
+      ledPin = LED_YELLOW;
+    } else if (t < 30) {
+      status = "WARM";
+      ledPin = LED_YELLOW;
+    } else if (t < 35) {
+      status = "HOT";
+      ledPin = LED_RED;
+    } else {
+      status = "TOO HOT";
+      ledPin = LED_RED;
+    }
   }
 
-  // ===== LED chớp nháy =====
-  if (millis() - lastBlink >= 500) {
-    lastBlink = millis();
-    ledState = !ledState;
-
-    digitalWrite(LED_GREEN,  ledColor == 1 ? ledState : LOW);
-    digitalWrite(LED_YELLOW, ledColor == 2 ? ledState : LOW);
-    digitalWrite(LED_RED,    ledColor == 3 ? ledState : LOW);
-  }
-
-  // ===== OLED =====
+  // OLED luôn hiển thị
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
 
   display.setCursor(0, 0);
-  display.println("Weather Monitor");
-
-  display.setCursor(0, 16);
   display.print("Temp: ");
-  display.print(t);
-  display.println(" C");
+  if (isnan(t)) display.println("--");
+  else {
+    display.print(t);
+    display.println(" C");
+  }
 
-  display.setCursor(0, 28);
-  display.print("Humidity: ");
-  display.print(h);
-  display.println(" %");
+  display.setCursor(0, 15);
+  display.print("Humi: ");
+  if (isnan(h)) display.println("--");
+  else {
+    display.print(h);
+    display.println(" %");
+  }
 
-  display.setCursor(0, 44);
-  display.print("Status: ");
+  display.setCursor(0, 35);
+  display.print("Status:");
+  display.setCursor(0, 50);
   display.println(status);
 
   display.display();
+
+  offAllLED();
+  if (ledPin != -1) blinkLED(ledPin, 500);
+
+  delay(2000);
 }
