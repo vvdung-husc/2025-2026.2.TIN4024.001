@@ -149,4 +149,32 @@ void loop()
         activeLed = LED_RED;
     }
 
-    
+    /* ========= PHẦN 3: HIỂN THỊ OLED ========= */
+    if (now - lastDisplayMillis >= DISPLAY_INTERVAL)
+    {
+        lastDisplayMillis = now;
+
+        display.clearDisplay();
+        display.setTextSize(1);
+        display.setCursor(0, 0);
+        display.print("Temp: ");
+        display.print(t, 1);
+        display.print(" C");
+
+        display.setCursor(0, 12);
+        display.print("Hum : ");
+        display.print(h, 1);
+        display.print(" %");
+
+        display.drawLine(0, 25, 128, 25, WHITE);
+
+        display.setTextSize(2);
+        int16_t x1, y1;
+        uint16_t w, h_text;
+        display.getTextBounds(statusMsg, 0, 0, &x1, &y1, &w, &h_text);
+        display.setCursor((SCREEN_WIDTH - w) / 2, 35);
+        display.println(statusMsg);
+
+        display.display();
+    }
+
