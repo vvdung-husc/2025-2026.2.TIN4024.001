@@ -13,7 +13,6 @@ THÔNG TIN NHÓM 6
 #include <Adafruit_SSD1306.h>
 #include <DHT.h>
 
-// --- CẤU HÌNH PHẦN CỨNG (Theo diagram.json) ---
 // 1. Cấu hình OLED
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -28,10 +27,29 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 DHT dht(DHTPIN, DHTTYPE);
 
 // 3. Cấu hình LED
-// Lưu ý: Trong sơ đồ Wokwi, LED Cyan nối chân 15, tôi gán nó là GREEN theo yêu cầu bài
 #define LED_GREEN  15 
 #define LED_YELLOW 2
 #define LED_RED    4
+
+// ===== SYSTEM TIMER =====
+unsigned long startMillis;
+bool systemReady = false;
+
+// ===== LOOP TIMER =====
+unsigned long lastReadMillis = 0;
+unsigned long lastDisplayMillis = 0;
+unsigned long lastBlinkMillis = 0;
+
+// ===== INTERVAL =====
+const unsigned long READ_INTERVAL = 2000;
+const unsigned long DISPLAY_INTERVAL = 2000;
+const unsigned long BLINK_INTERVAL = 500;
+
+// ===== DATA =====
+float t = 0, h = 0;
+String statusMsg = "";
+int activeLed = -1;
+bool ledState = false;
 
 void setup() {
   Serial.begin(115200);
@@ -64,22 +82,71 @@ void setup() {
   display.setCursor(0,20);
   display.println("Dang khoi tao...");
   display.display();
-  delay(2000); // Đợi cảm biến ổn định
 }
 
-void loop() {
-  // 1. Đọc dữ liệu
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
+void loop()
+{
 
-  // Kiểm tra lỗi đọc cảm biến
-  if (isnan(h) || isnan(t)) {
-    Serial.println(F("Loi doc DHT!"));
-    display.clearDisplay();
-    display.setCursor(0,0);
-    display.print("Sensor Error!");
-    display.display();
-    return;
-  }
+    // ===== NON-BLOCKING: ĐỢI 2s KHỞI ĐỘNG =====
+    if (!systemReady)
+    {
+        if (millis() - startMillis >= 2000)
+        {
+            systemReady = true;
+            display.clearDisplay();
+            display.display();
+        }
+        return;
+    }
 
-}
+    unsigned long now = millis();
+
+    /* ========= PHẦN 1: ĐỌC DỮ LIỆU ========= */
+    if (now - lastReadMillis >= READ_INTERVAL)
+    {
+        lastReadMillis = now;
+
+        h = dht.readHumidity();
+        t = dht.readTemperature();
+
+        if (isnan(h) || isnan(t))
+        {
+            statusMsg = "SENSOR ERR";
+            activeLed = -1;
+            return;
+        }
+    }
+
+    /* ========= PHẦN 2: XỬ LÝ LOGIC + CHỌN LED ========= */
+    if (t < 13)
+    {
+        statusMsg = "TOO COLD";
+        activeLed = LED_GREEN;
+    }
+    else if (t < 20)
+    {
+        statusMsg = "COLD";
+        activeLed = LED_GREEN;
+    }
+    else if (t < 25)
+    {
+        statusMsg = "COOL";
+        activeLed = LED_YELLOW;
+    }
+    else if (t < 30)
+    {
+        statusMsg = "WARM";
+        activeLed = LED_YELLOW;
+    }
+    else if (t < 35)
+    {
+        statusMsg = "HOT";
+        activeLed = LED_RED;
+    }
+    else
+    {
+        statusMsg = "TOO HOT";
+        activeLed = LED_RED;
+    }
+
+    
