@@ -1,3 +1,10 @@
+/*  THÔNG TIN NHÓM 10
+1. Lê Thị Khánh Ly
+2. Ngô Thị Cẩm Ly
+3. Phạm Năng
+4. Trần Thị Quỳnh Anh
+5. Lê Yến Nhi
+*/
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
