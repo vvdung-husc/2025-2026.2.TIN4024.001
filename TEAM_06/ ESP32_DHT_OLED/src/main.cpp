@@ -31,21 +31,21 @@ DHT dht(DHTPIN, DHTTYPE);
 #define LED_YELLOW 2
 #define LED_RED    4
 
-// ===== SYSTEM TIMER =====
+// SYSTEM TIMER
 unsigned long startMillis;
 bool systemReady = false;
 
-// ===== LOOP TIMER =====
+// LOOP TIMER
 unsigned long lastReadMillis = 0;
 unsigned long lastDisplayMillis = 0;
 unsigned long lastBlinkMillis = 0;
 
-// ===== INTERVAL =====
+// INTERVAL
 const unsigned long READ_INTERVAL = 2000;
 const unsigned long DISPLAY_INTERVAL = 2000;
 const unsigned long BLINK_INTERVAL = 500;
 
-// ===== DATA =====
+// DATA
 float t = 0, h = 0;
 String statusMsg = "";
 int activeLed = -1;
@@ -87,7 +87,7 @@ void setup() {
 void loop()
 {
 
-    // ===== NON-BLOCKING: ĐỢI 2s KHỞI ĐỘNG =====
+    // NON-BLOCKING: Đợi hệ thống ổn định và lấy giá trị trong 2 giây 
     if (!systemReady)
     {
         if (millis() - startMillis >= 2000)
@@ -101,7 +101,7 @@ void loop()
 
     unsigned long now = millis();
 
-    /* ========= PHẦN 1: ĐỌC DỮ LIỆU ========= */
+    // PHẦN 1: Đọc dữ liệu
     if (now - lastReadMillis >= READ_INTERVAL)
     {
         lastReadMillis = now;
@@ -117,28 +117,28 @@ void loop()
         }
     }
 
-    /* ========= PHẦN 2: XỬ LÝ LOGIC + CHỌN LED ========= */
+    // PHẦN 2: Xử lý Logic + Chọn LED
     if (t < 13)
     {
         statusMsg = "TOO COLD";
         activeLed = LED_GREEN;
     }
-    else if (t < 20)
+    else if (t <= 20)
     {
         statusMsg = "COLD";
         activeLed = LED_GREEN;
     }
-    else if (t < 25)
+    else if (t <= 25)
     {
         statusMsg = "COOL";
         activeLed = LED_YELLOW;
     }
-    else if (t < 30)
+    else if (t <= 30)
     {
         statusMsg = "WARM";
         activeLed = LED_YELLOW;
     }
-    else if (t < 35)
+    else if (t <= 35)
     {
         statusMsg = "HOT";
         activeLed = LED_RED;
@@ -149,7 +149,7 @@ void loop()
         activeLed = LED_RED;
     }
 
-    /* ========= PHẦN 3: HIỂN THỊ OLED ========= */
+    // PHẦN 3: Hiển thị OLED
     if (now - lastDisplayMillis >= DISPLAY_INTERVAL)
     {
         lastDisplayMillis = now;
@@ -178,3 +178,19 @@ void loop()
         display.display();
     }
 
+    // PHẦN 4: LED nhấp nháy 
+    if (now - lastBlinkMillis >= BLINK_INTERVAL)
+    {
+        lastBlinkMillis = now;
+        ledState = !ledState;
+
+        digitalWrite(LED_GREEN, LOW);
+        digitalWrite(LED_YELLOW, LOW);
+        digitalWrite(LED_RED, LOW);
+
+        if (activeLed != -1 && ledState)
+        {
+            digitalWrite(activeLed, HIGH);
+        }
+    }
+}
