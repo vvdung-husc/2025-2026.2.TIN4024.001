@@ -1,10 +1,3 @@
-/* THONG TIN NHOM 10
-1. Le Thi Khanh Ly
-2. Ngo Thi Cam Ly
-3. Pham Nang
-4. Tran Thi Quynh Anh
-5. Le Yen Nhi
-*/
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -77,7 +70,7 @@ void logToSerialdashboard(float t, float h, String status) {
 
   Serial.println();
   Serial.println("╔══════════════════════════════════╗");
-  Serial.println("║      NHOM 10 - TRAM IOT          ║");
+  Serial.println("║      NANG - TRAM IOT             ║");
   Serial.println("╠══════════════════════════════════╣");
   
   Serial.print("║  Lan do: #"); 

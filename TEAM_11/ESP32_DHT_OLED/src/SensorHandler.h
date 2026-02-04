@@ -21,7 +21,7 @@ bool handleSensorReading(float &h, float &t) {
       Serial.println("Loi cam bien!");
       return false;
     }
-    return true; // Trả về true khi có dữ liệu mới
+    return true; // trả về true khi có dữ liệu mới
   }
   return false;
 }
