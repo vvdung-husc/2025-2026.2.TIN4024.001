@@ -1,7 +1,7 @@
 /*
 THÔNG TIN NHÓM 9
-1. Nguyễn Hoàng Huyền Tran
-2. 
+1. Nguyễn Hoàng Huyền Trân
+2. Hoàng Anh Minh
 3. 
 */
 #include <Arduino.h>

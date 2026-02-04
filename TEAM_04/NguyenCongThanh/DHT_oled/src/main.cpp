@@ -51,10 +51,10 @@ void loop() {
 
   // Logic phân loại ngưỡng nhiệt độ theo yêu cầu của Thành
   if (temp < 13.0) { label = "❄️ TOO COLD"; activeLED = LED_CYAN; }
-  else if (temp < 20.0) { label = "☔COLD"; activeLED = LED_CYAN; }
+  else if (temp < 20.0) { label = "☔ COLD"; activeLED = LED_CYAN; }
   else if (temp < 25.0) { label = "☁️ COOL"; activeLED = LED_YELLOW; }
   else if (temp < 30.0) { label = "☀️ WARM"; activeLED = LED_YELLOW; }
-  else if (temp < 35.0) { label = "🌞HOT"; activeLED = LED_RED; }
+  else if (temp < 35.0) { label = "🌞 HOT"; activeLED = LED_RED; }
   else { label = "🔥 TOO HOT"; activeLED = LED_RED; }
 
   // --- XUẤT DỮ LIỆU RA TERMINAL ---
