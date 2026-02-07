@@ -4,7 +4,7 @@
 
 DHT dht(DHTPIN, DHTTYPE);
 unsigned long lastSensorRead = 0;
-const unsigned long sensorInterval = 2000; // 2 giây theo datasheet
+const unsigned long sensorInterval = 2000; 
 
 void setupSensors() {
   dht.begin();
