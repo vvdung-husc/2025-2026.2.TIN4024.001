@@ -13,7 +13,6 @@
       "left": 61.4,
       "attrs": { "color": "yellow" }
     },
-    
     {
       "type": "wokwi-resistor",
       "id": "r1",
@@ -55,8 +54,9 @@
     [ "led3:A", "r2:1", "yellow", [ "v86.4", "h76.8" ] ],
     [ "led1:A", "r1:1", "red", [ "v76.8", "h48" ] ],
     [ "esp:4", "r1:2", "red", [ "h0" ] ],
-    [ "esp:16", "dht1:SDA", "green", [ "v28.8", "h124.7" ] ],
-    [ "esp:GND.3", "dht1:GND", "black", [ "v28.8", "h144" ] ]
+    [ "esp:16", "dht1:DATA", "green", [ "v28.8", "h124.7" ] ],
+    [ "esp:GND.3", "dht1:GND", "black", [ "v28.8", "h144" ] ],
+    [ "dht1:SDA", "esp:16", "green", [ "v0" ] ]
   ],
   "dependencies": {}
 }
