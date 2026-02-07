@@ -12,6 +12,7 @@
 #include <DHT.h>
 
 // --- ĐỊNH NGHĨA CHÂN ---
+// định nghĩa chân
 #define DHTPIN 16
 #define DHTTYPE DHT22
 #define LED_CYAN   15
