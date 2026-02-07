@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 48, "left": 4.84, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": -61.2, "left": 71, "attrs": { "color": "red" } },
+    {
+      "type": "wokwi-led",
+      "id": "led2",
+      "top": -61.2,
+      "left": 32.6,
+      "attrs": { "color": "yellow" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led3",
+      "top": -61.2,
+      "left": -5.8,
+      "attrs": { "color": "cyan" }
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "oled1",
+      "top": 60.74,
+      "left": -182.17,
+      "attrs": { "i2cAddress": "0x3c" }
+    },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -95.7, "left": 186.6, "attrs": {} },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 110.4,
+      "left": 105.05,
+      "rotate": 90,
+      "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 110.4,
+      "left": 133.85,
+      "rotate": 90,
+      "attrs": { "value": "1000" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:13", "oled1:SDA", "green", [ "h-38.25", "v-201.6", "h-86.47" ] ],
+    [ "esp:GND.1", "oled1:GND", "black", [ "h-47.85", "v-182.4", "h-105.6" ] ],
+    [ "esp:12", "oled1:SCL", "green", [ "h-67.05", "v-163.2", "h-67.5" ] ],
+    [ "esp:3V3", "oled1:VCC", "red", [ "h-19.05", "v-38.4", "h-124.95" ] ],
+    [ "esp:15", "led3:A", "cyan", [ "h9.6", "v-220.8", "h-96" ] ],
+    [ "esp:GND.2", "led3:C", "black", [ "v-38.4", "h-96.4" ] ],
+    [ "esp:GND.2", "led2:C", "black", [ "v-38.4", "h-58" ] ],
+    [ "esp:GND.2", "led1:C", "black", [ "v-38.4", "h-19.6" ] ],
+    [ "esp:2", "r1:2", "gold", [ "h0" ] ],
+    [ "r1:1", "led2:A", "gold", [ "v-57.6", "h-86.4" ] ],
+    [ "esp:4", "r2:2", "red", [ "h0" ] ],
+    [ "r2:1", "led1:A", "red", [ "v-67.2", "h-67.2" ] ],
+    [ "esp:3V3", "dht1:VCC", "red", [ "h-19.05", "v-28.8", "h211.2" ] ],
+    [ "esp:16", "dht1:SDA", "green", [ "h0" ] ],
+    [ "esp:GND.3", "dht1:GND", "black", [ "h19.2", "v38.4", "h105.6" ] ]
+  ],
+  "dependencies": {}
+}

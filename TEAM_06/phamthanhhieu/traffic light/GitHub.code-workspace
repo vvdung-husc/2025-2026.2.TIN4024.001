@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "../../../.."
+		},
+		{
+			"name": "LED_blink",
+			"path": "../LED_blink"
+		},
+		{
+			"name": "homework",
+			"path": "../homework"
+		},
+		{
+			"name": "traffic light",
+			"path": "."
+		}
+	],
+	"settings": {}
+}

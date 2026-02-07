@@ -1,114 +1,195 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
 
-// --- CẤU HÌNH CHÂN (PINS) ---
-#define LED_RED     27
-#define LED_YELLOW  26
-#define LED_GREEN   25
-#define LED_STREET  21  
-
-#define CLK 18
-#define DIO 19
-
-#define BTN_PIN 4
-#define LDR_PIN 34      // Chân Analog Input (AO)
-
-// --- CẤU HÌNH THỜI GIAN ---
-const long RED_TIME = 5000;
-const long GREEN_TIME = 5000;
-const long YELLOW_TIME = 2000;
-
-TM1637Display display(CLK, DIO);
-
-// --- BIẾN TRẠNG THÁI ---
-int trafficState = 0; // 0: RED, 1: GREEN, 2: YELLOW
-unsigned long previousMillis = 0;
-bool isDisplayVisible = true; 
-
-void setup() {
-  Serial.begin(115200);
-
-  pinMode(LED_RED, OUTPUT);
-  pinMode(LED_YELLOW, OUTPUT);
-  pinMode(LED_GREEN, OUTPUT);
-  pinMode(LED_STREET, OUTPUT);
-  pinMode(BTN_PIN, INPUT_PULLUP);
-  
-  // Chân 34 là Input-only nên không cần pinMode OUTPUT, chỉ cần analogRead
-
-  display.setBrightness(0x0f);
+bool IsReady(unsigned long &ulTimer, uint32_t millisecond)
+{
+  if (millis() - ulTimer < millisecond) return false;
+  ulTimer = millis();
+  return true;
 }
 
-void loop() {
-  unsigned long currentMillis = millis();
+String StringFormat(const char *fmt, ...)
+{
+  va_list vaArgs;
+  va_start(vaArgs, fmt);
+  va_list vaArgsCopy;
+  va_copy(vaArgsCopy, vaArgs);
+  const int iLen = vsnprintf(NULL, 0, fmt, vaArgsCopy);
+  va_end(vaArgsCopy);
+  int iSize = iLen + 1;
+  char *buff = (char *)malloc(iSize);
+  vsnprintf(buff, iSize, fmt, vaArgs);
+  va_end(vaArgs);
+  String s = buff;
+  free(buff);
+  return String(s);
+}
 
-  // --- 1. ĐỌC CẢM BIẾN LDR ---
-  // ESP32 Analog Read: 0 (0V) đến 4095 (3.3V)
-  // Theo nguyên lý: Lux càng cao -> Điện trở LDR càng nhỏ -> Analog đọc được càng nhỏ (nếu nối Pull-up)
-  // Ta giả lập: Giá trị Analog < 500 tương ứng với Lux > 2000 (Trời rất sáng)
-  int analogValue = analogRead(LDR_PIN);
-  
-  // Biến đổi ngược để dễ hình dung (Giả lập Lux)
-  // Giá trị này chỉ mang tính tương đối để so sánh với ngưỡng 2000
-  int simulatedLux = map(analogValue, 0, 4095, 3000, 0); 
+#define PIN_LED_RED     25
+#define PIN_LED_YELLOW  33
+#define PIN_LED_GREEN   32
 
-  // --- LOGIC CHÍNH ---
-  if (simulatedLux > 2000) {
-    // === CHẾ ĐỘ 1: TRỜI SÁNG (LUX > 2000) ===
-    // Yêu cầu: Đèn vàng nhấp nháy, Màn hình tắt.
-    
-    display.clear(); // Tắt màn hình hiển thị số
-    digitalWrite(LED_RED, LOW);
-    digitalWrite(LED_GREEN, LOW);
-    digitalWrite(LED_STREET, LOW); // Trời sáng tắt đèn đường
+#define CLK 15
+#define DIO 2
 
-    // Nhấp nháy đèn vàng (Chu kỳ 500ms)
-    if ((currentMillis / 500) % 2 == 0) {
-      digitalWrite(LED_YELLOW, HIGH);
-    } else {
-      digitalWrite(LED_YELLOW, LOW);
-    }
-    
-    // Reset bộ đếm giao thông để khi quay lại chế độ thường sẽ bắt đầu từ đầu
-    previousMillis = currentMillis; 
+#define PIN_BUTTON_DISPLAY 23
+#define PIN_LED_BLUE      21
+#define PIN_LDR           13  
 
-  } else {
-    // === CHẾ ĐỘ 2: BÌNH THƯỜNG (LUX <= 2000) ===
-    
-    // Bật đèn đường (vì trời tối)
-    digitalWrite(LED_STREET, HIGH);
+TM1637Display display(CLK, DIO);
+int valueButtonDisplay = LOW;
 
-    // Xử lý đèn giao thông
-    long duration = 0;
-    if (trafficState == 0) duration = RED_TIME;
-    else if (trafficState == 1) duration = GREEN_TIME;
-    else duration = YELLOW_TIME;
+const char* LEDString(uint8_t pin)
+{
+  switch (pin)
+  {
+    case PIN_LED_RED:     return "RED";
+    case PIN_LED_YELLOW:  return "YELLOW";
+    case PIN_LED_GREEN:   return "GREEN";
+    default:              return "UNKNOWN";
+  }  
+}
 
-    long elapsed = currentMillis - previousMillis;
-    long remainingTime = (duration - elapsed) / 1000;
+void Init_LED_Traffic()
+{
+  pinMode(PIN_LED_RED, OUTPUT);
+  pinMode(PIN_LED_YELLOW, OUTPUT);  
+  pinMode(PIN_LED_GREEN, OUTPUT);
+}
 
-    if (elapsed >= duration) {
-      previousMillis = currentMillis;
-      trafficState++;
-      if (trafficState > 2) trafficState = 0;
-      elapsed = 0;
-    }
+bool ProcessLEDTraffic()
+{
+  static unsigned long ulTimer = 0;
+  static uint8_t idxLED = 0;
+  static uint8_t LEDs[3] = {PIN_LED_GREEN, PIN_LED_YELLOW, PIN_LED_RED};
+  if (!IsReady(ulTimer, 1000)) return false;
 
-    // Hiển thị đèn
-    digitalWrite(LED_RED, trafficState == 0 ? HIGH : LOW);
-    digitalWrite(LED_GREEN, trafficState == 1 ? HIGH : LOW);
-    digitalWrite(LED_YELLOW, trafficState == 2 ? HIGH : LOW);
-
-    // Xử lý nút nhấn (Bật/tắt màn hình)
-    if (digitalRead(BTN_PIN) == LOW) {
-        isDisplayVisible = !isDisplayVisible;
-        delay(200); // Debounce
-    }
-
-    if (isDisplayVisible) {
-      display.showNumberDec(remainingTime + 1);
-    } else {
-      display.clear();
-    }
+  for (size_t i = 0; i < 3; i++)
+  {
+    if (i == idxLED) digitalWrite(LEDs[i], HIGH);
+    else digitalWrite(LEDs[i], LOW);
   }
+  
+  idxLED = (idxLED + 1) % 3;
+  
+  return true;
+}
+
+bool ProcessLEDTrafficWaitTime()
+{
+  static unsigned long ulTimer = 0;
+  static uint8_t idxLED = 0;
+  static uint8_t LEDs[3] = {PIN_LED_GREEN, PIN_LED_YELLOW, PIN_LED_RED};
+  static uint32_t waitTime[3] = {7000, 3000, 5000};
+  static uint32_t count = waitTime[idxLED];
+  static bool ledStatus = false;
+  static int secondCount = 0;
+
+  if (!IsReady(ulTimer, 500)) return false;
+
+  if (count == waitTime[idxLED])
+  {
+    secondCount = (count / 1000) - 1;
+
+    ledStatus = true;
+    for (size_t i = 0; i < 3; i++)
+    {
+      if (i == idxLED){
+        digitalWrite(LEDs[i], HIGH);
+        printf("LED [%-6s] ON => %d Seconds\n", LEDString(LEDs[i]), count/1000);
+      }
+      else digitalWrite(LEDs[i], LOW);
+    }    
+  }
+  else {
+    ledStatus = !ledStatus;
+    digitalWrite(LEDs[idxLED], ledStatus ? HIGH : LOW);
+  }
+
+  if (ledStatus) {
+    if (valueButtonDisplay == HIGH){
+       printf(" [%s] => Second: %d\n",LEDString(LEDs[idxLED]), secondCount);
+       display.showNumberDec(secondCount);  
+    }  
+    --secondCount;
+  }
+
+  count -= 500;
+  if (count > 0) return true;
+
+  idxLED = (idxLED + 1) % 3;
+  count = waitTime[idxLED];
+
+  return true;
+}
+
+void ProcessButtonPressed(){
+  static ulong ulTimer = 0;
+  
+  if (!IsReady(ulTimer, 10)) return;
+
+  int newValue = digitalRead(PIN_BUTTON_DISPLAY);
+  if (newValue == valueButtonDisplay) return;
+  
+  if (newValue == HIGH){
+    printf("*** DISPLAY ON ***\n");
+  }
+  else {
+    display.clear();
+    printf("*** DISPLAY OFF ***\n");
+  }
+
+  valueButtonDisplay = newValue;
+}
+
+void ProcessLDRSensor(){
+  static ulong ulTimer = 0;
+  static int lastBrightness = -1;
+  static bool lastLEDState = false;
+  
+  if (!IsReady(ulTimer, 500)) return; 
+
+  int ldrValue = analogRead(PIN_LDR); 
+  
+  // === 1. TỰ ĐỘNG BẬT/TẮT ĐÈN LED XANH (ĐÈN ĐƯỜNG) ===
+  // Ngưỡng ánh sáng: < 2000 = tối (bật đèn), >= 2000 = sáng (tắt đèn)
+  // Chỉ bật đèn khi Display đang BẬT
+  bool shouldLEDOn = (ldrValue < 2000) && (valueButtonDisplay == HIGH);
+  
+  if (shouldLEDOn != lastLEDState) {
+    digitalWrite(PIN_LED_BLUE, shouldLEDOn ? HIGH : LOW);
+    lastLEDState = shouldLEDOn;
+  }
+  
+  // === 2. TỰ ĐỘNG ĐIỀU CHỈNH ĐỘ SÁNG MÀN HÌNH ===
+  // Chuyển đổi giá trị LDR thành độ sáng (0x00-0x0f)
+  // Giá trị LDR cao = Sáng -> độ sáng màn hình thấp
+  // Giá trị LDR thấp = Tối -> độ sáng màn hình cao
+  int brightness = map(ldrValue, 0, 4095, 0x0f, 0x00);
+  
+  // Chỉ cập nhật khi độ sáng thay đổi và khi Display đang BẬT
+  if (brightness != lastBrightness && valueButtonDisplay == HIGH) {
+    display.setBrightness(brightness);
+    lastBrightness = brightness;
+  }
+}
+
+void setup()
+{
+  Init_LED_Traffic();  // Khởi tạo các chân LED giao thông
+  
+  display.setBrightness(0x0a);
+  display.clear();
+
+  pinMode(PIN_BUTTON_DISPLAY, INPUT);
+  pinMode(PIN_LED_BLUE, OUTPUT);
+  pinMode(PIN_LDR, INPUT); 
+}
+
+
+void loop()
+{
+  ProcessLDRSensor();        
+  ProcessButtonPressed();
+  ProcessLEDTrafficWaitTime();
 }
