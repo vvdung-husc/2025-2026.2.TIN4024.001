@@ -1,132 +1,195 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
 
-// --- CẤU HÌNH CHÂN ---
-#define PIN_LED_RED    27 
-#define PIN_LED_YELLOW 26 
-#define PIN_LED_GREEN  25 
+bool IsReady(unsigned long &ulTimer, uint32_t millisecond)
+{
+  if (millis() - ulTimer < millisecond) return false;
+  ulTimer = millis();
+  return true;
+}
 
-#define CLK 18            
-#define DIO 19            
-#define PIN_BUTTON 23     
+String StringFormat(const char *fmt, ...)
+{
+  va_list vaArgs;
+  va_start(vaArgs, fmt);
+  va_list vaArgsCopy;
+  va_copy(vaArgsCopy, vaArgs);
+  const int iLen = vsnprintf(NULL, 0, fmt, vaArgsCopy);
+  va_end(vaArgsCopy);
+  int iSize = iLen + 1;
+  char *buff = (char *)malloc(iSize);
+  vsnprintf(buff, iSize, fmt, vaArgs);
+  va_end(vaArgs);
+  String s = buff;
+  free(buff);
+  return String(s);
+}
 
-// --- KHỞI TẠO ĐỐI TƯỢNG ---
+#define PIN_LED_RED     25
+#define PIN_LED_YELLOW  33
+#define PIN_LED_GREEN   32
+
+#define CLK 15
+#define DIO 2
+
+#define PIN_BUTTON_DISPLAY 23
+#define PIN_LED_BLUE      21
+#define PIN_LDR           13  
+
 TM1637Display display(CLK, DIO);
+int valueButtonDisplay = LOW;
 
-// Thời gian cho từng đèn (miligiây)
-const unsigned long RED_TIME    = 5000;
-const unsigned long GREEN_TIME  = 7000;
-const unsigned long YELLOW_TIME = 3000;
-
-enum TrafficState { RED, GREEN, YELLOW };
-TrafficState currentState = RED;
-
-unsigned long stateStartTime = 0;
-unsigned long duration = RED_TIME;
-bool isPedestrianMode = false;
-
-// Biến toàn cục để theo dõi việc hiển thị, tránh in trùng
-int lastDisplayedSecond = -1; 
-
-const char* GetStateName(TrafficState state) {
-    switch (state) {
-        case RED: return "RED";
-        case GREEN: return "GREEN";
-        case YELLOW: return "YELLOW";
-        default: return "UNKNOWN";
-    }
+const char* LEDString(uint8_t pin)
+{
+  switch (pin)
+  {
+    case PIN_LED_RED:     return "RED";
+    case PIN_LED_YELLOW:  return "YELLOW";
+    case PIN_LED_GREEN:   return "GREEN";
+    default:              return "UNKNOWN";
+  }  
 }
 
-void Init_Traffic_System() {
-    pinMode(PIN_LED_RED, OUTPUT);
-    pinMode(PIN_LED_YELLOW, OUTPUT);
-    pinMode(PIN_LED_GREEN, OUTPUT);
-    pinMode(PIN_BUTTON, INPUT_PULLUP);
-    
-    digitalWrite(PIN_LED_RED, LOW);
-    digitalWrite(PIN_LED_YELLOW, LOW);
-    digitalWrite(PIN_LED_GREEN, LOW);
+void Init_LED_Traffic()
+{
+  pinMode(PIN_LED_RED, OUTPUT);
+  pinMode(PIN_LED_YELLOW, OUTPUT);  
+  pinMode(PIN_LED_GREEN, OUTPUT);
+}
 
-    display.setBrightness(0x0f); 
+bool ProcessLEDTraffic()
+{
+  static unsigned long ulTimer = 0;
+  static uint8_t idxLED = 0;
+  static uint8_t LEDs[3] = {PIN_LED_GREEN, PIN_LED_YELLOW, PIN_LED_RED};
+  if (!IsReady(ulTimer, 1000)) return false;
+
+  for (size_t i = 0; i < 3; i++)
+  {
+    if (i == idxLED) digitalWrite(LEDs[i], HIGH);
+    else digitalWrite(LEDs[i], LOW);
+  }
+  
+  idxLED = (idxLED + 1) % 3;
+  
+  return true;
+}
+
+bool ProcessLEDTrafficWaitTime()
+{
+  static unsigned long ulTimer = 0;
+  static uint8_t idxLED = 0;
+  static uint8_t LEDs[3] = {PIN_LED_GREEN, PIN_LED_YELLOW, PIN_LED_RED};
+  static uint32_t waitTime[3] = {7000, 3000, 5000};
+  static uint32_t count = waitTime[idxLED];
+  static bool ledStatus = false;
+  static int secondCount = 0;
+
+  if (!IsReady(ulTimer, 500)) return false;
+
+  if (count == waitTime[idxLED])
+  {
+    secondCount = (count / 1000) - 1;
+
+    ledStatus = true;
+    for (size_t i = 0; i < 3; i++)
+    {
+      if (i == idxLED){
+        digitalWrite(LEDs[i], HIGH);
+        printf("LED [%-6s] ON => %d Seconds\n", LEDString(LEDs[i]), count/1000);
+      }
+      else digitalWrite(LEDs[i], LOW);
+    }    
+  }
+  else {
+    ledStatus = !ledStatus;
+    digitalWrite(LEDs[idxLED], ledStatus ? HIGH : LOW);
+  }
+
+  if (ledStatus) {
+    if (valueButtonDisplay == HIGH){
+       printf(" [%s] => Second: %d\n",LEDString(LEDs[idxLED]), secondCount);
+       display.showNumberDec(secondCount);  
+    }  
+    --secondCount;
+  }
+
+  count -= 500;
+  if (count > 0) return true;
+
+  idxLED = (idxLED + 1) % 3;
+  count = waitTime[idxLED];
+
+  return true;
+}
+
+void ProcessButtonPressed(){
+  static ulong ulTimer = 0;
+  
+  if (!IsReady(ulTimer, 10)) return;
+
+  int newValue = digitalRead(PIN_BUTTON_DISPLAY);
+  if (newValue == valueButtonDisplay) return;
+  
+  if (newValue == HIGH){
+    printf("*** DISPLAY ON ***\n");
+  }
+  else {
     display.clear();
+    printf("*** DISPLAY OFF ***\n");
+  }
+
+  valueButtonDisplay = newValue;
 }
 
-void SetTrafficLight(TrafficState state) {
-    // Tắt đèn cũ
-    digitalWrite(PIN_LED_RED, LOW);
-    digitalWrite(PIN_LED_YELLOW, LOW);
-    digitalWrite(PIN_LED_GREEN, LOW);
+void ProcessLDRSensor(){
+  static ulong ulTimer = 0;
+  static int lastBrightness = -1;
+  static bool lastLEDState = false;
+  
+  if (!IsReady(ulTimer, 500)) return; 
 
-    switch (state) {
-        case RED:
-            digitalWrite(PIN_LED_RED, HIGH);
-            duration = RED_TIME;
-            break;
-        case GREEN:
-            digitalWrite(PIN_LED_GREEN, HIGH);
-            duration = GREEN_TIME;
-            break;
-        case YELLOW:
-            digitalWrite(PIN_LED_YELLOW, HIGH);
-            duration = YELLOW_TIME;
-            break;
-    }
-    stateStartTime = millis(); 
-    currentState = state;
-    
-    // Reset biến hiển thị khi chuyển trạng thái mới
-    lastDisplayedSecond = -1;
-
-    // IN DÒNG TIÊU ĐỀ (Ví dụ: LED [RED] ON => 5 Seconds)
-    Serial.printf("LED [%s] ON => %lu Seconds\r\n", GetStateName(state), duration / 1000);
+  int ldrValue = analogRead(PIN_LDR); 
+  
+  // === 1. TỰ ĐỘNG BẬT/TẮT ĐÈN LED XANH (ĐÈN ĐƯỜNG) ===
+  // Ngưỡng ánh sáng: < 2000 = tối (bật đèn), >= 2000 = sáng (tắt đèn)
+  // Chỉ bật đèn khi Display đang BẬT
+  bool shouldLEDOn = (ldrValue < 2000) && (valueButtonDisplay == HIGH);
+  
+  if (shouldLEDOn != lastLEDState) {
+    digitalWrite(PIN_LED_BLUE, shouldLEDOn ? HIGH : LOW);
+    lastLEDState = shouldLEDOn;
+  }
+  
+  // === 2. TỰ ĐỘNG ĐIỀU CHỈNH ĐỘ SÁNG MÀN HÌNH ===
+  // Chuyển đổi giá trị LDR thành độ sáng (0x00-0x0f)
+  // Giá trị LDR cao = Sáng -> độ sáng màn hình thấp
+  // Giá trị LDR thấp = Tối -> độ sáng màn hình cao
+  int brightness = map(ldrValue, 0, 4095, 0x0f, 0x00);
+  
+  // Chỉ cập nhật khi độ sáng thay đổi và khi Display đang BẬT
+  if (brightness != lastBrightness && valueButtonDisplay == HIGH) {
+    display.setBrightness(brightness);
+    lastBrightness = brightness;
+  }
 }
 
-void loop() {
-    unsigned long currentMillis = millis();
+void setup()
+{
+  Init_LED_Traffic();  // Khởi tạo các chân LED giao thông
+  
+  display.setBrightness(0x0a);
+  display.clear();
 
-    // 1. XỬ LÝ NÚT BẤM
-    if (digitalRead(PIN_BUTTON) == LOW && currentState == GREEN && !isPedestrianMode) {
-        unsigned long elapsedTime = currentMillis - stateStartTime;
-        if (duration - elapsedTime > 2000) {
-            Serial.println("!!! PEDESTRIAN BUTTON PRESSED !!!");
-            stateStartTime = currentMillis - (duration - 2000); 
-            isPedestrianMode = true; 
-        }
-    }
-
-    // 2. TÍNH TOÁN THỜI GIAN
-    unsigned long elapsedTime = currentMillis - stateStartTime;
-    
-    // Chuyển trạng thái khi hết giờ
-    if (elapsedTime >= duration) {
-        switch (currentState) {
-            case RED:    SetTrafficLight(GREEN); isPedestrianMode = false; break;
-            case GREEN:  SetTrafficLight(YELLOW); break;
-            case YELLOW: SetTrafficLight(RED); break;
-        }
-        return; 
-    }
-
-    // 3. HIỂN THỊ LOGIC (Đã sửa theo yêu cầu của bạn)
-    int totalSeconds = duration / 1000;              // Tổng thời gian (Ví dụ: 5)
-    int remainingSeconds = (duration - elapsedTime) / 1000; // Thời gian còn lại (Ví dụ: 5, 4, 3...)
-    
-    if (remainingSeconds != lastDisplayedSecond) {
-        // Màn hình vẫn hiện số giây thực tế (5, 4, 3...)
-        display.showNumberDec(remainingSeconds); 
-        
-        // --- CHỈ IN LOG KHI THỜI GIAN CÒN LẠI NHỎ HƠN TỔNG THỜI GIAN ---
-        // (Tức là bỏ qua giây đầu tiên vì đã in ở dòng Tiêu đề rồi)
-        if (remainingSeconds < totalSeconds && remainingSeconds > 0) {
-            Serial.printf(" [%s] => Second: %d\r\n", GetStateName(currentState), remainingSeconds);
-        }
-        
-        lastDisplayedSecond = remainingSeconds;
-    }
+  pinMode(PIN_BUTTON_DISPLAY, INPUT);
+  pinMode(PIN_LED_BLUE, OUTPUT);
+  pinMode(PIN_LDR, INPUT); 
 }
 
-void setup() {
-    Serial.begin(115200);
-    Init_Traffic_System();
-    SetTrafficLight(RED); 
+
+void loop()
+{
+  ProcessLDRSensor();        
+  ProcessButtonPressed();
+  ProcessLEDTrafficWaitTime();
 }
