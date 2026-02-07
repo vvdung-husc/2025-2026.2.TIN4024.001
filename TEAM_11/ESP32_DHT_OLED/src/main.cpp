@@ -21,12 +21,10 @@ void setup() {
   setupDisplay();  
   setupAlerts();   
   
-  // Hiển thị tên DAO VAN LOI khi khởi động
   display.clearDisplay();
   display.setCursor(0, 20);
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
-  display.println("Author: DAO VAN LOI");
   display.display();
   delay(2000);
 }
