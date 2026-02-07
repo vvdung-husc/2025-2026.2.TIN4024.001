@@ -1,41 +1,15 @@
-/*
-THÔNG TIN NHÓM 11
-1. Phạm Mạnh Lân
-2. Phan Minh Nhật Khoa
-3. Nguyễn Đức Tín
-4. Đào Văn Lợi
-5. Võ Thanh Toàn
-*/
-
+/* HÔNG TIN NHÓM 11
+ * 1. Phạm Mạnh Lân - Tích hợp
+ * 2. Nguyễn Đức Tín - Xử lý Cảm biến
+ * 3. Đào Văn Lợi - Xử lý Hiển thị OLED
+ * 4. Võ Thanh Toàn - Logic Cảnh báo & LED
+ * 5. Phan Minh Nhật Khoa - Thiết kế Diagram & Tài liệu
+ */
 #include <Arduino.h>
-#include "SensorHandler.h"
-#include "DisplayHandler.h"
-#include "AlertHandler.h"
 
-float temp = 0;
-float hum = 0;
 
 void setup() {
-  Serial.begin(115200);
-  setupSensors();  
-  setupDisplay();  
-  setupAlerts();   
-  
-  display.clearDisplay();
-  display.setCursor(0, 20);
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.display();
-  delay(2000);
 }
 
 void loop() {
-  // Đọc cảm biến mỗi 2 giây
-  if (handleSensorReading(hum, temp)) {
-    // Cập nhật OLED với nhiệt độ và trạng thái
-    updateOLED(temp, hum, getStatus(temp));
-  }
-  
-  // Điều khiển LED nhấp nháy theo ngưỡng nhiệt độ
-  handleLEDBloking(getActiveLed(temp)); 
 }
