@@ -1,4 +1,6 @@
 #include <Arduino.h>
+
+// Định nghĩa chân LED theo sơ đồ Wokwi
 #define LED_CYAN   15
 #define LED_YELLOW 2
 #define LED_RED    4
@@ -13,16 +15,21 @@ void setupAlerts() {
   pinMode(LED_RED, OUTPUT);
 }
 
+// Trạng thái hiển thị theo bảng nhiệt độ
 String getStatus(float t) {
+  if (t < 13) return "TOO COLD";
   if (t < 20) return "COLD";
+  if (t < 25) return "COOL";
   if (t < 30) return "WARM";
-  return "HOT";
+  if (t < 35) return "HOT";
+  return "TOO HOT";
 }
 
+// Chọn LED đại diện theo bảng
 int getActiveLed(float t) {
-  if (t < 20) return LED_CYAN;
-  if (t < 30) return LED_YELLOW;
-  return LED_RED;
+  if (t < 20) return LED_CYAN;   // Green/Cyan cho Cold
+  if (t < 30) return LED_YELLOW; // Yellow cho Warm
+  return LED_RED;                // Red cho Hot
 }
 
 void handleLEDBloking(int activeLed) {
@@ -30,16 +37,16 @@ void handleLEDBloking(int activeLed) {
   
   if (currentMillis - lastLedToggle >= blinkInterval) {
     lastLedToggle = currentMillis;
-    ledState = !ledState; // Đảo trạng thái LED
+    ledState = !ledState; 
 
-    // Tắt hết LED trước khi bật LED chỉ định
+    // Tắt hết LED để reset
     digitalWrite(LED_CYAN, LOW);
     digitalWrite(LED_YELLOW, LOW);
     digitalWrite(LED_RED, LOW);
 
+    // Chỉ nhấp nháy LED đang được kích hoạt
     if (activeLed != -1) {
       digitalWrite(activeLed, ledState);
     }
   }
 }
-

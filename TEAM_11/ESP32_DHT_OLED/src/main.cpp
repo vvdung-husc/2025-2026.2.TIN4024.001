@@ -8,10 +8,36 @@ THÔNG TIN NHÓM 11
 */
 
 #include <Arduino.h>
+#include "SensorHandler.h"
+#include "DisplayHandler.h"
+#include "AlertHandler.h"
 
+float temp = 0;
+float hum = 0;
 
 void setup() {
+  Serial.begin(115200);
+  setupSensors();  
+  setupDisplay();  
+  setupAlerts();   
+  
+  // Hiển thị tên DAO VAN LOI khi khởi động
+  display.clearDisplay();
+  display.setCursor(0, 20);
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.println("Author: DAO VAN LOI");
+  display.display();
+  delay(2000);
 }
 
 void loop() {
+  // Đọc cảm biến mỗi 2 giây
+  if (handleSensorReading(hum, temp)) {
+    // Cập nhật OLED với nhiệt độ và trạng thái
+    updateOLED(temp, hum, getStatus(temp));
+  }
+  
+  // Điều khiển LED nhấp nháy theo ngưỡng nhiệt độ
+  handleLEDBloking(getActiveLed(temp)); 
 }
