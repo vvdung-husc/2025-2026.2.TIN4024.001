@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "author": "Phong Nguyễn Văn",
+  "author": "Diễn Hồ Văn",
   "editor": "wokwi",
   "parts": [
     { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 105.6, "left": -14.36, "attrs": {} },
@@ -23,7 +23,13 @@
       "rotate": 90,
       "attrs": { "value": "1000" }
     },
-    { "type": "wokwi-dht22", "id": "dht1", "top": -95.7, "left": 167.4, "attrs": {} },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": -95.7,
+      "left": 167.4,
+      "attrs": { "temperature": "55.4" }
+    },
     {
       "type": "board-ssd1306",
       "id": "oled1",
@@ -57,8 +63,8 @@
     [ "esp:4", "r1:2", "red", [ "h0" ] ],
     [ "esp:2", "r2:2", "yellow", [ "h0" ] ],
     [ "esp:16", "dht1:SDA", "green", [ "h96" ] ],
-    [ "led1:A", "r3:1", "green", [ "v86.4", "h134.4" ] ],
-    [ "r3:2", "esp:15", "green", [ "v162", "h-19.2" ] ]
+    [ "led1:A", "r3:1", "cyan", [ "v86.4", "h134.4" ] ],
+    [ "r3:2", "esp:15", "cyan", [ "v162", "h-19.2" ] ]
   ],
   "dependencies": {}
 }
