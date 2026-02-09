@@ -1,142 +1,180 @@
+
 #include "ultils.h"
-//----- LED_Blink -----
+
+// ===== CLASS LED_Blink - Điều khiển LED đơn giản =====
+
 LED_Blink::LED_Blink()
 {
     _pin = -1;
     _state = false;
     _previousMillis = 0;
 }
+
 void LED_Blink::setup(int pin)
 {
     _pin = pin;
     pinMode(_pin, OUTPUT);
 }
+
 void LED_Blink::blink(unsigned long interval)
 {
+    // Kiểm tra thời gian, nếu chưa đủ interval thì return
     if (!IsReady(_previousMillis, interval))
         return;
+    
+    // Đảo trạng thái LED (ON <-> OFF)
     _state = !_state;
     digitalWrite(_pin, _state ? HIGH : LOW);
 }
 
-//----- Trafic_Blink -----
+// ===== CLASS Trafic_Blink - Điều khiển đèn giao thông =====
+
 Trafic_Blink::Trafic_Blink()
 {
     _ledStatus = false;
     _previousMillis = 0;
 }
+
 void Trafic_Blink::setupPin(int pinRed, int pinYellow, int pinGreen)
 {
+    // Lưu thứ tự LED: [0]=GREEN, [1]=YELLOW, [2]=RED
     _LEDs[0] = pinGreen;
     _LEDs[1] = pinYellow;
     _LEDs[2] = pinRed;
+    
+    // Cấu hình các chân là OUTPUT
     pinMode(pinRed, OUTPUT);
     pinMode(pinYellow, OUTPUT);
     pinMode(pinGreen, OUTPUT);
 
+    // Bắt đầu với đèn XANH (index 0)
     _idxLED = 0;
     
-    // Initialize first LED (GREEN) to ON
+    // Khởi tạo: Bật đèn XANH, tắt VÀNG và ĐỎ
     digitalWrite(pinGreen, HIGH);
     digitalWrite(pinYellow, LOW);
     digitalWrite(pinRed, LOW);
 }
+
 void Trafic_Blink::setupWaitTime(uint32_t redWait, uint32_t yellowWait, uint32_t greenWait)
 {
-    _waitTime[0] = greenWait * 1000;
-    _waitTime[1] = yellowWait * 1000;
-    _waitTime[2] = redWait * 1000;
+    // Chuyển từ giây sang milliseconds và lưu vào mảng tương ứng
+    _waitTime[0] = greenWait * 1000;    // Thời gian đèn XANH
+    _waitTime[1] = yellowWait * 1000;   // Thời gian đèn VÀNG
+    _waitTime[2] = redWait * 1000;      // Thời gian đèn ĐỎ
 }
 
+/*
+ * Hàm điều khiển nhấp nháy đèn giao thông với logic tự động
+ * 
+ * @param interval: Khoảng thời gian nhấp nháy (milliseconds) - mặc định 500ms
+ * @param isDark: Trạng thái môi trường (true = tối, false = sáng)
+ * @return: true nếu đèn chuyển màu, false nếu đang nhấp nháy
+ */
 bool Trafic_Blink::blink(unsigned long interval, bool isDark)
 {
-    static uint32_t count = 0;
-    static int secondCount = 0;
-    static bool prevDark = false;
-    static bool initialized = false;
+    // Biến static giữ giá trị giữa các lần gọi hàm
+    static uint32_t count = 0;           // Đếm ngược thời gian (milliseconds)
+    static int secondCount = 0;          // Đếm ngược giây để hiển thị
+    static bool prevDark = false;        // Lưu trạng thái tối/sáng trước đó
+    static bool initialized = false;     // Cờ đánh dấu đã khởi tạo
 
+    // ===== KHỞI TẠO LẦN ĐẦU =====
     if (!initialized)
     {
         initialized = true;
-        count = _waitTime[_idxLED];
-        secondCount = count / 1000;
+        count = _waitTime[_idxLED];      // Lấy thời gian đèn hiện tại
+        secondCount = count / 1000;       // Chuyển sang giây
         _ledStatus = true;
         
-        // Turn on first LED (GREEN) without printing
+        // Bật đèn đầu tiên (GREEN) không in ra Serial
         for (size_t i = 0; i < 3; i++)
         {
             if (i == _idxLED)
-            {
                 digitalWrite(_LEDs[i], HIGH);
-            }
             else
                 digitalWrite(_LEDs[i], LOW);
         }
     }
 
+    // Kiểm tra thời gian, nếu chưa đủ interval thì return
     if (!IsReady(_previousMillis, interval)) return false;
 
+    // ===== CHẾ ĐỘ BAN ĐÊM (DARK MODE) =====
     if (isDark)
     {
-        // If isDark = true => Blink only Yellow LED
+        // Phát hiện chuyển từ SÁNG → TỐI
         if (prevDark != isDark)
         {
             prevDark = isDark;
-            digitalWrite(_LEDs[0], LOW); // GREEN OFF
-            digitalWrite(_LEDs[2], LOW); // RED OFF
+            digitalWrite(_LEDs[0], LOW);     // Tắt đèn XANH
+            digitalWrite(_LEDs[2], LOW);     // Tắt đèn ĐỎ
+            
+            // *** IN RA THÔNG BÁO: CHUYỂN SANG CHẾ ĐỘ BAN ĐÊM ***
             printf("IT IS DARK!!!!\n");
         }
 
+        // Chỉ nhấp nháy đèn VÀNG trong chế độ ban đêm
         _ledStatus = !_ledStatus;
-        digitalWrite(_LEDs[1], _ledStatus ? HIGH : LOW); // YELLOW BLINKING
-        return false;
+        digitalWrite(_LEDs[1], _ledStatus ? HIGH : LOW);
+        return false;  // Không chuyển đèn trong chế độ tối
     }
 
+    // ===== PHÁT HIỆN CHUYỂN TỪ TỐI → SÁNG =====
     if (prevDark != isDark && prevDark == true)
     {
-        // Change from isDark = true to isDark = false
+        // *** IN RA THÔNG BÁO: CHUYỂN SANG CHẾ ĐỘ BAN NGÀY ***
         printf("YEAH!!! IT IS DAY!!!!\n");
+        
         prevDark = isDark;
         _ledStatus = false;
-        _idxLED = 0;
-        count = _waitTime[_idxLED];
+        _idxLED = 0;                      // Reset về đèn XANH
+        count = _waitTime[_idxLED];       // Lấy lại thời gian đèn XANH
     }
 
+    // ===== CHẾ ĐỘ BAN NGÀY - BẮT ĐẦU CHU KỲ ĐÈN MỚI =====
     if (count == _waitTime[_idxLED])
     {
         secondCount = count / 1000;
 
         _ledStatus = true;
+        
+        // Bật đèn hiện tại, tắt các đèn khác
         for (size_t i = 0; i < 3; i++)
         {
             if (i == _idxLED)
             {
                 digitalWrite(_LEDs[i], HIGH);
+                // In ra thông tin đèn vừa bật và thời gian
                 printf("LED [%-6s] ON => %d Seconds\n", ledString(_LEDs[i]), count / 1000);
             }
             else
                 digitalWrite(_LEDs[i], LOW);
         }
     }
+    // ===== NHẤP NHÁY ĐÈN HIỆN TẠI =====
     else
     {
         _ledStatus = !_ledStatus;
         digitalWrite(_LEDs[_idxLED], _ledStatus ? HIGH : LOW);
     }
 
+    // ===== IN RA COUNTDOWN (khi đèn đang sáng) =====
     if (_ledStatus)
     {
         printf(" [%s] => Second: %d\n", ledString(_LEDs[_idxLED]), secondCount);
-        --secondCount;
+        --secondCount;  // Giảm số giây
     }
 
-    count -= 500;
+    // ===== ĐẾM NGƯỢC THỜI GIAN =====
+    count -= 500;  // Giảm 500ms mỗi lần
     if (count > 0)
-        return false;
+        return false;  // Chưa hết thời gian, tiếp tục ở đèn hiện tại
 
-    _idxLED = (_idxLED + 1) % 3; // Next LED => _idxLED = 0,1,2,...
-    count = _waitTime[_idxLED];
-    return true; // Switched to next LED
+    // ===== CHUYỂN SANG ĐÈN TIẾP THEO =====
+    _idxLED = (_idxLED + 1) % 3;        // 0→1→2→0→1→2...
+    count = _waitTime[_idxLED];          // Lấy thời gian đèn mới
+    return true;                         // Trả về true: đã chuyển đèn
 }
 
 const char *Trafic_Blink::ledString(int pin)
