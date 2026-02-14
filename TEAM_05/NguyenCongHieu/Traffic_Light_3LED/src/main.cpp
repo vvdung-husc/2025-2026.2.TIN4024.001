@@ -75,21 +75,6 @@ void loop() {
   trafficLight.update();
 }
 
-
-// ========================================
-// ===== CODE CŨ (COMMENTED) =====
-// ========================================
-/*
- * Phần code cũ được giữ lại để tham khảo
- * Code này đã được refactor thành class TrafficLight
- * 
- * Ưu điểm của code mới:
- * ✅ Sử dụng OOP - dễ bảo trì
- * ✅ Tách biệt logic vào TrafficLight.h
- * ✅ Thêm Emergency Mode
- * ✅ Code ngắn gọn, dễ đọc hơn
- */
-
 // #include <Arduino.h>
 //
 // #define PIN_LED_RED 25
