@@ -118,5 +118,4 @@ BLYNK_WRITE(V1) { //virtual_pin định nghĩa trong ứng dụng Blynk
     Serial.println("Blynk -> Blue Light OFF");
     digitalWrite(pinBLED, LOW);   
     display.clear(); 
-  }
-}
+  }}
