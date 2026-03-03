@@ -25,7 +25,7 @@ char pass[] = "";
 
 // ===== GLOBAL =====
 unsigned long currentMiliseconds = 0;
-bool blueButtonON = true;
+bool blueButtonON = false;
 unsigned long activeSeconds = 0; 
 
 TM1637Display display(CLK, DIO);
@@ -47,16 +47,19 @@ void setup() {
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
   
   digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
-  Blynk.virtualWrite(V1, blueButtonON);
-  Blynk.virtualWrite(V0, activeSeconds); 
+  //Blynk.virtualWrite(V1, blueButtonON);
+  //Blynk.virtualWrite(V0, activeSeconds); 
 }
-
+BLYNK_CONNECTED() {
+  Blynk.syncVirtual(V1);
+}
 // ================== LOOP ==================
 void loop() {
   Blynk.run();
   currentMiliseconds = millis();
-  uptimeBlynk();
-  updateBlueButton();
+
+  updateBlueButton();   // xử lý nút trước
+  uptimeBlynk();        // rồi mới đếm
   sendDHT();
 }
 
@@ -80,7 +83,7 @@ void updateBlueButton() {
   
   // RESET KHI BẬT LÊN
   if (blueButtonON) {
-    activeSeconds = 0; // Xóa dữ liệu cũ, bắt đầu lại từ đầu
+    //activeSeconds = 0; // Xóa dữ liệu cũ, bắt đầu lại từ đầu
     Blynk.virtualWrite(V0, activeSeconds);
     display.showNumberDec(activeSeconds);
   } else {
@@ -95,12 +98,20 @@ void updateBlueButton() {
 // ----- Uptime -----
 void uptimeBlynk() {
   static unsigned long lastTime = 0;
-  if (!IsReady(lastTime, 1000)) return;
 
-  if (blueButtonON) {
-    activeSeconds++; 
-    Blynk.virtualWrite(V0, activeSeconds); 
-    display.showNumberDec(activeSeconds);  
+  if (!blueButtonON) {
+    return;   // TẮT LÀ THOÁT NGAY
+  }
+
+  if (millis() - lastTime >= 1000) {
+    lastTime = millis();
+    activeSeconds++;
+
+    Blynk.virtualWrite(V0, activeSeconds);
+    display.showNumberDec(activeSeconds);
+
+    Serial.print("Seconds: ");
+    Serial.println(activeSeconds);
   }
 }
 
@@ -121,7 +132,7 @@ BLYNK_WRITE(V1) {
   
   // RESET KHI BẬT TỪ APP BLYNK
   if (blueButtonON) {
-    activeSeconds = 0; // Xóa dữ liệu cũ, bắt đầu lại từ đầu
+    //activeSeconds = 0; // Xóa dữ liệu cũ, bắt đầu lại từ đầu
     Blynk.virtualWrite(V0, activeSeconds);
     display.showNumberDec(activeSeconds);
   } else {
