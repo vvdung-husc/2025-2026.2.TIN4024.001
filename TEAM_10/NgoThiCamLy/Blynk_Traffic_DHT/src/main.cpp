@@ -1,10 +1,11 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
+#include <DHT.h>
 
 /* Fill in information from Blynk Device Info here */
-#define BLYNK_TEMPLATE_ID "TMPL64YL8fJrk"
-#define BLYNK_TEMPLATE_NAME "ESP32 LED TM1637"
-#define BLYNK_AUTH_TOKEN "S9-UuqRP6ItPoUGPZYbtSWknol03FF-0"
+#define BLYNK_TEMPLATE_ID "TMPL6JoJWpKDu"
+#define BLYNK_TEMPLATE_NAME "Blynk Traffic DHT"
+#define BLYNK_AUTH_TOKEN "EUXbZSNGKNPBFoPYxOf6SxRoahUb82PB"
 // Phải để trước khai báo sử dụng thư viện Blynk
 
 #include <WiFi.h>
@@ -22,6 +23,10 @@ char pass[] = "";             //Mật khẩu mạng WiFi
 #define CLK 18  //Chân kết nối CLK của TM1637
 #define DIO 19  //Chân kết nối DIO của TM1637
 
+#define DHTPIN 16
+#define DHTTYPE DHT22
+DHT dht(DHTPIN, DHTTYPE);
+
 //Biến toàn cục
 ulong currentMiliseconds = 0; //Thời gian hiện tại - miliseconds 
 bool blueButtonON = true;     //Trạng thái của nút bấm ON -> đèn Xanh sáng và hiển thị LED TM1637
@@ -32,6 +37,7 @@ TM1637Display display(CLK, DIO);
 bool IsReady(ulong &ulTimer, uint32_t milisecond);
 void updateBlueButton();
 void uptimeBlynk();
+void readDHT();
 
 void setup() {
   // put your setup code here, to run once:
@@ -40,7 +46,8 @@ void setup() {
   pinMode(btnBLED, INPUT_PULLUP);
     
   display.setBrightness(0x0f);
-  
+  dht.begin();
+
   // Start the WiFi connection
   Serial.print("Connecting to ");Serial.println(ssid);
   Blynk.begin(BLYNK_AUTH_TOKEN,ssid, pass); //Kết nối đến mạng WiFi
@@ -56,11 +63,11 @@ void setup() {
 }
 
 void loop() {  
-  Blynk.run();  //Chạy Blynk để cập nhật trạng thái từ Blynk Cloud
-
+  Blynk.run();
   currentMiliseconds = millis();
   uptimeBlynk();
   updateBlueButton();
+  readDHT();  
 }
 
 // put function definitions here:
@@ -118,4 +125,16 @@ BLYNK_WRITE(V1) { //virtual_pin định nghĩa trong ứng dụng Blynk
     digitalWrite(pinBLED, LOW);   
     display.clear(); 
   }
+}
+void readDHT() {
+  static ulong lastTime = 0;
+  if (!IsReady(lastTime, 2000)) return;
+
+  float temp = dht.readTemperature();
+  float hum  = dht.readHumidity();
+
+  if (isnan(temp) || isnan(hum)) return;
+
+  Blynk.virtualWrite(V2, temp);
+  Blynk.virtualWrite(V3, hum);
 }
