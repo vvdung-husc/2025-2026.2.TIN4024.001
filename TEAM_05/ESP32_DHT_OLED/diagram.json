@@ -1,4 +1,3 @@
-
 {
   "version": 1,
   "author": "Nhóm 5",
@@ -11,7 +10,7 @@
       "id": "led2",
       "top": -147.6,
       "left": -34.6,
-      "attrs": { "color": "cyan" }
+      "attrs": { "color": "limegreen" }
     },
     {
       "type": "wokwi-led",
@@ -52,7 +51,7 @@
     [ "r2:2", "esp:4", "red", [ "v85.2", "h-100.84" ] ],
     [ "led3:A", "r1:1", "yellow", [ "v9.6", "h115.2" ] ],
     [ "r1:2", "esp:2", "yellow", [ "v104.4", "h-62.44" ] ],
-    [ "led2:A", "esp:15", "cyan", [ "v28.8", "h134.4", "v249.6" ] ],
+    [ "led2:A", "esp:15", "limegreen", [ "v28.8", "h134.4", "v249.6" ] ],
     [ "led2:C", "esp:GND.2", "black", [ "v48", "h106", "v86.4" ] ],
     [ "led3:C", "esp:GND.2", "black", [ "v48", "h48.4", "v86.4" ] ],
     [ "led1:C", "esp:GND.2", "black", [ "h0.4", "v134.4" ] ],
@@ -66,4 +65,3 @@
   ],
   "dependencies": {}
 }
-
