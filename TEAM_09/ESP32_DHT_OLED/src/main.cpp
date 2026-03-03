@@ -1,8 +1,8 @@
 /*
 THÔNG TIN NHÓM 9
-1. Nguyễn Hoàng Huyền Tran
-2. 
-3. 
+1. Nguyễn Hoàng Huyền Trân
+2. Hoàng Anh Minh
+3. Hồ Văn Tấn Phát
 */
 #include <Arduino.h>
 #include <Wire.h>
@@ -10,18 +10,18 @@ THÔNG TIN NHÓM 9
 #include <Adafruit_SSD1306.h>
 #include <DHT.h>
 
-// --- CẬP NHẬT CẤU HÌNH CHÂN MỚI ---
-#define DHTPIN 16      // Cảm biến DHT22 giờ nối chân 16
+
+#define DHTPIN 16      
 #define DHTTYPE DHT22  
 
-// Cấu hình chân đèn LED mới
-#define LED_GREEN  15  // Đèn Xanh nối chân 15
-#define LED_YELLOW 2   // Đèn Vàng nối chân 2
-#define LED_RED    4   // Đèn Đỏ nối chân 4
 
-// Cấu hình màn hình OLED (Chân I2C Tùy chỉnh)
-#define OLED_SDA 13    // Chân SDA mới
-#define OLED_SCL 12    // Chân SCL mới
+#define LED_GREEN  15  
+#define LED_YELLOW 2  
+#define LED_RED    4   
+
+
+#define OLED_SDA 13    
+#define OLED_SCL 12    
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 
@@ -31,16 +31,15 @@ DHT dht(DHTPIN, DHTTYPE);
 void setup() {
   Serial.begin(115200);
   
-  // 1. Khởi động các chân đèn
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_YELLOW, OUTPUT);
   pinMode(LED_RED, OUTPUT);
 
-  // 2. Cài đặt chân I2C riêng cho OLED (Quan trọng!)
-  // Vì Công chúa đổi chân nên phải dùng lệnh này OLED mới lên hình
+ 
+  
   Wire.begin(OLED_SDA, OLED_SCL);
 
-  // 3. Khởi động màn hình và cảm biến
+ 
   dht.begin();
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("Khong tim thay OLED!"));
@@ -50,7 +49,7 @@ void setup() {
   display.setTextColor(WHITE);
 }
 
-// Hàm tắt hết đèn
+
 void resetLeds() {
   digitalWrite(LED_GREEN, LOW);
   digitalWrite(LED_YELLOW, LOW);
@@ -58,7 +57,7 @@ void resetLeds() {
 }
 
 void loop() {
-  // 1. Đọc dữ liệu
+  
   float t = dht.readTemperature();
   float h = dht.readHumidity();
 
@@ -67,7 +66,7 @@ void loop() {
     return;
   }
 
-  // 2. Xử lý logic bật đèn theo nhiệt độ
+  
   String status = "";
   int blinkLed = -1;
 
@@ -91,38 +90,37 @@ void loop() {
     blinkLed = LED_RED;
   }
 
-  // 3. Hiển thị thông tin lên OLED
-  // 3. Hiển thị thông tin lên OLED (GIỐNG HỆT ẢNH 2)
+ 
   display.clearDisplay(); 
 
-  // --- DÒNG 1: Tiêu đề + Trạng thái (COOL/HOT) ---
-  display.setTextSize(1);      // Chữ nhỏ
-  display.setCursor(0, 0);     // Góc trên cùng
+  
+  display.setTextSize(1);      
+  display.setCursor(0, 0);     
   display.print("Temperature: "); 
-  display.print(status);       // In chữ COOL/HOT ngay bên cạnh
+  display.print(status);       
 
-  // --- DÒNG 2: Số Nhiệt độ (Xuống hàng) ---
-  display.setTextSize(2);      // Chữ to
-  display.setCursor(0, 12);    // Xuống dòng một chút
+ 
+  display.setTextSize(2);      
+  display.setCursor(0, 12);   
   display.print(t);
-  display.cp437(true);         // Kích hoạt bảng ký tự đặc biệt
-  display.write(167);          // In dấu độ (°) cho xịn
+  display.cp437(true);        
+  display.write(167);          
   display.print("C");
 
-  // --- DÒNG 3: Tiêu đề Độ ẩm ---
-  display.setTextSize(1);      // Chữ nhỏ
-  display.setCursor(0, 35);    // Cách ra một đoạn
+ 
+  display.setTextSize(1);      
+  display.setCursor(0, 35);    
   display.print("Humidity:");
 
-  // --- DÒNG 4: Số Độ ẩm + % ---
-  display.setTextSize(2);      // Chữ to
-  display.setCursor(0, 47);    // Dòng cuối cùng
+  
+  display.setTextSize(2);      
+  display.setCursor(0, 47);    
   display.print(h);
-  display.print(" %");         // Thêm dấu % theo ý Công chúa
+  display.print(" %");        
 
   display.display();
 
-  // 4. Hiệu ứng nhấp nháy đèn
+
   resetLeds(); 
   if (blinkLed != -1) {
     digitalWrite(blinkLed, HIGH); 
