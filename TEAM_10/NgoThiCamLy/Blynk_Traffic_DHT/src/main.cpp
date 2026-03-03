@@ -26,12 +26,11 @@ char pass[] = "";
 // ===== GLOBAL =====
 unsigned long currentMiliseconds = 0;
 bool blueButtonON = true;
-unsigned long activeSeconds = 0; // BIẾN MỚI: Chỉ dùng để đếm giây khi đèn bật
+unsigned long activeSeconds = 0; 
 
 TM1637Display display(CLK, DIO);
 DHT dht(DHTPIN, DHTTYPE);
 
-// ===== FUNCTION DECLARE =====
 bool IsReady(unsigned long &ulTimer, uint32_t milisecond);
 void updateBlueButton();
 void uptimeBlynk();
@@ -49,7 +48,7 @@ void setup() {
   
   digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
   Blynk.virtualWrite(V1, blueButtonON);
-  Blynk.virtualWrite(V0, activeSeconds); // Gửi giá trị khởi tạo lên Blynk
+  Blynk.virtualWrite(V0, activeSeconds); 
 }
 
 // ================== LOOP ==================
@@ -61,15 +60,13 @@ void loop() {
   sendDHT();
 }
 
-// ================= FUNCTIONS =================
-
 bool IsReady(unsigned long &ulTimer, uint32_t milisecond) {
   if (currentMiliseconds - ulTimer < milisecond) return false;
   ulTimer = currentMiliseconds;
   return true;
 }
 
-// ----- Button Control -----
+// ----- Button Control (Đã sửa logic Reset) -----
 void updateBlueButton() {
   static unsigned long lastTime = 0;
   static int lastValue = HIGH;
@@ -80,26 +77,30 @@ void updateBlueButton() {
   if (v == LOW) return;
 
   blueButtonON = !blueButtonON;
+  
+  // RESET KHI BẬT LÊN
+  if (blueButtonON) {
+    activeSeconds = 0; // Xóa dữ liệu cũ, bắt đầu lại từ đầu
+    Blynk.virtualWrite(V0, activeSeconds);
+    display.showNumberDec(activeSeconds);
+  } else {
+    display.clear();
+  }
+
   digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
   Blynk.virtualWrite(V1, blueButtonON);
-
-  if (!blueButtonON) display.clear();
-  else display.showNumberDec(activeSeconds); // Hiện lại số giây hiện tại khi bật đèn
-
-  Serial.println(blueButtonON ? "Blue Light ON" : "Blue Light OFF");
+  Serial.println(blueButtonON ? "Blue Light ON - Restart from 0" : "Blue Light OFF");
 }
 
-// ----- Uptime (Đã sửa logic) -----
+// ----- Uptime -----
 void uptimeBlynk() {
   static unsigned long lastTime = 0;
   if (!IsReady(lastTime, 1000)) return;
 
-  // CHỈ THỰC HIỆN KHI ĐÈN ĐANG BẬT
   if (blueButtonON) {
-    activeSeconds++; // Tăng biến đếm thủ công mỗi 1 giây
-    
-    Blynk.virtualWrite(V0, activeSeconds); // Cập nhật lên Blynk V0
-    display.showNumberDec(activeSeconds);  // Cập nhật lên màn hình TM1637
+    activeSeconds++; 
+    Blynk.virtualWrite(V0, activeSeconds); 
+    display.showNumberDec(activeSeconds);  
   }
 }
 
@@ -114,11 +115,19 @@ void sendDHT() {
   Blynk.virtualWrite(V3, hum);
 }
 
-// ----- Blynk Receive -----
+// ----- Blynk Receive (Đã sửa logic Reset) -----
 BLYNK_WRITE(V1) {
   blueButtonON = param.asInt();
+  
+  // RESET KHI BẬT TỪ APP BLYNK
+  if (blueButtonON) {
+    activeSeconds = 0; // Xóa dữ liệu cũ, bắt đầu lại từ đầu
+    Blynk.virtualWrite(V0, activeSeconds);
+    display.showNumberDec(activeSeconds);
+  } else {
+    display.clear();
+  }
+
   digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
-  if (!blueButtonON) display.clear();
-  else display.showNumberDec(activeSeconds);
-  Serial.println(blueButtonON ? "Blynk -> ON" : "Blynk -> OFF");
+  Serial.println(blueButtonON ? "Blynk -> ON - Restart from 0" : "Blynk -> OFF");
 }
