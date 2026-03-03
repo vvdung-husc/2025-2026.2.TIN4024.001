@@ -2,9 +2,10 @@
 #include <TM1637Display.h>
 
 /* Fill in information from Blynk Device Info here */
-#define BLYNK_TEMPLATE_ID "TMPL68EwJFXV1"
-#define BLYNK_TEMPLATE_NAME "ESP32 Traffic DHT"
-#define BLYNK_AUTH_TOKEN "Ze8m7pD2pettcUcJBuCHmt6B3h6RhrPI"
+#define BLYNK_TEMPLATE_ID "TMPL65pc4Xflv"
+#define BLYNK_TEMPLATE_NAME "PROMAX"
+#define BLYNK_AUTH_TOKEN "z-VKfQxuw8Ngm80dzFqJvaSpGXRRlXPM"
+
 // Phải để trước khai báo sử dụng thư viện Blynk
 
 #include <WiFi.h>
@@ -117,5 +118,4 @@ BLYNK_WRITE(V1) { //virtual_pin định nghĩa trong ứng dụng Blynk
     Serial.println("Blynk -> Blue Light OFF");
     digitalWrite(pinBLED, LOW);   
     display.clear(); 
-  }
-}
+  }}
