@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
 
-/* Blynk Info */
+/* ===== BLYNK INFO ===== */
 #define BLYNK_TEMPLATE_ID "TMPL68EwJFXV1"
 #define BLYNK_TEMPLATE_NAME "ESP32 Traffic DHT"
 #define BLYNK_AUTH_TOKEN "Ze8m7pD2pettcUcJBuCHmt6B3h6RhrPI"
@@ -12,117 +12,69 @@
 
 #include <DHT.h>
 
-/* WiFi */
+/* ===== WIFI ===== */
 char ssid[] = "Wokwi-GUEST";
 char pass[] = "";
 
-/* Pin định nghĩa */
+/* ===== PIN DEFINE ===== */
 #define btnBLED  23
 #define pinBLED  21
 
 #define CLK 18
 #define DIO 19
 
-#define DHTPIN 4
+#define DHTPIN 16
 #define DHTTYPE DHT22
 
-/* Khởi tạo */
+/* ===== OBJECT ===== */
 TM1637Display display(CLK, DIO);
 DHT dht(DHTPIN, DHTTYPE);
 
-unsigned long currentMiliseconds = 0;
+/* ===== GLOBAL VARIABLE ===== */
+unsigned long currentMillis = 0;
+unsigned long activeSeconds = 0;
+
 bool blueButtonON = true;
 
-/* Prototype */
-bool IsReady(unsigned long &ulTimer, uint32_t milisecond);
-void updateBlueButton();
-void uptimeBlynk();
-void readDHT();
+/* ===================================================== */
+/* ===================== FUNCTIONS ===================== */
+/* ===================================================== */
 
-/* ======================= SETUP ======================= */
-void setup() {
-  Serial.begin(115200);
-
-  pinMode(pinBLED, OUTPUT);
-  pinMode(btnBLED, INPUT_PULLUP);
-
-  display.setBrightness(0x0f);
-  dht.begin();
-
-  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
-
-  digitalWrite(pinBLED, HIGH);
-
-  // Đồng bộ trạng thái LED với Blynk
-  Blynk.virtualWrite(V3, blueButtonON);
-
-  Serial.println("== START ==");
-}
-
-/* ======================= LOOP ======================= */
-void loop() {
-  Blynk.run();
-
-  currentMiliseconds = millis();
-
-  uptimeBlynk();
-  updateBlueButton();
-  readDHT();
-}
-
-/* ======================= FUNCTIONS ======================= */
-
-bool IsReady(unsigned long &ulTimer, uint32_t milisecond) {
-  if (currentMiliseconds - ulTimer < milisecond) return false;
-  ulTimer = currentMiliseconds;
+bool IsReady(unsigned long &timer, uint32_t interval) {
+  if (currentMillis - timer < interval) return false;
+  timer = currentMillis;
   return true;
 }
 
-/* ----------- Đọc nút bấm cứng ----------- */
-void updateBlueButton() {
-  static unsigned long lastTime = 0;
-  static int lastValue = HIGH;
+/* ----------- UPTIME COUNTER ----------- */
+void uptimeTask() {
+  static unsigned long previousMillis = 0;
 
-  if (!IsReady(lastTime, 50)) return;
+  if (millis() - previousMillis >= 1000) {
+    previousMillis = millis();
 
-  int v = digitalRead(btnBLED);
-  if (v == lastValue) return;
-  lastValue = v;
-  if (v == LOW) return;
+    if (blueButtonON) {
+      activeSeconds++;
 
-  blueButtonON = !blueButtonON;
+      Serial.print("Send to Blynk: ");
+      Serial.println(activeSeconds);
 
-  digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
-
-  Blynk.virtualWrite(V3, blueButtonON);
-
-  if (!blueButtonON) display.clear();
-}
-
-/* ----------- Gửi thời gian hoạt động ----------- */
-void uptimeBlynk() {
-  static unsigned long lastTime = 0;
-  if (!IsReady(lastTime, 1000)) return;
-
-  unsigned long value = lastTime / 1000;
-
-  Blynk.virtualWrite(V0, value);
-
-  if (blueButtonON) {
-    display.showNumberDec(value);
+      display.showNumberDec(activeSeconds);
+      Blynk.virtualWrite(V0, activeSeconds);
+    }
   }
 }
-
-/* ----------- Đọc cảm biến DHT ----------- */
+/* ----------- READ DHT ----------- */
 void readDHT() {
   static unsigned long lastTime = 0;
+
   if (!IsReady(lastTime, 2000)) return;
 
   float temperature = dht.readTemperature();
   float humidity = dht.readHumidity();
 
   if (isnan(temperature) || isnan(humidity)) {
-    Serial.println("Lỗi đọc DHT!");
+    Serial.println("Loi doc DHT!");
     return;
   }
 
@@ -135,13 +87,65 @@ void readDHT() {
   Blynk.virtualWrite(V2, humidity);
 }
 
-/* ----------- Nhận dữ liệu từ Blynk Switch ----------- */
+/* ----------- BUTTON HARDWARE ----------- */
+void updateButton() {
+  static unsigned long lastTime = 0;
+  static int lastState = HIGH;
+
+  if (!IsReady(lastTime, 50)) return;
+
+  int state = digitalRead(btnBLED);
+
+  if (state == lastState) return;
+  lastState = state;
+
+  if (state == LOW) return;   // nhấn nhả mới tính
+
+  blueButtonON = !blueButtonON;
+
+  digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
+  Blynk.virtualWrite(V3, blueButtonON);
+
+  if (!blueButtonON) {
+  display.clear();   // chỉ tắt màn hình thôi
+}
+}
+
+/* ----------- RECEIVE FROM BLYNK SWITCH ----------- */
 BLYNK_WRITE(V3) {
   blueButtonON = param.asInt();
 
   digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
 
-  if (!blueButtonON) {
-    display.clear();
-  }
+if (!blueButtonON) {
+  display.clear();
+}
+}
+
+/* ======================= SETUP ======================= */
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(pinBLED, OUTPUT);
+  pinMode(btnBLED, INPUT_PULLUP);
+
+  display.setBrightness(0x0f);
+  dht.begin();
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  digitalWrite(pinBLED, HIGH);
+  Blynk.virtualWrite(V3, blueButtonON);
+
+  Serial.println("=== SYSTEM START ===");
+}
+
+/* ======================== LOOP ======================= */
+
+void loop() {
+  Blynk.run();
+  uptimeTask();
+  updateButton();
+  readDHT();
 }
