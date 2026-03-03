@@ -1,7 +1,4 @@
-/*************************************************************
-   ESP32 + Blynk + DHT22 + TM1637 + Button + LED
-   Phiên bản hoàn chỉnh đồng bộ 2 chiều
-*************************************************************/
+
 
 #define BLYNK_TEMPLATE_ID "TMPL6dVnEmRRC"
 #define BLYNK_TEMPLATE_NAME "BLYNKDHT"
@@ -12,10 +9,8 @@
 #include <DHT.h>
 #include <TM1637Display.h>
 
-
 char ssid[] = "Wokwi-GUEST";
 char pass[] = "";
-
 
 #define DHT_PIN 16
 #define DHTTYPE DHT22
@@ -24,7 +19,6 @@ char pass[] = "";
 #define CLK 18
 #define DIO 19
 
-
 DHT dht(DHT_PIN, DHTTYPE);
 TM1637Display display(CLK, DIO);
 BlynkTimer timer;
@@ -32,37 +26,38 @@ BlynkTimer timer;
 bool ledState = false;
 unsigned long uptime = 0;
 
-
-void updateLED(bool state) {
+void updateLED(bool state)
+{
   ledState = state;
   digitalWrite(LED_PIN, ledState);
   Blynk.virtualWrite(V2, ledState);
 }
 
-
-BLYNK_CONNECTED() {
-  Blynk.syncVirtual(V2);          
-  Blynk.virtualWrite(V3, uptime); 
+BLYNK_CONNECTED()
+{
+  Blynk.syncVirtual(V2);
+  Blynk.virtualWrite(V3, uptime);
 }
 
-
-BLYNK_WRITE(V2) {
+BLYNK_WRITE(V2)
+{
   updateLED(param.asInt());
 }
 
-
-void sendSensor() {
+void sendSensor()
+{
   float temp = dht.readTemperature();
-  float hum  = dht.readHumidity();
+  float hum = dht.readHumidity();
 
-  if (!isnan(temp) && !isnan(hum)) {
+  if (!isnan(temp) && !isnan(hum))
+  {
     Blynk.virtualWrite(V0, temp);
     Blynk.virtualWrite(V1, hum);
   }
 }
 
-
-void sendUptime() {
+void sendUptime()
+{
   uptime++;
 
   display.showNumberDec(uptime, false);
@@ -72,8 +67,8 @@ void sendUptime() {
   Serial.println(uptime);
 }
 
-
-void setup() {
+void setup()
+{
   Serial.begin(115200);
 
   pinMode(LED_PIN, OUTPUT);
@@ -88,15 +83,16 @@ void setup() {
   timer.setInterval(1000L, sendUptime);
 }
 
-
-void loop() {
+void loop()
+{
   Blynk.run();
   timer.run();
 
   static bool lastButton = HIGH;
   bool currentButton = digitalRead(BUTTON_PIN);
 
-  if (lastButton == HIGH && currentButton == LOW) {
+  if (lastButton == HIGH && currentButton == LOW)
+  {
     updateLED(!ledState);
     delay(150);
   }
