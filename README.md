@@ -57,6 +57,15 @@
 + [Cài đặt thư viện cho PlatformIO](https://khuenguyencreator.com/huong-dan-cai-dat-platform-io-lap-trinh-esp32/#Cai_dat_thu_vien_cho_Platformio)
 -------------------------------
 2026-03-03
+
+### - [Blynk | Traffic & DHT Sensor](https://wokwi.com/projects/424198235739151361)
++ ***Thư viện sử dụng***
+	> **# DHT sensor library** by Avishay - Arduino library for DHT11, DHT22, etc Temp & Humidity Sensors
+	
+![](https://raw.githubusercontent.com/vvdung/storage/refs/heads/main/IOT/traffic_blynk_1.png)
+
+---
+
 ### - [Esp32 | Blynk & Wokwi](https://wokwi.com/projects/423790624312911873) 
 
 #### Tham khảo
