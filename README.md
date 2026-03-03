@@ -57,6 +57,9 @@
 + [Cài đặt thư viện cho PlatformIO](https://khuenguyencreator.com/huong-dan-cai-dat-platform-io-lap-trinh-esp32/#Cai_dat_thu_vien_cho_Platformio)
 -------------------------------
 2026-03-03
+### - [Esp32 | Blynk & Wokwi](https://wokwi.com/projects/423790624312911873) 
+
+#### Tham khảo
 
 + [Sử dụng Blynk IOT với ESP32](https://dienthongminhesmart.com/lap-trinh-esp32/blynk-iot-va-esp32/)
 + ***Thư viện sử dụng***
