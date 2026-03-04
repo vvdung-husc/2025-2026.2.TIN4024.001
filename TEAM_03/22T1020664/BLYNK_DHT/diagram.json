@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 34.8,
+      "left": 138.6,
+      "attrs": { "color": "blue", "flip": "1" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": 6.2,
+      "left": 172.8,
+      "attrs": { "color": "blue", "xray": "1" }
+    },
+    {
+      "type": "wokwi-tm1637-7segment",
+      "id": "sevseg1",
+      "top": -134.44,
+      "left": 93.43,
+      "attrs": { "color": "red" }
+    },
+    { "type": "wokwi-dht22", "id": "dht1", "top": 115.5, "left": 282.6, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "btn1:1.l", "esp:GND.2", "green", [ "h0" ] ],
+    [ "btn1:2.l", "esp:23", "green", [ "h0" ] ],
+    [ "led1:A", "esp:21", "green", [ "v0" ] ],
+    [ "led1:C", "esp:GND.3", "green", [ "v0" ] ],
+    [ "dht1:GND", "esp:GND.3", "black", [ "v48", "h-192", "v-192" ] ],
+    [ "dht1:VCC", "esp:3V3", "red", [ "v9.6", "h-316.8", "v-211.2" ] ],
+    [ "dht1:SDA", "esp:16", "green", [ "v38.4", "h-163.1", "v-134.4" ] ],
+    [ "sevseg1:GND", "esp:GND.3", "black", [ "h9.6", "v163.2" ] ],
+    [ "sevseg1:VCC", "esp:5V", "red", [ "h19.2", "v172.8", "h-172.8", "v134.4", "h-115.2" ] ],
+    [ "sevseg1:DIO", "esp:19", "green", [ "h28.8", "v192" ] ],
+    [ "sevseg1:CLK", "esp:18", "green", [ "h38.4", "v211.2" ] ]
+  ],
+  "dependencies": {}
+}
