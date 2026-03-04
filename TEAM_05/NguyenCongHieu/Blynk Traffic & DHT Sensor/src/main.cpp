@@ -1,195 +1,158 @@
+#define BLYNK_TEMPLATE_ID "TMPL6NguyenCongHieu"
+#define BLYNK_TEMPLATE_NAME "ESP32 Traffic  DHT"
+#define BLYNK_AUTH_TOKEN "KjKLyDntOpkCrKU1M9ewn-Wvt5s177ZI"
+// Phải để trước khai báo sử dụng thư viện Blynk
+
 #include <Arduino.h>
 #include <TM1637Display.h>
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <BlynkSimpleEsp32.h>
+#include <DHT.h>
 
-bool IsReady(unsigned long &ulTimer, uint32_t millisecond)
-{
-  if (millis() - ulTimer < millisecond) return false;
-  ulTimer = millis();
-  return true;
-}
+// Wokwi sử dụng mạng WiFi "Wokwi-GUEST" không cần mật khẩu cho việc chạy mô phỏng
+char ssid[] = "Wokwi-GUEST";  // Tên mạng WiFi
+char pass[] = "";             // Mật khẩu mạng WiFi
 
-String StringFormat(const char *fmt, ...)
-{
-  va_list vaArgs;
-  va_start(vaArgs, fmt);
-  va_list vaArgsCopy;
-  va_copy(vaArgsCopy, vaArgs);
-  const int iLen = vsnprintf(NULL, 0, fmt, vaArgsCopy);
-  va_end(vaArgsCopy);
-  int iSize = iLen + 1;
-  char *buff = (char *)malloc(iSize);
-  vsnprintf(buff, iSize, fmt, vaArgs);
-  va_end(vaArgs);
-  String s = buff;
-  free(buff);
-  return String(s);
-}
+// Định nghĩa các chân kết nối theo diagram.json
+#define PIN_BUTTON        23  // Nút bấm
+#define PIN_LED_BLUE      21  // LED xanh dương
+#define CLK               18  // TM1637 CLK
+#define DIO               19  // TM1637 DIO
+#define PIN_DHT           16  // DHT22 data pin
+#define DHTTYPE           DHT22
 
-#define PIN_LED_RED     25
-#define PIN_LED_YELLOW  33
-#define PIN_LED_GREEN   32
-
-#define CLK 15
-#define DIO 2
-
-#define PIN_BUTTON_DISPLAY 23
-#define PIN_LED_BLUE      21
-#define PIN_LDR           13  
-
+// Biến toàn cục
+DHT dht(PIN_DHT, DHTTYPE);
 TM1637Display display(CLK, DIO);
-int valueButtonDisplay = LOW;
+ulong currentMilliseconds = 0;
+bool displayON = false;       // Trạng thái hiển thị
+bool blueLedON = false;       // Trạng thái LED xanh
 
-const char* LEDString(uint8_t pin)
+// === Hàm tiện ích ===
+bool IsReady(ulong &ulTimer, uint32_t millisecond)
 {
-  switch (pin)
-  {
-    case PIN_LED_RED:     return "RED";
-    case PIN_LED_YELLOW:  return "YELLOW";
-    case PIN_LED_GREEN:   return "GREEN";
-    default:              return "UNKNOWN";
-  }  
-}
-
-void Init_LED_Traffic()
-{
-  pinMode(PIN_LED_RED, OUTPUT);
-  pinMode(PIN_LED_YELLOW, OUTPUT);  
-  pinMode(PIN_LED_GREEN, OUTPUT);
-}
-
-bool ProcessLEDTraffic()
-{
-  static unsigned long ulTimer = 0;
-  static uint8_t idxLED = 0;
-  static uint8_t LEDs[3] = {PIN_LED_GREEN, PIN_LED_YELLOW, PIN_LED_RED};
-  if (!IsReady(ulTimer, 1000)) return false;
-
-  for (size_t i = 0; i < 3; i++)
-  {
-    if (i == idxLED) digitalWrite(LEDs[i], HIGH);
-    else digitalWrite(LEDs[i], LOW);
-  }
-  
-  idxLED = (idxLED + 1) % 3;
-  
+  if (currentMilliseconds - ulTimer < millisecond) return false;
+  ulTimer = currentMilliseconds;
   return true;
 }
 
-bool ProcessLEDTrafficWaitTime()
-{
-  static unsigned long ulTimer = 0;
-  static uint8_t idxLED = 0;
-  static uint8_t LEDs[3] = {PIN_LED_GREEN, PIN_LED_YELLOW, PIN_LED_RED};
-  static uint32_t waitTime[3] = {7000, 3000, 5000};
-  static uint32_t count = waitTime[idxLED];
-  static bool ledStatus = false;
-  static int secondCount = 0;
-
-  if (!IsReady(ulTimer, 500)) return false;
-
-  if (count == waitTime[idxLED])
-  {
-    secondCount = (count / 1000) - 1;
-
-    ledStatus = true;
-    for (size_t i = 0; i < 3; i++)
-    {
-      if (i == idxLED){
-        digitalWrite(LEDs[i], HIGH);
-        printf("LED [%-6s] ON => %d Seconds\n", LEDString(LEDs[i]), count/1000);
-      }
-      else digitalWrite(LEDs[i], LOW);
-    }    
-  }
-  else {
-    ledStatus = !ledStatus;
-    digitalWrite(LEDs[idxLED], ledStatus ? HIGH : LOW);
-  }
-
-  if (ledStatus) {
-    if (valueButtonDisplay == HIGH){
-       printf(" [%s] => Second: %d\n",LEDString(LEDs[idxLED]), secondCount);
-       display.showNumberDec(secondCount);  
-    }  
-    --secondCount;
-  }
-
-  count -= 500;
-  if (count > 0) return true;
-
-  idxLED = (idxLED + 1) % 3;
-  count = waitTime[idxLED];
-
-  return true;
-}
-
-void ProcessButtonPressed(){
-  static ulong ulTimer = 0;
+// === Xử lý nút bấm ===
+void updateButton() {
+  static ulong lastTime = 0;
+  static int lastValue = HIGH;
   
-  if (!IsReady(ulTimer, 10)) return;
-
-  int newValue = digitalRead(PIN_BUTTON_DISPLAY);
-  if (newValue == valueButtonDisplay) return;
+  if (!IsReady(lastTime, 50)) return;
   
-  if (newValue == HIGH){
-    printf("*** DISPLAY ON ***\n");
-  }
-  else {
+  int v = digitalRead(PIN_BUTTON);
+  if (v == lastValue) return;
+  lastValue = v;
+  if (v == LOW) return;  // Chỉ xử lý khi nhả nút
+
+  // Toggle trạng thái display và LED
+  displayON = !displayON;
+  blueLedON = !blueLedON;
+  
+  if (displayON) {
+    Serial.println("Display & LED ON");
+    digitalWrite(PIN_LED_BLUE, HIGH);
+  } else {
+    Serial.println("Display & LED OFF");
+    digitalWrite(PIN_LED_BLUE, LOW);
     display.clear();
-    printf("*** DISPLAY OFF ***\n");
   }
-
-  valueButtonDisplay = newValue;
+  
+  // Gửi trạng thái lên Blynk
+  Blynk.virtualWrite(V0, blueLedON);
 }
 
-void ProcessLDRSensor(){
-  static ulong ulTimer = 0;
-  static int lastBrightness = -1;
-  static bool lastLEDState = false;
+// === Đọc và hiển thị cảm biến DHT ===
+void readDHTSensor() {
+  static ulong lastTime = 0;
+  if (!IsReady(lastTime, 2000)) return;  // Đọc mỗi 2 giây
   
-  if (!IsReady(ulTimer, 500)) return; 
-
-  int ldrValue = analogRead(PIN_LDR); 
+  float temperature = dht.readTemperature();  // Đọc nhiệt độ (°C)
+  float humidity = dht.readHumidity();        // Đọc độ ẩm (%)
   
-  // === 1. TỰ ĐỘNG BẬT/TẮT ĐÈN LED XANH (ĐÈN ĐƯỜNG) ===
-  // Ngưỡng ánh sáng: < 2000 = tối (bật đèn), >= 2000 = sáng (tắt đèn)
-  // Chỉ bật đèn khi Display đang BẬT
-  bool shouldLEDOn = (ldrValue < 2000) && (valueButtonDisplay == HIGH);
-  
-  if (shouldLEDOn != lastLEDState) {
-    digitalWrite(PIN_LED_BLUE, shouldLEDOn ? HIGH : LOW);
-    lastLEDState = shouldLEDOn;
+  // Kiểm tra lỗi đọc
+  if (isnan(temperature) || isnan(humidity)) {
+    Serial.println("Failed to read from DHT sensor!");
+    return;
   }
   
-  // === 2. TỰ ĐỘNG ĐIỀU CHỈNH ĐỘ SÁNG MÀN HÌNH ===
-  // Chuyển đổi giá trị LDR thành độ sáng (0x00-0x0f)
-  // Giá trị LDR cao = Sáng -> độ sáng màn hình thấp
-  // Giá trị LDR thấp = Tối -> độ sáng màn hình cao
-  int brightness = map(ldrValue, 0, 4095, 0x0f, 0x00);
+  Serial.printf("Temperature: %.1f°C, Humidity: %.1f%%\n", temperature, humidity);
   
-  // Chỉ cập nhật khi độ sáng thay đổi và khi Display đang BẬT
-  if (brightness != lastBrightness && valueButtonDisplay == HIGH) {
-    display.setBrightness(brightness);
-    lastBrightness = brightness;
+  // Gửi dữ liệu lên Blynk
+  Blynk.virtualWrite(V1, temperature);  // Virtual Pin V1: Nhiệt độ
+  Blynk.virtualWrite(V2, humidity);     // Virtual Pin V2: Độ ẩm
+  
+  // Hiển thị nhiệt độ trên TM1637 nếu display đang bật
+  if (displayON) {
+    int temp = (int)temperature;
+    display.showNumberDec(temp);
   }
 }
 
-void setup()
-{
-  Init_LED_Traffic();  // Khởi tạo các chân LED giao thông
+// === Gửi uptime lên Blynk ===
+void sendUptimeToBlynk() {
+  static ulong lastTime = 0;
+  if (!IsReady(lastTime, 1000)) return;  // Gửi mỗi 1 giây
   
-  display.setBrightness(0x0a);
-  display.clear();
+  ulong uptimeSeconds = lastTime / 1000;
+  Blynk.virtualWrite(V3, uptimeSeconds);  // Virtual Pin V3: Uptime
+  
+  // Hiển thị uptime trên TM1637 nếu display bật và không hiển thị nhiệt độ
+  // (có thể thêm logic switch giữa các chế độ hiển thị)
+}
 
-  pinMode(PIN_BUTTON_DISPLAY, INPUT);
+// === Nhận lệnh từ Blynk để điều khiển LED ===
+BLYNK_WRITE(V0) {
+  blueLedON = param.asInt();
+  displayON = blueLedON;
+  
+  if (blueLedON) {
+    Serial.println("Blynk -> LED & Display ON");
+    digitalWrite(PIN_LED_BLUE, HIGH);
+  } else {
+    Serial.println("Blynk -> LED & Display OFF");
+    digitalWrite(PIN_LED_BLUE, LOW);
+    display.clear();
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Khởi tạo các chân
+  pinMode(PIN_BUTTON, INPUT);
   pinMode(PIN_LED_BLUE, OUTPUT);
-  pinMode(PIN_LDR, INPUT); 
+  
+  // Khởi tạo DHT
+  dht.begin();
+  
+  // Khởi tạo TM1637
+  display.setBrightness(0x0f);
+  display.clear();
+  
+  // Kết nối WiFi và Blynk
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+  Serial.println("WiFi connected");
+  
+  // Đồng bộ trạng thái ban đầu
+  digitalWrite(PIN_LED_BLUE, blueLedON ? HIGH : LOW);
+  Blynk.virtualWrite(V0, blueLedON);
+  
+  Serial.println("=== ESP32 Traffic & DHT Sensor Started ===");
 }
 
-
-void loop()
-{
-  ProcessLDRSensor();        
-  ProcessButtonPressed();
-  ProcessLEDTrafficWaitTime();
+void loop() {
+  Blynk.run();  // Chạy Blynk
+  
+  currentMilliseconds = millis();
+  
+  updateButton();        // Xử lý nút bấm
+  readDHTSensor();       // Đọc cảm biến DHT
+  sendUptimeToBlynk();   // Gửi uptime
 }
