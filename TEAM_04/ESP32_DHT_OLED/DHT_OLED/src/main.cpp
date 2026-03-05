@@ -2,7 +2,7 @@
 THÔNG TIN NHÓM 4
 1. Lê Văn Thuần
 2. Hoàng Văn Quốc Thịnh
-3. Nguyễnn Côngg Thànhh
+3. Nguyễn Công Thành
 4. Trần Khánh
 */
 
