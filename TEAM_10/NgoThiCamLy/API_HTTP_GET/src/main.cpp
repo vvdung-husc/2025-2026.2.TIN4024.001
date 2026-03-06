@@ -4,8 +4,7 @@
 //Thay thông số BLYNK của bạn vào đây
 #define BLYNK_TEMPLATE_ID "TMPL69UTBdSgx"
 #define BLYNK_TEMPLATE_NAME "API HTTP GET"
-#define BLYNK_AUTH_TOKEN "YOUR_BLYNK_TOKEN"
-//#define BLYNK_AUTH_TOKEN "vvDcgFfK5CMiavwZPT9Jb3rxjrNLIl-o" 
+#define BLYNK_AUTH_TOKEN "vvDcgFfK5CMiavwZPT9Jb3rxjrNLIl-o" 
 
 
 #include <WiFi.h>
@@ -85,8 +84,8 @@ void parseGeoInfo(String payload, IP4_Info& ipInfo) {
 }
 
 //Key lấy từ openweathermap.org khi đăng ký tài khoản
-//#define OPENWEATHERMAP_KEY "74e75195bf07d05f094cad4c23cc01da"
-#define OPENWEATHERMAP_KEY "YOUR_API_KEY"
+#define OPENWEATHERMAP_KEY "74e75195bf07d05f094cad4c23cc01da"
+
 String urlWeather;  //Biến lưu url https://openweathermap.org/
 
 //API Get http://ip4.iothings.vn/?geo=1
