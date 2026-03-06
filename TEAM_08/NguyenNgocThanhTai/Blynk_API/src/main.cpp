@@ -16,7 +16,7 @@
 #define WIFI_CHANNEL 6
 
 // --- THAY API KEY THỜI TIẾT CỦA BẠN VÀO ĐÂY ---
-#define OPENWEATHERMAP_KEY "2b8ba35931eb75402e9857639fec5e43" // Đã sửa lỗi dư dấu chấm phẩy
+#define OPENWEATHERMAP_KEY "API_KEY_CUA_TAINGUYEN" // Đã sửa lỗi dư dấu chấm phẩy
 
 struct IP4_Info {
   String ip4;
