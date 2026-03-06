@@ -127,14 +127,18 @@ void updateTemp(){
   static ulong lastTime = 0;
   static float temp_ = 0.0;
 
-  if (!IsReady(lastTime, 10000)) return; //Kiểm tra và cập nhật lastTime sau mỗi 100 giây
+  if (!IsReady(lastTime, 100000)) return; //Kiểm tra và cập nhật lastTime sau mỗi 100 giây
   if(WiFi.status() != WL_CONNECTED){
     Serial.println("updateTemp() Error in WiFi connection"); 
     return;
   }
 
-  HTTPClient http;   
-  http.begin(urlWeather);
+  WiFiClientSecure client;
+  client.setInsecure();   // bỏ kiểm tra SSL
+
+  HTTPClient http;
+  http.begin(client, urlWeather);
+
   http.addHeader("Content-Type", "text/plain");
   // int httpResponseCode = http.POST("POSTING from ESP32");
   int httpResponseCode = http.GET();
