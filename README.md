@@ -69,7 +69,7 @@
 + [CURL for Windows](https://curl.se/windows/)
 + [Postman - Kiểm thử API](https://www.postman.com/)
 
-#### http://ip4.iothings.vn?geo=1
+#### http://ip4.iothings.vn/?geo=1
 >Thông tin địa chỉ IPv4 đang sử dụng và vị trí địa lý (Geolocation - Latitude: Vĩ độ, Longitude: Kinh độ) 
 
 #### http://www.google.com/maps/place/16.4591267,107.5901477
