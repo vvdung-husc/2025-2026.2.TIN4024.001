@@ -2,7 +2,7 @@
 #include <TM1637Display.h>
 
 #define BLYNK_TEMPLATE_ID "TMPL6ASlZf_Q8"
-#define BLYNK_TEMPLATE_NAME "esp32"
+#define BLYNK_TEMPLATE_NAME "BLYNK_DHT"
 #define BLYNK_AUTH_TOKEN "Piseg1_V3_zEs-xC3oDMOAK8AtK7dRjg"
 // Phải để trước khai báo sử dụng thư viện Blynk
 
