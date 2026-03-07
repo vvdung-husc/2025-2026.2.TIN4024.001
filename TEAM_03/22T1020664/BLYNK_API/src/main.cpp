@@ -11,7 +11,7 @@ const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 
 // OpenWeather API key
-String weatherAPI = "d238f41da3ffabe4d5e85d7b7a52d6b6";
+String weatherAPI = "662c68a285ce3dbaba3635978a6a91a9";
 
 unsigned long lastUptime = 0;
 unsigned long lastAPI = 0;
