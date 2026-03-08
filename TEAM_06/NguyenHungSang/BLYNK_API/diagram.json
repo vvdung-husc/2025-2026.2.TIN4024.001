@@ -14,5 +14,7 @@
   "connections": [
     ["esp:TX", "$serialMonitor:RX", "", []],
     ["esp:RX", "$serialMonitor:TX", "", []]
-  ]
+  ],
+  "dependencies": {},
+  "internet": true
 }
