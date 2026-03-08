@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "author": "Uri Shaked",
+  "author": "Nguyen Hoang Huyen Tran",
   "editor": "wokwi",
   "parts": [
     {
@@ -15,6 +15,5 @@
     ["esp:TX", "$serialMonitor:RX", "", []],
     ["esp:RX", "$serialMonitor:TX", "", []]
   ],
-  "dependencies": {},
-  "internet": true
+  "dependencies": {}
 }
