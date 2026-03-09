@@ -1,76 +1,114 @@
+// 1. PHẢI ĐẶT CÁC DÒNG NÀY ĐẦU TIÊN
 #define BLYNK_TEMPLATE_ID "TMPL6iJh7kbPx"
 #define BLYNK_TEMPLATE_NAME "Blynk API"
 #define BLYNK_AUTH_TOKEN "EaAUgSqeTMbJPmTFHI4cyIBblHHC8TnP"
 
+// 2. SAU ĐÓ MỚI ĐẾN CÁC THƯ VIỆN
+#include <Arduino.h>
 #include <WiFi.h>
+#include <WiFiClient.h>
+#include <BlynkSimpleEsp32.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#include <BlynkSimpleEsp32.h>
 
-char ssid[] = "Wokwi-GUEST";
-char pass[] = "";
-String apiKey = "729ff1bcff5cd0c2e58362ee8faa2273";
+// --- THÔNG SỐ KẾT NỐI ---
+#define WIFI_SSID "Wokwi-GUEST"
+#define WIFI_PASSWORD ""
+#define WIFI_CHANNEL 6
+#define OPENWEATHERMAP_KEY "729ff1bcff5cd0c2e58362ee8faa2273"
 
-BlynkTimer timer;
-int countdown = 0;
+struct IP4_Info {
+  String ip4 = "0.0.0.0";
+  String latitude = "0";
+  String longitude = "0";
+};
 
-void fetchApiData() {
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-    http.setTimeout(5000);
-    
-    // 1. Dữ liệu mặc định (Chống null 100%)
-    String ip = "123.25.115.141"; 
-    float lat = 16.466669;
-    float lon = 107.594444;
+IP4_Info ip4Info;
+unsigned long currentMillis = 0;
+String urlWeather = "";
 
-    // 2. Thử lấy dữ liệu thật từ API
-    http.begin("http://ip4.iothings.vn/?geo=1");
-    if (http.GET() == 200) {
-      JsonDocument doc; // Chuẩn v7: Không cần (1024)
-      DeserializationError error = deserializeJson(doc, http.getString());
-      if (!error) {
-        if (!doc["ip"].isNull()) ip = doc["ip"].as<String>();
-        if (!doc["lat"].isNull()) lat = doc["lat"].as<float>();
-        if (!doc["lon"].isNull()) lon = doc["lon"].as<float>();
-      }
-    }
-    
-    // Gửi lên Blynk
-    Blynk.virtualWrite(V4, ip);
-    Blynk.virtualWrite(V5, "https://www.google.com/maps/place/" + String(lat, 6) + "," + String(lon, 6));
-
-    // 3. Lấy thời tiết
-    String weatherUrl = "http://api.openweathermap.org/data/2.5/weather?lat=" + String(lat) + "&lon=" + String(lon) + "&appid=" + apiKey + "&units=metric";
-    http.begin(weatherUrl);
-    if (http.GET() == 200) {
-      JsonDocument weatherDoc; // Chuẩn v7
-      deserializeJson(weatherDoc, http.getString());
-      if (!weatherDoc["main"]["temp"].isNull()) {
-        Blynk.virtualWrite(V1, weatherDoc["main"]["temp"].as<float>());
-      }
-    }
-    http.end();
-  }
+// Hàm quản lý thời gian (Non-blocking)
+bool IsReady(unsigned long &ulTimer, uint32_t millisecond) {
+  if (millis() - ulTimer < millisecond) return false;
+  ulTimer = millis();
+  return true;
 }
 
-void updateTimer() {
-  countdown++;
-  Blynk.virtualWrite(V0, countdown);
-  Blynk.virtualWrite(V6, "ĐÀO VĂN LỢI"); // Gửi tên định danh
+// Lấy dữ liệu IP và Vị trí THẬT từ ip-api
+void getGeoAPI() {
+  if(WiFi.status() != WL_CONNECTED) return;
+  
+  HTTPClient http;
+  http.setTimeout(8000);
+  http.begin("http://ip-api.com/json/");
+  
+  int httpCode = http.GET();
+  if(httpCode == 200) {
+    JsonDocument doc;
+    deserializeJson(doc, http.getString());
+    
+    ip4Info.ip4 = doc["query"].as<String>();
+    ip4Info.latitude = doc["lat"].as<String>();
+    ip4Info.longitude = doc["lon"].as<String>();
+
+    // Gửi dữ liệu thật lên các chân V4, V5
+    Blynk.virtualWrite(V4, ip4Info.ip4); 
+    String mapsLink = "http://www.google.com/maps/place/" + ip4Info.latitude + "," + ip4Info.longitude;
+    Blynk.virtualWrite(V5, mapsLink);   
+    
+    urlWeather = "http://api.openweathermap.org/data/2.5/weather?lat=" + ip4Info.latitude + "&lon=" + ip4Info.longitude + "&appid=" + OPENWEATHERMAP_KEY + "&units=metric";
+    Serial.println("Đã lấy được IP THẬT: " + ip4Info.ip4);
+  }
+  http.end();
+}
+
+void updateWeather() {
+  static unsigned long lastWeatherTime = 0;
+  if (!IsReady(lastWeatherTime, 30000)) return; 
+  if (urlWeather == "" || WiFi.status() != WL_CONNECTED) return;
+
+  HTTPClient http;
+  http.begin(urlWeather);
+  if(http.GET() == 200) {
+    JsonDocument doc;
+    deserializeJson(doc, http.getString());
+    float temp = doc["main"]["temp"];
+    Blynk.virtualWrite(V1, temp); // Chân Nhiệt độ
+  }
+  http.end();
+}
+
+void uptimeBlynk() {
+  static unsigned long lastUptimeTime = 0;
+  if (!IsReady(lastUptimeTime, 1000)) return;
+  Blynk.virtualWrite(V0, millis() / 1000); // Chân Uptime
+  Blynk.virtualWrite(V6, "ĐÀO VĂN LỢI"); // Luôn gửi tên định danh
 }
 
 void setup() {
   Serial.begin(115200);
-  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
-
-  timer.setInterval(60000L, fetchApiData); 
-  timer.setInterval(1000L, updateTimer);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
   
-  fetchApiData(); 
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nWiFi connected!");
+
+  Blynk.config(BLYNK_AUTH_TOKEN);
+  Blynk.connect();
+
+  getGeoAPI(); 
 }
 
 void loop() {
   Blynk.run();
-  timer.run();
+  uptimeBlynk();
+  updateWeather();
+
+  // Nếu chưa có IP thì thử lại mỗi 10s
+  static unsigned long retryGeo = 0;
+  if (ip4Info.ip4 == "0.0.0.0" && IsReady(retryGeo, 10000)) {
+    getGeoAPI();
+  }
 }
