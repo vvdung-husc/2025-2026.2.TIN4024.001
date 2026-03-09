@@ -3,13 +3,13 @@
 #define BLYNK_AUTH_TOKEN "jUB3r-q1gcgicGMynE8qeJDo4uPJgsn2"
 #define BLYNK_PRINT Serial
 
-#include <Arduino.h>
 #include <WiFi.h>
+#include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
 #include <DHT.h>
 #include <TM1637Display.h>
 
-// --- CẤU HÌNH CHÂN PIN (Khớp chính xác với diagram.json của bạn) ---
+// --- CẤU HÌNH CHÂN PIN (Khớp 100% với diagram.json của bạn) ---
 #define PIN_DHT 16      
 #define PIN_LED 21      
 #define PIN_BTN 23      
@@ -24,32 +24,32 @@ char ssid[] = "Wokwi-GUEST";
 char pass[] = "";
 
 int countdown = 11;
-bool isAuto = false;
+bool isAuto = true; // Đặt thành true để giây tự chạy ngay lập tức
 
-// Hàm gửi dữ liệu cảm biến
 void sendSensorData() {
   float h = dht.readHumidity();
   float t = dht.readTemperature();
-
   if (!isnan(h) && !isnan(t)) {
     if (Blynk.connected()) {
-      Blynk.virtualWrite(V1, t); // Gauge Nhiệt độ
-      Blynk.virtualWrite(V2, h); // Gauge Độ ẩm
+      Blynk.virtualWrite(V1, t); 
+      Blynk.virtualWrite(V2, h); 
     }
+    Serial.printf("Nhiệt độ: %.1f°C | Độ ẩm: %.1f%%\n", t, h);
   }
 }
 
-// Hàm xử lý đếm ngược (Traffic Light Logic)
 void trafficTimer() {
-  if (isAuto) {
+  if (isAuto) { 
     display.showNumberDec(countdown);
-    if (Blynk.connected()) Blynk.virtualWrite(V0, countdown);
-
+    if (Blynk.connected()) {
+        Blynk.virtualWrite(V0, countdown);
+    }
+    
     if (countdown > 0) {
       countdown--;
       digitalWrite(PIN_LED, HIGH);
     } else {
-      countdown = 11;
+      countdown = 11; // Reset vòng lặp
     }
   } else {
     display.clear();
@@ -57,7 +57,6 @@ void trafficTimer() {
   }
 }
 
-// Nhận lệnh từ Switch trên Blynk
 BLYNK_WRITE(V3) {
   isAuto = param.asInt();
 }
@@ -65,10 +64,10 @@ BLYNK_WRITE(V3) {
 void setup() {
   Serial.begin(115200);
   
-  // --- HIỂN THỊ TÊN ĐỊNH DANH (Bắt buộc để nộp bài) ---
+  // HIỂN THỊ TÊN ĐÀO VĂN LỢI TRÊN TERMINAL
   Serial.println("================================");
-  Serial.println("ĐÀO VĂN LỢI"); // Tên của bạn từ file json
-  Serial.println("PROJECT: ESP32 BLYNK & WOKWI");
+  Serial.println("STUDENT: ĐÀO VĂN LỢI"); 
+  Serial.println("STATUS: RUNNING SIMULATION");
   Serial.println("================================");
 
   pinMode(PIN_LED, OUTPUT);
@@ -77,23 +76,28 @@ void setup() {
   dht.begin();
   display.setBrightness(0x0f);
   
+  // Khởi tạo WiFi
   WiFi.begin(ssid, pass);
-  Blynk.config(BLYNK_AUTH_TOKEN); 
+
+  // Dùng config thay cho begin để tránh lỗi treo DNS
+  Blynk.config(BLYNK_AUTH_TOKEN, "blynk.cloud", 80);
 
   timer.setInterval(2000L, sendSensorData);
   timer.setInterval(1000L, trafficTimer);
 }
 
 void loop() {
-  if (Blynk.connected()) Blynk.run();
+  // Chỉ chạy Blynk.run khi đã có kết nối để tránh lag code
+  if (WiFi.status() == WL_CONNECTED) {
+    Blynk.run();
+  }
   timer.run();
 
-  // Nút nhấn vật lý thay đổi trạng thái Auto
+  // Nút nhấn vật lý
   static bool lastBtnState = HIGH;
   bool btnState = digitalRead(PIN_BTN);
   if (btnState == LOW && lastBtnState == HIGH) {
     isAuto = !isAuto;
-    if (Blynk.connected()) Blynk.virtualWrite(V3, isAuto);
     delay(200); 
   }
   lastBtnState = btnState;
