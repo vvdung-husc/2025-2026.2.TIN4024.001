@@ -1,111 +1,110 @@
-#define BLYNK_TEMPLATE_ID "TMPL6xB0NbhkA"
-#define BLYNK_TEMPLATE_NAME "Blynk"
-#define BLYNK_AUTH_TOKEN "41jGiQCKYOVqKZako90AvPvhfpE9dd_Z"
+#define BLYNK_TEMPLATE_ID "TMPL6WunbPpSd"
+#define BLYNK_TEMPLATE_NAME "Blynk light"
+#define BLYNK_AUTH_TOKEN "85wijx416aqBFtFfdub8i2IIQz85z_bX"
+
+#define BLYNK_PRINT Serial
+#define BLYNK_HEARTBEAT 30
 
 #include <WiFi.h>
 #include <BlynkSimpleEsp32.h>
 #include <TM1637Display.h>
 #include <DHT.h>
 
-// WIFI (Wokwi)
 char ssid[] = "Wokwi-GUEST";
 char pass[] = "";
 
-// ===== PIN =====
-#define DHTPIN 16
-#define DHTTYPE DHT22
+/* PIN theo sơ đồ của bạn */
 #define LED_PIN 21
 #define BUTTON_PIN 23
+
 #define CLK 18
 #define DIO 19
 
-// ===== SENSOR =====
-DHT dht(DHTPIN, DHTTYPE);
-TM1637Display display(CLK, DIO);
+#define DHTPIN 16
+#define DHTTYPE DHT22
 
-// ===== BLYNK TIMER =====
+TM1637Display display(CLK, DIO);
+DHT dht(DHTPIN, DHTTYPE);
+
 BlynkTimer timer;
 
-bool ledState = false;
-unsigned long startTime = 0;
-unsigned long elapsedSeconds = 0;
+bool systemState = false;
+int secondsRun = 0;
 
-// ============================
-// GỬI NHIỆT ĐỘ + ĐỘ ẨM
-// ============================
+/* đọc DHT22 */
 void sendSensor() {
+  float t = dht.readTemperature();
+  float h = dht.readHumidity();
 
-  float humidity = dht.readHumidity();
-  float temperature = dht.readTemperature();
+  if (!isnan(t)) {
+    Blynk.virtualWrite(V1, t);
+  }
 
-  if (!isnan(humidity) && !isnan(temperature)) {
-
-    Serial.print("Nhiet do: ");
-    Serial.print(temperature);
-    Serial.print(" C | Do am: ");
-    Serial.println(humidity);
-
-    // GỬI LÊN BLYNK
-    if (Blynk.connected()) {      // <<< BỔ SUNG
-      Blynk.virtualWrite(V0, temperature);
-      Blynk.virtualWrite(V1, humidity);
-    }
+  if (!isnan(h)) {
+    Blynk.virtualWrite(V2, h);
   }
 }
 
-// ============================
-// GỬI THỜI GIAN LED
-// ============================
-void sendTime() {
+/* đếm thời gian */
+void countTime() {
 
-  if (ledState) {
+  if (systemState) {
 
-    elapsedSeconds = (millis() - startTime) / 1000;
+    secondsRun++;
 
-    display.showNumberDec(elapsedSeconds);
+    display.showNumberDec(secondsRun);
 
-    if (Blynk.connected()) {      // <<< BỔ SUNG
-      Blynk.virtualWrite(V2, elapsedSeconds);
-    }
+    Blynk.virtualWrite(V3, secondsRun);
   }
 }
 
-// ============================
-// SWITCH TRÊN BLYNK
-// ============================
-BLYNK_WRITE(V3) {
+/* điều khiển từ Blynk */
+BLYNK_WRITE(V0) {
 
-  int value = param.asInt();
+  systemState = param.asInt();
 
-  if (value == 1 && ledState == false) {
-    startTime = millis();
-  }
+  digitalWrite(LED_PIN, systemState);
 
-  ledState = value;
+  if (!systemState) {
 
-  digitalWrite(LED_PIN, ledState);
+    secondsRun = 0;
 
-  if (!ledState) {
     display.showNumberDec(0);
-    Blynk.virtualWrite(V2, 0);
+
+    Blynk.virtualWrite(V3, 0);
   }
 }
 
-// ============================
-// ĐỒNG BỘ KHI CONNECT
-// ============================
-BLYNK_CONNECTED() {
+/* nút trên Wokwi */
+void checkButton() {
 
-  Blynk.syncVirtual(V3);
+  static bool lastState = HIGH;
 
-  // <<< BỔ SUNG ĐỒNG BỘ NGAY LẬP TỨC
-  sendSensor();
-  sendTime();
+  bool state = digitalRead(BUTTON_PIN);
+
+  if (state == LOW && lastState == HIGH) {
+
+    systemState = !systemState;
+
+    digitalWrite(LED_PIN, systemState);
+
+    Blynk.virtualWrite(V0, systemState);
+
+    if (!systemState) {
+
+      secondsRun = 0;
+
+      display.showNumberDec(0);
+
+      Blynk.virtualWrite(V3, 0);
+    }
+
+    delay(200);
+  }
+
+  lastState = state;
 }
 
-// ============================
-// SETUP
-// ============================
 void setup() {
 
   Serial.begin(115200);
@@ -113,58 +112,20 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
+  display.setBrightness(7);
+
   dht.begin();
 
-  display.setBrightness(7);
-  display.showNumberDec(0);
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass, "blynk.cloud", 80);
 
-  // WIFI
-  WiFi.begin(ssid, pass);
-
-  Serial.print("Connecting WiFi");
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println(" OK");
-
-  // BLYNK
-  Blynk.config(BLYNK_AUTH_TOKEN, "blynk.cloud", 80);
-  Blynk.connect();
-
-  // TIMER
+  timer.setInterval(1000L, countTime);
   timer.setInterval(2000L, sendSensor);
-  timer.setInterval(1000L, sendTime);
 }
 
-// ============================
-// LOOP
-// ============================
 void loop() {
 
   Blynk.run();
   timer.run();
 
-  static bool lastButton = HIGH;
-  bool button = digitalRead(BUTTON_PIN);
-
-  if (button == LOW && lastButton == HIGH) {
-
-    ledState = !ledState;
-
-    digitalWrite(LED_PIN, ledState);
-
-    Blynk.virtualWrite(V3, ledState);
-
-    if (ledState) {
-      startTime = millis();
-    } else {
-      display.showNumberDec(0);
-      Blynk.virtualWrite(V2, 0);
-    }
-  }
-
-  lastButton = button;
+  checkButton();
 }
