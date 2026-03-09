@@ -1,4 +1,3 @@
-// 1. PHẢI ĐẶT CÁC DÒNG NÀY ĐẦU TIÊN
 #define BLYNK_TEMPLATE_ID "TMPL6iJh7kbPx"
 #define BLYNK_TEMPLATE_NAME "Blynk API"
 #define BLYNK_AUTH_TOKEN "EaAUgSqeTMbJPmTFHI4cyIBblHHC8TnP"
