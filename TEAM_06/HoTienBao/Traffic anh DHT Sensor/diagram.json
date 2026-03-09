@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "author": "Sinh Vien",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht", "top": 50, "left": 180, "attrs": {} },
+    { "type": "wokwi-tm1637-7segment", "id": "disp", "top": -60, "left": 180, "attrs": {"color": "red"} },
+    { "type": "wokwi-led", "id": "led", "top": 120, "left": -100, "attrs": {"color": "green"} },
+    { "type": "wokwi-pushbutton", "id": "btn", "top": 20, "left": -100, "attrs": {"color": "green"} },
+    { "type": "wokwi-resistor", "id": "r1", "top": 160, "left": -60, "attrs": {"value": "220"} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:15", "dht:SDA", "green", [ "v0" ] ],
+    [ "esp:3V3", "dht:VCC", "red", [ "v0" ] ],
+    [ "esp:GND", "dht:GND", "black", [ "v0" ] ],
+    [ "esp:22", "disp:CLK", "blue", [ "v0" ] ],
+    [ "esp:23", "disp:DIO", "green", [ "v0" ] ],
+    [ "esp:5V", "disp:VCC", "red", [ "v0" ] ],
+    [ "esp:GND", "disp:GND", "black", [ "v0" ] ],
+    [ "esp:2", "led:A", "green", [ "v0" ] ],
+    [ "led:C", "r1:1", "black", [ "v0" ] ],
+    [ "r1:2", "esp:GND", "black", [ "v0" ] ],
+    [ "esp:4", "btn:1.l", "green", [ "v0" ] ],
+    [ "btn:2.l", "esp:GND", "black", [ "v0" ] ]
+  ]
+}
