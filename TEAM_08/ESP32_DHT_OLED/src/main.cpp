@@ -2,7 +2,7 @@
 THÔNG TIN NHÓM 08
 1. Nguyễn Ngọc Thành Tài
 2. Trần Văn Quốc Khánh 
-3. ...
+3. Nguyễn Diệu Hằng
 */
 
 #include <Arduino.h>
@@ -47,7 +47,7 @@ void setup() {
   display.setTextColor(WHITE);
 }
 
-// Hàm nhấp nháy LED
+
 void blinkLED(int pin) {
   digitalWrite(pin, HIGH);
   delay(200);
