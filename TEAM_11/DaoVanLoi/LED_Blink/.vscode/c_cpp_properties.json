@@ -8,8 +8,8 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "d:/2025-2026.2.TIN4024.001/TEAM_05/DaoVanLoi/LED_Blink/include",
-                "d:/2025-2026.2.TIN4024.001/TEAM_05/DaoVanLoi/LED_Blink/src",
+                "d:/2025-2026.2.TIN4024.001/TEAM_11/DaoVanLoi/LED_Blink/include",
+                "d:/2025-2026.2.TIN4024.001/TEAM_11/DaoVanLoi/LED_Blink/src",
                 "C:/Users/Admin/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",
                 "C:/Users/Admin/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include",
                 "C:/Users/Admin/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/esp_additions/freertos",
@@ -244,8 +244,8 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "d:/2025-2026.2.TIN4024.001/TEAM_05/DaoVanLoi/LED_Blink/include",
-                    "d:/2025-2026.2.TIN4024.001/TEAM_05/DaoVanLoi/LED_Blink/src",
+                    "d:/2025-2026.2.TIN4024.001/TEAM_11/DaoVanLoi/LED_Blink/include",
+                    "d:/2025-2026.2.TIN4024.001/TEAM_11/DaoVanLoi/LED_Blink/src",
                     "C:/Users/Admin/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",
                     "C:/Users/Admin/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include",
                     "C:/Users/Admin/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/esp_additions/freertos",
