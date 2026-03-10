@@ -1,6 +1,6 @@
 #define BLYNK_TEMPLATE_ID "TMPL6oOVHVFHX"
 #define BLYNK_TEMPLATE_NAME "Blynk API"
-#define BLYNK_AUTH_TOKEN "WozTCNuGPA0sz2nY95_1KnS3SgSpko-Q"
+#define BLYNK_AUTH_TOKEN "1dhkBWBqksbH0X4XD2HabeJJMmPe3VzL"
 
 #include <WiFi.h>
 #include <BlynkSimpleEsp32.h>
@@ -29,7 +29,6 @@ long uptime = 0;
 void getIPLocation() {
 
   HTTPClient http;
-
   http.begin("http://ip4.iothings.vn/?geo=1");
 
   int httpCode = http.GET();
@@ -37,8 +36,7 @@ void getIPLocation() {
   if (httpCode == 200) {
 
     String payload = http.getString();
-
-    Serial.println(payload);
+    Serial.println("Dữ liệu vị trí: " + payload);
 
     String data[7];
     int index = 0;
@@ -60,17 +58,22 @@ void getIPLocation() {
     longitude = data[5];
     latitude = data[6];
 
-    googleLink =
-      "https://www.google.com/maps/place/" +
-      latitude + "," + longitude;
+    googleLink = "https://www.google.com/maps/place/" + latitude + "," + longitude;
 
     Serial.println("IP: " + ipAddress);
     Serial.println("Lat: " + latitude);
     Serial.println("Lon: " + longitude);
     Serial.println("Map: " + googleLink);
 
-    Blynk.virtualWrite(V1, ipAddress);
-    Blynk.virtualWrite(V2, googleLink);
+    if (Blynk.connected()) {
+      Blynk.virtualWrite(V1, ipAddress);
+      Blynk.virtualWrite(V2, googleLink);
+    }
+
+  } else {
+
+    Serial.print("Lỗi lấy IP/Location: ");
+    Serial.println(httpCode);
   }
 
   http.end();
@@ -78,16 +81,18 @@ void getIPLocation() {
 
 void getWeather() {
 
+  if (latitude == "" || longitude == "") return;
+
   HTTPClient http;
 
   String url =
-    "https://api.openweathermap.org/data/2.5/weather?lat=" +
-    latitude +
-    "&lon=" +
-    longitude +
-    "&appid=" +
-    API_KEY +
-    "&units=metric";
+  "http://api.openweathermap.org/data/2.5/weather?lat=" +
+  latitude +
+  "&lon=" +
+  longitude +
+  "&appid=" +
+  API_KEY +
+  "&units=metric";
 
   http.begin(url);
 
@@ -102,10 +107,17 @@ void getWeather() {
 
     float temp = doc["main"]["temp"];
 
-    Serial.print("Temp: ");
+    Serial.print("Nhiệt độ hiện tại: ");
     Serial.println(temp);
 
-    Blynk.virtualWrite(V3, temp);
+    if (Blynk.connected()) {
+      Blynk.virtualWrite(V3, temp);
+    }
+
+  } else {
+
+    Serial.print("Lỗi API thời tiết: ");
+    Serial.println(httpCode);
   }
 
   http.end();
@@ -115,35 +127,59 @@ void updateUptime() {
 
   uptime = millis() / 1000;
 
-  Blynk.virtualWrite(V0, uptime);
+  if (Blynk.connected()) {
+    Blynk.virtualWrite(V0, uptime);
+  }
 
-  display.showNumberDec(uptime);
+  int minutes = (uptime / 60) % 100;
+  int seconds = uptime % 60;
+
+  int displayTime = (minutes * 100) + seconds;
+
+  bool blinkColon = (uptime % 2 == 0);
+
+  display.showNumberDecEx(displayTime, blinkColon ? 0x40 : 0, true);
 }
+
 void setup() {
 
   Serial.begin(115200);
 
+  display.setBrightness(7);
+
+  Serial.print("Đang kết nối WiFi");
+
   WiFi.begin(ssid, pass);
 
   while (WiFi.status() != WL_CONNECTED) {
-    delay(300);
+
+    delay(500);
     Serial.print(".");
   }
 
-  Serial.println("WiFi Connected");
+  Serial.println("\nWiFi Connected");
 
-  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+  Serial.print("Đang kết nối Blynk...");
 
-  display.setBrightness(7);
+  Blynk.config(BLYNK_AUTH_TOKEN, "blynk.cloud", 80);
+
+  bool b = Blynk.connect(5000);
+
+  Serial.print("OK?: ");
+  Serial.println(b);
 
   getIPLocation();
+  getWeather();
 
   timer.setInterval(1000L, updateUptime);
-  timer.setInterval(10000L, getWeather);
+  timer.setInterval(60000L, getWeather);
 }
 
 void loop() {
 
-  Blynk.run();
+  if (Blynk.connected()) {
+    Blynk.run();
+  }
+
   timer.run();
 }

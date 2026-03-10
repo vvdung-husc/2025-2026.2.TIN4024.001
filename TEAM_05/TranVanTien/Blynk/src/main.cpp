@@ -1,9 +1,9 @@
-// --- COPY VÀ DÁN 3 DÒNG BLYNK CỦA BẠN VÀO ĐÂY ---
+// --- THÔNG TIN DỰ ÁN BLYNK CỦA BẠN ---
 #define BLYNK_TEMPLATE_ID "TMPL6QoftEiTy"
 #define BLYNK_TEMPLATE_NAME "Blynkled"
 #define BLYNK_AUTH_TOKEN "BwhDV3kdHZ1V_PZh-EFkGng7MO4Za8kG"
 
-// Khai báo in thông tin BLYNK ra Serial Monitor
+// Bật tính năng in log của Blynk ra Serial Monitor
 #define BLYNK_PRINT Serial
 
 #include <Arduino.h>
@@ -14,7 +14,6 @@
 #include <TM1637Display.h>
 
 // --- THÔNG TIN WIFI CỦA WOKWI (BẮT BUỘC) ---
-// Mạng Wokwi-GUEST là mạng giả lập internet riêng của Wokwi, không cần pass
 char ssid[] = "Wokwi-GUEST";
 char pass[] = "";
 
@@ -36,7 +35,16 @@ int uptime = 0;
 bool isDeviceOn = false; // Trạng thái của Đèn và Màn hình
 int lastBtnState = HIGH; // Mặc định nút nhấn nhả (Pull-up)
 
-// 1. Hàm nhận lệnh từ Nút nhấn trên Blynk (Virtual Pin V1)
+// 👉 1. Hàm này tự động chạy 1 lần duy nhất khi ESP32 kết nối Blynk thành công
+BLYNK_CONNECTED() {
+  // Gửi tên của bạn lên V4 (Nhớ cài đặt V4 là String trên Web nhé)
+  Blynk.virtualWrite(V4, "Tran Van Tien");
+  
+  // Đồng bộ trạng thái thực tế của nút V1 từ App về mạch
+  Blynk.syncVirtual(V1); 
+}
+
+// 👉 2. Hàm nhận lệnh từ Nút nhấn trên App Blynk (Virtual Pin V1)
 BLYNK_WRITE(V1) {
   isDeviceOn = param.asInt(); // Đọc giá trị từ app (0 hoặc 1)
   digitalWrite(LED_PIN, isDeviceOn ? HIGH : LOW);
@@ -46,10 +54,10 @@ BLYNK_WRITE(V1) {
   }
 }
 
-// 2. Hàm đọc cảm biến và gửi lên Blynk (Chạy mỗi 1 giây)
+// 👉 3. Hàm đọc cảm biến và gửi lên Blynk (Chạy mỗi 2 giây)
 void sendDataToBlynk() {
-  // Gửi thời gian hoạt động
-  uptime++;
+  // Cập nhật và gửi thời gian hoạt động
+  uptime += 2; 
   Blynk.virtualWrite(V0, uptime);
 
   // Hiển thị thời gian lên TM1637 nếu trạng thái đang BẬT
@@ -57,17 +65,18 @@ void sendDataToBlynk() {
     display.showNumberDec(uptime);
   }
 
-  // Đọc và gửi Nhiệt độ, Độ ẩm
+  // Đọc cảm biến nhiệt độ & độ ẩm
   float t = dht.readTemperature();
   float h = dht.readHumidity();
 
+  // Chỉ gửi nếu dữ liệu hợp lệ (không bị lỗi NaN)
   if (!isnan(t) && !isnan(h)) {
-    Blynk.virtualWrite(V2, t); // V2 cho Nhiệt độ
-    Blynk.virtualWrite(V3, h); // V3 cho Độ ẩm
+    Blynk.virtualWrite(V2, t); 
+    Blynk.virtualWrite(V3, h);
   }
 }
 
-// 3. Hàm xử lý nút nhấn cứng (Trên sơ đồ mạch)
+// 👉 4. Hàm xử lý nút nhấn cứng trên mạch
 void checkPhysicalButton() {
   int btnState = digitalRead(BTN_PIN);
   
@@ -76,7 +85,9 @@ void checkPhysicalButton() {
     isDeviceOn = !isDeviceOn; // Đảo trạng thái
     digitalWrite(LED_PIN, isDeviceOn ? HIGH : LOW);
     
-    if (!isDeviceOn) display.clear();
+    if (!isDeviceOn) {
+      display.clear();
+    }
     
     // Cập nhật trạng thái mới này lên Nút nhấn trên App Blynk
     Blynk.virtualWrite(V1, isDeviceOn);
@@ -87,25 +98,26 @@ void checkPhysicalButton() {
 void setup() {
   Serial.begin(115200);
 
-  // Cài đặt chân
+  // Cài đặt chân I/O
   pinMode(LED_PIN, OUTPUT);
   pinMode(BTN_PIN, INPUT_PULLUP);
 
-  // Khởi động thiết bị
+  // Khởi động các thiết bị ngoại vi
   dht.begin();
   display.setBrightness(0x0f); // Độ sáng tối đa
   display.clear();
-
+  
   // Kết nối Blynk
   Serial.println("Dang ket noi WiFi va Blynk...");
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
 
-  // Thiết lập Timer
-  timer.setInterval(1000L, sendDataToBlynk);      // Gửi dữ liệu mỗi 1s
+  // Thiết lập Timer chạy tuần hoàn
+  timer.setInterval(2000L, sendDataToBlynk);      // Gửi dữ liệu mỗi 2s (Đảm bảo DHT22 không treo)
   timer.setInterval(100L, checkPhysicalButton);   // Kiểm tra nút nhấn mỗi 0.1s
 }
 
 void loop() {
+  // Chỉ gọi 2 lệnh này trong loop() để đảm bảo Blynk không bị ngắt kết nối
   Blynk.run();
   timer.run();
 }
