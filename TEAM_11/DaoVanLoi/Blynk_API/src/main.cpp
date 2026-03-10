@@ -2,7 +2,6 @@
 #define BLYNK_TEMPLATE_NAME "Blynk API"
 #define BLYNK_AUTH_TOKEN "EaAUgSqeTMbJPmTFHI4cyIBblHHC8TnP"
 
-// 2. SAU ĐÓ MỚI ĐẾN CÁC THƯ VIỆN
 #include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
@@ -10,7 +9,6 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
-// --- THÔNG SỐ KẾT NỐI ---
 #define WIFI_SSID "Wokwi-GUEST"
 #define WIFI_PASSWORD ""
 #define WIFI_CHANNEL 6
