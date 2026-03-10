@@ -2,34 +2,31 @@
 #include <WiFiClientSecure.h>
 #include <UniversalTelegramBot.h>
 #include <ArduinoJson.h>
+#include "lwip/dns.h"
 
-// 1. Cấu hình WiFi (Trên Wokwi dùng WiFi mặc định này)
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 
-// 2. Cấu hình Telegram Bot
-#define BOT_TOKEN "ĐIỀN_TOKEN_CỦA_BẠN_VÀO_ĐÂY"
-#define CHAT_ID "ĐIỀN_CHAT_ID_CỦA_BẠN_VÀO_ĐÂY"
+// Cấu hình Token và Chat ID của bạn
+#define BOT_TOKEN "8529793156:AAF9WuRIembzPTatFVQjDaGnthrIJMMDoBA"
+#define CHAT_ID "-5221229296"
 
 WiFiClientSecure secured_client;
 UniversalTelegramBot bot(BOT_TOKEN, secured_client);
 
-// 3. Khai báo chân linh kiện
 const int ledPin = 23;
 const int pirPin = 27;
 
 bool ledState = LOW;
-int botRequestDelay = 1000;
+int botRequestDelay = 2000;
 unsigned long lastTimeBotRan;
 
-// Biến lưu trạng thái cảm biến PIR
 int pirState = LOW;
 int lastPirState = LOW;
 
 void handleNewMessages(int numNewMessages) {
   for (int i = 0; i < numNewMessages; i++) {
     String chat_id = String(bot.messages[i].chat_id);
-    // Kiểm tra xem tin nhắn có đến từ group hợp lệ không
     if (chat_id != CHAT_ID) {
       bot.sendMessage(chat_id, "Bạn không có quyền điều khiển bot này!", "");
       continue;
@@ -73,19 +70,42 @@ void setup() {
   pinMode(pirPin, INPUT);
   digitalWrite(ledPin, ledState);
 
-  // Kết nối WiFi
   Serial.print("Connecting to WiFi");
-  WiFi.begin(ssid, password);
-  secured_client.setCACert(TELEGRAM_CERTIFICATE_ROOT); // Cấp quyền SSL cho Telegram
+
+  // 1. Cài DNS chính (8.8.8.8) và DNS phụ (8.8.4.4) của Google
+  IPAddress primaryDNS(8, 8, 8, 8);
+  IPAddress secondaryDNS(8, 8, 4, 4);
+  WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, primaryDNS, secondaryDNS);
+
+  // 2. Thêm tham số 6 (kênh WiFi) giúp giả lập Wokwi kết nối mượt hơn
+  WiFi.begin(ssid, password, 6);
+
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
     delay(500);
   }
   Serial.println("\nWiFi connected.");
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
+
+  // 3. Override DNS trực tiếp tầng LwIP (bypass Wokwi DNS override)
+  ip_addr_t dnsServer;
+  IP4_ADDR(&dnsServer.u_addr.ip4, 8, 8, 8, 8);
+  dnsServer.type = IPADDR_TYPE_V4;
+  dns_setserver(0, &dnsServer);
+  Serial.print("DNS override: 8.8.8.8 -> ");
+  Serial.println(WiFi.dnsIP());
+
+  // 4. Bỏ qua xác thực chứng chỉ SSL
+  secured_client.setInsecure();
+  secured_client.setTimeout(15);
+
+  // 5. Chờ DNS ổn định
+  delay(1500);
 }
 
 void loop() {
-  // 1. Kiểm tra tin nhắn Telegram đến
+  // Kiểm tra tin nhắn Telegram
   if (millis() - lastTimeBotRan > botRequestDelay) {
     int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
     while (numNewMessages) {
@@ -95,7 +115,7 @@ void loop() {
     lastTimeBotRan = millis();
   }
 
-  // 2. Kiểm tra cảm biến PIR (Cảnh báo chuyển động)
+  // Kiểm tra cảm biến PIR
   pirState = digitalRead(pirPin);
   if (pirState == HIGH && lastPirState == LOW) {
     Serial.println("Phát hiện chuyển động!");
