@@ -1,15 +1,4 @@
-// Thêm biến này (global)
-unsigned long lastTimeBotRan = 0;
-const unsigned long BOT_MTBS = 1000;  // Check Telegram mỗi 1 giây (nhỏ hơn = nhanh hơn, nhưng tốn CPU)
 #include <Arduino.h>
-
-/*
-  Rui Santos
-  Complete project details at https://RandomNerdTutorials.com/telegram-esp32-motion-detection-arduino/
-  
-  Project created using Brian Lough's Universal Telegram Bot Library: https://github.com/witnessmenow/Universal-Arduino-Telegram-Bot
-*/
-
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <UniversalTelegramBot.h>
@@ -28,10 +17,19 @@ const char* password = "";
 WiFiClientSecure client;
 UniversalTelegramBot bot(BOTtoken, client);
 
-const int motionSensor = 27; // PIR Motion Sensor
+// --- ĐỊNH NGHĨA CHÂN THIẾT BỊ ---
+const int motionSensor = 27; // Cảm biến chuyển động PIR
+const int ledPin = 23;     
+
 bool motionDetected = false;
 
-//Định dạng chuỗi %s,%d,...
+// Các biến phục vụ việc nhận tin nhắn
+unsigned long lastTimeBotRan = 0;
+const unsigned long botRequestDelay = 1000; // Kiểm tra tin nhắn mỗi 1 giây
+
+// --- CÁC HÀM XỬ LÝ ---
+
+// Hàm định dạng chuỗi
 String StringFormat(const char* fmt, ...){
   va_list vaArgs;
   va_start(vaArgs, fmt);
@@ -48,30 +46,65 @@ String StringFormat(const char* fmt, ...){
   return String(s);
 }
 
-// Indicates when motion is detected
+// Hàm ngắt (Interrupt) khi phát hiện chuyển động
 void IRAM_ATTR detectsMovement() {
-  //Serial.println("MOTION DETECTED!!!");
   motionDetected = true;
 }
 
+// Hàm xử lý lệnh điều khiển đèn LED từ Telegram
+void handleNewMessages(int numNewMessages) {
+  for (int i = 0; i < numNewMessages; i++) {
+    String chat_id = String(bot.messages[i].chat_id);
+    String text = bot.messages[i].text;
+    String from_name = bot.messages[i].from_name;
 
+    if (text == "/start") {
+      String welcome = "Xin chào, " + from_name + ".\n";
+      welcome += "Sử dụng các lệnh sau để điều khiển hệ thống:\n\n";
+      welcome += "Gửi /led_on bật sáng đèn\n";
+      welcome += "Gửi /led_off để tắt đèn\n";
+      welcome += "Gửi /get_state để yêu cầu trạng thái đèn hiện tại";
+      bot.sendMessage(chat_id, welcome, "");
+    }
+    else if (text == "/led_on") {
+      digitalWrite(ledPin, HIGH);
+      bot.sendMessage(chat_id, "LED bật sáng", "");
+    }
+    else if (text == "/led_off") {
+      digitalWrite(ledPin, LOW);
+      bot.sendMessage(chat_id, "LED is OFF", "");
+    }
+    else if (text == "/get_state") {
+      if (digitalRead(ledPin) == HIGH) {
+        bot.sendMessage(chat_id, "LED is ON", "");
+      } else {
+        bot.sendMessage(chat_id, "LED is OFF", "");
+      }
+    }
+  }
+}
+
+// --- SETUP & KHỞI ĐỘNG ---
 
 void setup() {
   Serial.begin(115200);
   delay(100);
-  Serial.println("\n=== IoT Telegram Motion Detection - Starting ===");
+  Serial.println("\n=== IoT Telegram Motion Detection & LED - Starting ===");
 
-  pinMode(motionSensor, INPUT);
+  // 1. Cấu hình chân phần cứng
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, LOW); // Đảm bảo đèn tắt khi mới khởi động
+  pinMode(motionSensor, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(motionSensor), detectsMovement, RISING);
 
+  // 2. KẾT NỐI WIFI (Cấu hình IP tĩnh bypass DNS)
   Serial.printf("Connecting to WiFi: %s ", ssid);
-
-  // FIX DNS: Dùng IP tĩnh để bypass DHCP DNS (10.13.37.1 rác)
-  IPAddress localIP(10, 13, 37, 55);       // Chọn IP chưa dùng (tránh trùng .2)
+  
+  IPAddress localIP(10, 13, 37, 55);       
   IPAddress gateway(10, 13, 37, 1);
   IPAddress subnet(255, 255, 255, 0);
-  IPAddress primaryDNS(8, 8, 8, 8);         // Google DNS
-  IPAddress secondaryDNS(1, 1, 1, 1);       // Cloudflare DNS – thường fix tốt hơn
+  IPAddress primaryDNS(8, 8, 8, 8);         
+  IPAddress secondaryDNS(1, 1, 1, 1);        
 
   if (!WiFi.config(localIP, gateway, subnet, primaryDNS, secondaryDNS)) {
     Serial.println("\n[ERROR] WiFi.config failed!");
@@ -80,7 +113,6 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
-  // Timeout dài hơn, in dấu chấm mỗi 500ms
   unsigned long startAttempt = millis();
   while (WiFi.status() != WL_CONNECTED && millis() - startAttempt < 30000) {
     Serial.print(".");
@@ -89,21 +121,19 @@ void setup() {
 
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("\n[CRITICAL] WiFi connect FAILED after 30s! Restarting...");
-    ESP.restart();  // Tự reset nếu fail
+    ESP.restart();  
   }
 
   Serial.println("\nWiFi connected SUCCESS!");
   Serial.printf("IP: %s\n", WiFi.localIP().toString().c_str());
-  Serial.printf("Gateway: %s\n", WiFi.gatewayIP().toString().c_str());
-  Serial.printf("DNS primary: %s\n", WiFi.dnsIP(0).toString().c_str());
-  Serial.printf("DNS secondary: %s\n", WiFi.dnsIP(1).toString().c_str());
 
-  client.setInsecure();  // Bắt buộc cho HTTPS Telegram trên Wokwi
+  client.setInsecure(); 
 
+  // Wokwi cần một khoảng nghỉ dài để ổn định Gateway mạng
   Serial.println("Waiting for network full stable (Wokwi needs this)...");
-  delay(10000);  // Tăng lên 10 giây – nhiều case fix nhờ delay dài
+  delay(10000); 
 
-  // Test DNS resolve ngay lập tức (debug siêu quan trọng)
+  // 3. Test DNS ngay lập tức
   IPAddress resolved;
   if (WiFi.hostByName("api.telegram.org", resolved)) {
     Serial.printf("DNS TEST SUCCESS: api.telegram.org -> %s\n", resolved.toString().c_str());
@@ -111,32 +141,42 @@ void setup() {
     Serial.println("[DNS TEST FAIL] Still cannot resolve api.telegram.org!");
   }
 
-  // Gửi test message với info đầy đủ
-  String testMsg = "Device ONLINE!\n"
-                   "IP: " + WiFi.localIP().toString() + "\n"
-                   "DNS: " + WiFi.dnsIP(0).toString() + "\n"
-                   "Uptime: " + String(millis()/1000) + "s";
+  // 4. Báo cáo hệ thống sẵn sàng qua Telegram
+  String testMsg = "Hệ thống IoT đã sẵn sàng!\n";
+  testMsg += "Đã kết nối thành công điều khiển LED và Cảm biến chuyển động.";
 
-  Serial.println("Sending test message to Telegram...");
+  Serial.println("Sending welcome message to Telegram...");
   if (bot.sendMessage(GROUP_ID, testMsg, "")) {
     Serial.println("→ Test message SENT OK!");
   } else {
-    Serial.println("→ Send FAILED – check token/GROUP_ID or DNS still broken");
+    Serial.println("→ Send FAILED - check network or ID");
   }
 
-  Serial.println("=== Setup done – ready for motion detection ===");
+  Serial.println("=== Setup done - System Running ===");
 }
 
+// --- VÒNG LẶP CHÍNH ---
 
 void loop() {
   static uint count_ = 0;
 
+  // 1. Quét cảm biến chuyển động
   if(motionDetected){
     ++count_;
-    Serial.print(count_);Serial.println(". MOTION DETECTED => Waiting to send to Telegram");    
-    String msg = StringFormat("%u => Motion detected!",count_);
+    Serial.print(count_); Serial.println(". MOTION DETECTED => Sending to Telegram");    
+    String msg = StringFormat("%u => Motion detected! Có chuyển động lạ!", count_);
     bot.sendMessage(GROUP_ID, msg.c_str());
-    Serial.print(count_);Serial.println(". Sent successfully to Telegram: Motion Detected");
+    Serial.print(count_); Serial.println(". Sent successfully to Telegram");
     motionDetected = false;
+  }
+
+  // 2. Chờ và quét tin nhắn lệnh từ Telegram
+  if (millis() > lastTimeBotRan + botRequestDelay)  {
+    int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+    while(numNewMessages) {
+      handleNewMessages(numNewMessages);
+      numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+    }
+    lastTimeBotRan = millis();
   }
 }
