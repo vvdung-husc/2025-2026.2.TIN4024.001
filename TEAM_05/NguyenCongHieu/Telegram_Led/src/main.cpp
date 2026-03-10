@@ -3,13 +3,10 @@
 #include <UniversalTelegramBot.h>
 #include <ArduinoJson.h>
 #include "lwip/dns.h"
+#include "secrets.h"
 
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
-
-// Cấu hình Token và Chat ID của bạn
-#define BOT_TOKEN "8529793156:AAF9WuRIembzPTatFVQjDaGnthrIJMMDoBA"
-#define CHAT_ID "-5221229296"
 
 WiFiClientSecure secured_client;
 UniversalTelegramBot bot(BOT_TOKEN, secured_client);
