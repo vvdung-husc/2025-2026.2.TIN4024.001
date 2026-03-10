@@ -135,7 +135,7 @@ void setup() {
 void loop() {
   static uint count_ = 0;
 
-  // ===== PIR phát hiện chuyển động =====
+  // PIR phát hiện chuyển động
   if(motionDetected){
     ++count_;
     Serial.print(count_);
@@ -150,7 +150,7 @@ void loop() {
     motionDetected = false;
   }
 
-  // ===== Kiểm tra lệnh Telegram =====
+  // Kiểm tra lệnh Telegram
   if (millis() - lastTimeBotRan > botRequestDelay) {
 
     int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
@@ -162,27 +162,4 @@ void loop() {
 
     lastTimeBotRan = millis();
   }
-  int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
-
-while (numNewMessages) {
-
-  for (int i = 0; i < numNewMessages; i++) {
-
-    String text = bot.messages[i].text;
-    String chat_id = bot.messages[i].chat_id;
-
-    if (text == "/start") {
-
-      String welcome = "Xin chào.\n";
-      welcome += "Sử dụng các lệnh sau để điều khiển đèn LED.\n\n";
-      welcome += "/led_on bật đèn\n";
-      welcome += "/led_off tắt đèn\n";
-
-      bot.sendMessage(chat_id, welcome, "");
-    }
-
-  }
-
-  numNewMessages = bot.getUpdates(bot.last_message_received + 1);
-}
 }
