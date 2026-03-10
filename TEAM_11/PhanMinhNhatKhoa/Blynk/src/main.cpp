@@ -1,116 +1,137 @@
+#include <Arduino.h>
+#include <TM1637Display.h>
+#include <DHT.h> // Thêm thư viện DHT
+
+/* Điền thông tin Blynk của bạn vào đây */
 #define BLYNK_TEMPLATE_ID "TMPL6yrROMUTd"
 #define BLYNK_TEMPLATE_NAME "He Thong Giam Sat"
-#define BLYNK_AUTH_TOKEN "SMLQAiTuOQK50uNEiYDNXlvlSqOa89hi"
-#define BLYNK_PRINT Serial
+#define BLYNK_AUTH_TOKEN "OatJPynbJCRUlXD4nyATNRlrYr1vJ_FY"
 
-#include <Arduino.h>
 #include <WiFi.h>
+#include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
-#include <DHT.h>
-#include <TM1637Display.h>
 
-// --- CẤU HÌNH CHÂN PIN ---
-#define PIN_DHT 16      
-#define PIN_LED 21      
-#define PIN_BTN 23      
-#define CLK_TM1637 18   
-#define DIO_TM1637 19   
+char ssid[] = "Wokwi-GUEST"; 
+char pass[] = "";             
 
-DHT dht(PIN_DHT, DHT22);
-TM1637Display display(CLK_TM1637, DIO_TM1637);
-BlynkTimer timer;
+#define btnBLED  23
+#define pinBLED  21
+#define CLK 18  
+#define DIO 19  
 
-char ssid[] = "Wokwi-GUEST";
-char pass[] = "";
+// --- Cấu hình cảm biến DHT22 ---
+#define DHTPIN 4        // Chân kết nối DHT22
+#define DHTTYPE DHT22   // Loại cảm biến
+DHT dht(DHTPIN, DHTTYPE);
+// -------------------------------
 
-// Hàm đọc cảm biến
-void sendSensorData() {
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
+ulong currentMiliseconds = 0; 
+bool blueButtonON = true;     
 
-  if (isnan(h) || isnan(t)) {
-    Serial.println("Lỗi: Không đọc được DHT22!");
-    return;
-  }
+TM1637Display display(CLK, DIO);
 
-  // Luôn luôn hiển thị lên màn hình LED 7 đoạn dù có mạng hay không
-  display.showNumberDec(round(t), false, 2, 0);
-  
-  // Nếu có kết nối Blynk thì mới đẩy lên App
-  if (Blynk.connected()) {
-    Blynk.virtualWrite(V1, t);
-    Blynk.virtualWrite(V2, h);
-    Serial.printf("Online - Gửi Blynk -> Nhiệt độ: %.1f°C | Độ ẩm: %.1f%%\n", t, h);
-  } else {
-    Serial.printf("Offline - Nhiệt độ: %.1f°C | Độ ẩm: %.1f%%\n", t, h);
-  }
-}
-
-// Nhận lệnh từ App
-BLYNK_WRITE(V3) {
-  int value = param.asInt();
-  digitalWrite(PIN_LED, value);
-}
+bool IsReady(ulong &ulTimer, uint32_t milisecond);
+void updateBlueButton();
+void uptimeBlynk();
+void updateDHT22(); // Hàm mới để đọc nhiệt độ/độ ẩm
 
 void setup() {
   Serial.begin(115200);
-  
-  pinMode(PIN_LED, OUTPUT);
-  pinMode(PIN_BTN, INPUT_PULLUP);
-
-  dht.begin();
+  pinMode(pinBLED, OUTPUT);
+  pinMode(btnBLED, INPUT_PULLUP);
+    
   display.setBrightness(0x0f);
+  dht.begin(); // Khởi động DHT22
   
-  Serial.println("\n--- ĐANG KẾT NỐI WIFI ---");
-  WiFi.begin(ssid, pass);
-  
-  // Chỉ đợi WiFi 5 giây thôi, không được thì bỏ qua chạy tiếp
-  int retries = 0;
-  while (WiFi.status() != WL_CONNECTED && retries < 10) {
-    delay(500);
-    Serial.print(".");
-    retries++;
-  }
-  
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("\nWiFi OK! Bắt đầu cấu hình Blynk...");
-    // Dùng Blynk.config thay cho Blynk.begin để không bị treo máy
-    Blynk.config(BLYNK_AUTH_TOKEN, "blynk.cloud", 80); 
-  } else {
-    Serial.println("\nWiFi Lỗi! Chuyển sang chạy Offline.");
-  }
+  Serial.print("Connecting to ");Serial.println(ssid);
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
 
-  // Hẹn giờ đọc cảm biến 2 giây/lần
-  timer.setInterval(2000L, sendSensorData);
+  Serial.println("\nWiFi connected");
+  
+  digitalWrite(pinBLED, blueButtonON? HIGH : LOW);  
+  Blynk.virtualWrite(V1, blueButtonON); 
+  
+  Serial.println("== START ==>");
 }
 
-bool lastBtnState = HIGH;
+void loop() {  
+  Blynk.run(); 
 
-void loop() {
-  // Chỉ chạy Blynk nếu kết nối thành công
-  if (Blynk.connected()) {
-    Blynk.run();
+  currentMiliseconds = millis();
+  uptimeBlynk();
+  updateBlueButton();
+  updateDHT22(); // Chạy hàm cập nhật cảm biến
+}
+
+bool IsReady(ulong &ulTimer, uint32_t milisecond) {
+  if (currentMiliseconds - ulTimer < milisecond) return false;
+  ulTimer = currentMiliseconds;
+  return true;
+}
+
+void updateBlueButton(){
+  static ulong lastTime = 0;
+  static int lastValue = HIGH;
+  if (!IsReady(lastTime, 50)) return;
+  int v = digitalRead(btnBLED);
+  if (v == lastValue) return;
+  lastValue = v;
+  if (v == LOW) return;
+
+  if (!blueButtonON){
+    Serial.println("Blue Light ON");
+    digitalWrite(pinBLED, HIGH);
+    blueButtonON = true;
+    Blynk.virtualWrite(V1, blueButtonON);
   } else {
-    // Tự động kết nối ngầm Blynk ở background
-    if (WiFi.status() == WL_CONNECTED) {
-       Blynk.connect(); 
-    }
-  }
-  
-  // LUÔN LUÔN chạy Timer để đọc cảm biến và hiện màn hình
-  timer.run();
+    Serial.println("Blue Light OFF");
+    digitalWrite(pinBLED, LOW);    
+    blueButtonON = false;
+    Blynk.virtualWrite(V1, blueButtonON);
+    display.clear();
+  }    
+}
 
-  // Xử lý nút nhấn vật lý
-  bool btnState = digitalRead(PIN_BTN);
-  if (btnState == LOW && lastBtnState == HIGH) {
-    int currentLedState = digitalRead(PIN_LED);
-    digitalWrite(PIN_LED, !currentLedState);
-    
-    if (Blynk.connected()) {
-      Blynk.virtualWrite(V3, !currentLedState); 
-    }
-    Serial.println("Đã nhấn nút thay đổi đèn!");
-    delay(200);
+void uptimeBlynk(){
+  static ulong lastTime = 0;
+  if (!IsReady(lastTime, 1000)) return; 
+  ulong value = lastTime / 1000;
+  Blynk.virtualWrite(V0, value);  
+  if (blueButtonON){
+    display.showNumberDec(value);
   }
-  lastBtnState = btnState;
+}
+
+// Hàm mới: Đọc và gửi dữ liệu DHT22 lên Blynk mỗi 2 giây
+void updateDHT22() {
+  static ulong lastTime = 0;
+  if (!IsReady(lastTime, 2000)) return; // Đọc 2 giây/lần
+
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  // Kiểm tra lỗi nếu không đọc được
+  if (isnan(h) || isnan(t)) {
+    Serial.println("Lỗi: Không thể đọc dữ liệu từ DHT22!");
+    return;
+  }
+
+  // Gửi lên Blynk qua V2 và V3
+  Blynk.virtualWrite(V2, t);
+  Blynk.virtualWrite(V3, h);
+  
+  Serial.print("Nhiệt độ: "); Serial.print(t);
+  Serial.print(" °C - Độ ẩm: "); Serial.print(h); Serial.println(" %");
+}
+
+BLYNK_WRITE(V1) {
+  blueButtonON = param.asInt();  
+  if (blueButtonON){
+    Serial.println("Blynk -> Blue Light ON");
+    digitalWrite(pinBLED, HIGH);
+  } else {
+    Serial.println("Blynk -> Blue Light OFF");
+    digitalWrite(pinBLED, LOW);   
+    display.clear(); 
+  }
 }
