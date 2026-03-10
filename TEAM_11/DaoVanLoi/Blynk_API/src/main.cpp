@@ -70,7 +70,7 @@ void updateWeather() {
     JsonDocument doc;
     deserializeJson(doc, http.getString());
     float temp = doc["main"]["temp"];
-    Blynk.virtualWrite(V1, temp); // Chân Nhiệt độ
+    Blynk.virtualWrite(V1, temp); 
   }
   http.end();
 }
@@ -79,7 +79,7 @@ void uptimeBlynk() {
   static unsigned long lastUptimeTime = 0;
   if (!IsReady(lastUptimeTime, 1000)) return;
   Blynk.virtualWrite(V0, millis() / 1000); // Chân Uptime
-  Blynk.virtualWrite(V6, "ĐÀO VĂN LỢI"); // Luôn gửi tên định danh
+  Blynk.virtualWrite(V6, "ĐÀO VĂN LỢI"); 
 }
 
 void setup() {
