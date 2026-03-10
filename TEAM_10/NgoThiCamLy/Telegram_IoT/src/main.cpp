@@ -19,14 +19,20 @@ const char* password = "";
 // Initialize Telegram BOT
 #define BOTtoken "8235124253:AAHt8WxIYQEdb9a_EwdyQEUjPe2jKgYrpmU"  // your Bot Token (Get from Botfather)
 
-// Dùng ChatGPT để nhờ hướng dẫn tìm giá trị GROUP_ID này
-#define GROUP_ID "-4663178968" //thường là một số âm
+// tìm giá trị GROUP_ID này
+#define GROUP_ID "-4663178968" // thường là một số âm
 
 WiFiClientSecure client;
 UniversalTelegramBot bot(BOTtoken, client);
 
 const int motionSensor = 27; // PIR Motion Sensor
+const int ledPin = 23;       // LED
+
 bool motionDetected = false;
+bool ledState = false;
+
+unsigned long lastTimeBotRan;
+const int botRequestDelay = 1000;
 
 //Định dạng chuỗi %s,%d,...
 String StringFormat(const char* fmt, ...){
@@ -47,8 +53,50 @@ String StringFormat(const char* fmt, ...){
 
 // Indicates when motion is detected
 void IRAM_ATTR detectsMovement() {
-  //Serial.println("MOTION DETECTED!!!");
   motionDetected = true;
+}
+
+// ===== XỬ LÝ LỆNH TELEGRAM =====
+void handleNewMessages(int numNewMessages) {
+
+  for (int i = 0; i < numNewMessages; i++) {
+
+    String text = bot.messages[i].text;
+    String chat_id = bot.messages[i].chat_id;
+
+    if (text == "/start") {
+      String welcome = "Xin chào, Cẩm Ly.\n";
+      welcome += "Sử dụng các lệnh sau để điều khiển đèn LED.\n\n";
+      welcome += "Gửi /led_on bật sáng đèn\n";
+      welcome += "Gửi /led_off để tắt đèn\n";
+      welcome += "Gửi /get_state để yêu cầu trạng thái đèn hiện tại";
+
+      bot.sendMessage(chat_id, welcome, "");
+    }
+
+    if (text == "/led_on") {
+      digitalWrite(ledPin, HIGH);
+      ledState = true;
+      bot.sendMessage(chat_id, "LED bật sáng", "");
+    }
+
+    if (text == "/led_off") {
+      digitalWrite(ledPin, LOW);
+      ledState = false;
+      bot.sendMessage(chat_id, "LED đã tắt", "");
+    }
+
+    if (text == "/get_state") {
+
+      if (ledState) {
+        bot.sendMessage(chat_id, "LED is ON", "");
+      } else {
+        bot.sendMessage(chat_id, "LED is OFF", "");
+      }
+
+    }
+
+  }
 }
 
 void setup() {
@@ -56,7 +104,12 @@ void setup() {
 
   // PIR Motion Sensor mode INPUT_PULLUP
   pinMode(motionSensor, INPUT_PULLUP);
-  // Set motionSensor pin as interrupt, assign interrupt function and set RISING mode
+
+  // LED
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, LOW);
+
+  // Set motionSensor pin as interrupt
   attachInterrupt(digitalPinToInterrupt(motionSensor), detectsMovement, RISING);
 
   // Attempt to connect to Wifi network:
@@ -65,6 +118,7 @@ void setup() {
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
+
   client.setCACert(TELEGRAM_CERTIFICATE_ROOT); // Add root certificate for api.telegram.org
   
   while (WiFi.status() != WL_CONNECTED) {
@@ -74,20 +128,61 @@ void setup() {
 
   Serial.println("");
   Serial.println("WiFi connected");
-  
+
   bot.sendMessage(GROUP_ID, "IoT Developer started up");
 }
-
 
 void loop() {
   static uint count_ = 0;
 
+  // ===== PIR phát hiện chuyển động =====
   if(motionDetected){
     ++count_;
-    Serial.print(count_);Serial.println(". MOTION DETECTED => Waiting to send to Telegram");    
+    Serial.print(count_);
+    Serial.println(". MOTION DETECTED => Waiting to send to Telegram");
+
     String msg = StringFormat("%u => Motion detected!",count_);
     bot.sendMessage(GROUP_ID, msg.c_str());
-    Serial.print(count_);Serial.println(". Sent successfully to Telegram: Motion Detected");
+
+    Serial.print(count_);
+    Serial.println(". Sent successfully to Telegram: Motion Detected");
+
     motionDetected = false;
   }
+
+  // ===== Kiểm tra lệnh Telegram =====
+  if (millis() - lastTimeBotRan > botRequestDelay) {
+
+    int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+
+    while (numNewMessages) {
+      handleNewMessages(numNewMessages);
+      numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+    }
+
+    lastTimeBotRan = millis();
+  }
+  int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+
+while (numNewMessages) {
+
+  for (int i = 0; i < numNewMessages; i++) {
+
+    String text = bot.messages[i].text;
+    String chat_id = bot.messages[i].chat_id;
+
+    if (text == "/start") {
+
+      String welcome = "Xin chào.\n";
+      welcome += "Sử dụng các lệnh sau để điều khiển đèn LED.\n\n";
+      welcome += "/led_on bật đèn\n";
+      welcome += "/led_off tắt đèn\n";
+
+      bot.sendMessage(chat_id, welcome, "");
+    }
+
+  }
+
+  numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+}
 }
