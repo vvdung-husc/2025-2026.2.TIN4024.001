@@ -61,10 +61,10 @@ void handleNewMessages(int numNewMessages) {
     Serial.println(text);
 
     if (text == "/start") {
-      String welcome = "Xin chao \n";
-      welcome += "/led_on : Bat den\n";
-      welcome += "/led_off : Tat den\n";
-      welcome += "/state : Trang thai den\n";
+      String welcome = "Xin chào \n";
+      welcome += "/led_on : Bật đèn\n";
+      welcome += "/led_off : Tắt đèn\n";
+      welcome += "/state : Trạng thái đèn\n";
 
       bot.sendMessage(chat_id, welcome, "");
     }
@@ -72,20 +72,20 @@ void handleNewMessages(int numNewMessages) {
     if (text == "/led_on") {
       digitalWrite(ledPin, HIGH);
       ledState = HIGH;
-      bot.sendMessage(chat_id, "LED da BAT", "");
+      bot.sendMessage(chat_id, "LED đã bật", "");
     }
 
     if (text == "/led_off") {
       digitalWrite(ledPin, LOW);
       ledState = LOW;
-      bot.sendMessage(chat_id, "LED da TAT", "");
+      bot.sendMessage(chat_id, "LED đã tắt", "");
     }
 
     if (text == "/state") {
       if (ledState) {
-        bot.sendMessage(chat_id, "LED dang BAT", "");
+        bot.sendMessage(chat_id, "LED đang bật", "");
       } else {
-        bot.sendMessage(chat_id, "LED dang TAT", "");
+        bot.sendMessage(chat_id, "LED đang tắt", "");
       }
     }
   }
