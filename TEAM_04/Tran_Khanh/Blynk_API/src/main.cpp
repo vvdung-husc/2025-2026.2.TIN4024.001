@@ -33,7 +33,7 @@ bool IsReady(unsigned long &ulTimer, uint32_t milisecond) {
 
 String urlWeather;
 
-#define OPENWEATHERMAP_KEY "c79ff954e9431f222ff283ff0f537b2d"
+//#define OPENWEATHERMAP_KEY "c79ff954e9431f222ff283ff0f537b2d"
 
 void parseGeoInfo(String payload, IP4_Info& ipInfo) {
 
