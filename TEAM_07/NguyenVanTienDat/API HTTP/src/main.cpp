@@ -78,7 +78,7 @@ void parseGeoInfo(String payload, IP4_Info& ipInfo) {
   Serial.printf("Latitude: %s\r\n", values[6].c_str());
 }
 
-#define OPENWEATHERMAP_KEY "520fa16f7f8e412a014913dc8921b651"
+#define OPENWEATHERMAP_KEY "xxxxxxxx";
 String urlWeather;
 
 void getAPI(){
