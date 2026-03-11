@@ -38,7 +38,11 @@ void handleNewMessages(int numNewMessages) {
     String chat_id = bot.messages[i].chat_id;
     String text = bot.messages[i].text;
     String from_name = bot.messages[i].from_name;
-
+    
+    int botname = text.indexOf("@");
+    if (botname != -1) {
+      text = text.substring(0, botname);
+    }
     Serial.println(text);
 
     if (text == "/start") {
