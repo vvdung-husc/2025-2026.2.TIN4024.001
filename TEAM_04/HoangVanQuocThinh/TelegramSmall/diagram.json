@@ -10,7 +10,13 @@
       "left": -33.56,
       "attrs": { "builder": "esp-idf" }
     },
-    { "type": "wokwi-pir-motion-sensor", "id": "pir1", "top": -44, "left": -160.98, "attrs": {} },
+    { 
+      "type": "wokwi-pir-motion-sensor", 
+      "id": "pir1", 
+      "top": -44, 
+      "left": -160.98, 
+      "attrs": { "onTime": "1" } 
+    },
     {
       "type": "wokwi-led",
       "id": "led1",
