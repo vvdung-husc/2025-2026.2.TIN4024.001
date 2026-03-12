@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "author": "Thuần Lê",
+  "author": "Quốc Thịnh",
   "editor": "wokwi",
   "parts": [
     { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 28.8, "left": -62.36, "attrs": {} },
