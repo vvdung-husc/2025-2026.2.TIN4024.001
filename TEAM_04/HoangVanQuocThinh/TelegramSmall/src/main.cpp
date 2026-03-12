@@ -90,4 +90,4 @@ void loop() {
     Serial.print(count_);Serial.println(". Sent successfully to Telegram: Motion Detected");
     motionDetected = false;
   }
-} 
+}
