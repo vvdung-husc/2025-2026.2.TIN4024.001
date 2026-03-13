@@ -41,7 +41,7 @@ void loop() {
   //TRẠNG THÁI 2: TẮT ĐÈN
   digitalWrite(ledPin, HIGH); 
   u8g2.clearBuffer();
-  u8g2.drawStr(0, 15, "HUSC - KHOA CNTT");
+  u8g2.drawStr(0, 15, "NANG - KHOA CNTT");
   u8g2.setCursor(0, 35);
   u8g2.print("Temp: "); u8g2.print(t); u8g2.print(" C");
   u8g2.setCursor(0, 50);
