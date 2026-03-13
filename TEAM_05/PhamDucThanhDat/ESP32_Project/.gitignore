@@ -1,0 +1,6 @@
+# PlatformIO files
+.pio/
+
+
+# other
+build/
