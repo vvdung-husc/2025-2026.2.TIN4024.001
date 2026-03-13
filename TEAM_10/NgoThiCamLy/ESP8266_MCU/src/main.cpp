@@ -25,7 +25,7 @@ void loop() {
     t = 0.0; h = 0.0;
   }
 
-  // TRẠNG THÁI 1: BẬT ĐÈN 
+  // BẬT ĐÈN 
   digitalWrite(ledPin, LOW); 
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_ncenB08_tr);
@@ -38,7 +38,7 @@ void loop() {
   u8g2.sendBuffer();
   delay(1000);
 
-  //TRẠNG THÁI 2: TẮT ĐÈN
+  // TẮT ĐÈN
   digitalWrite(ledPin, HIGH); 
   u8g2.clearBuffer();
   u8g2.drawStr(0, 15, "ESP6288_CMU");
