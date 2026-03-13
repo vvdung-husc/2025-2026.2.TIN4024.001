@@ -44,6 +44,14 @@ void loop() {
 
   // 2. Cập nhật màn hình OLED
   display.clearDisplay();
+  
+// --- IN RA TERMINAL (SERIAL MONITOR) ---
+  Serial.println("=============================");
+  Serial.printf("Nhiet do: %.1f C\n", isnan(temp) ? 0 : temp);
+  Serial.printf("Do am: %.1f %%\n", isnan(hum) ? 0 : hum);
+  Serial.printf("Khi Gas: %d\n", gasVal);
+  Serial.printf("Trang thai Den: %s\n", lightStatus ? "BAT" : "TAT");
+  Serial.printf("Chuyen dong: %s\n", motion ? "CO!" : "KHONG");
 
   // Hàng 1: Tên (Cố định)
   display.setCursor(0, 0);
@@ -68,7 +76,7 @@ void loop() {
 
   // Hàng 6: Chuyển động
   display.setCursor(0, 56);
-  display.printf("Chuyen dong: %s", motion ? "CO" : "KHONG");
+  display.printf("Chuyen dong: %s", motion ? "CO!" : "KHONG");
 
   display.display();
 
