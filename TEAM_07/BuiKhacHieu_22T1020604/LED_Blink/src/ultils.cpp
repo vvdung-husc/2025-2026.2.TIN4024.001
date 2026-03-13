@@ -186,13 +186,13 @@ float LDR::readLux(int *analogValue)
 
 //----- Functions -----
 // Non-blocking
-bool IsReady(unsigned long &ulTimer, uint32_t millisecond)
+/*bool IsReady(unsigned long &ulTimer, uint32_t millisecond)
 {
     if (millis() - ulTimer < millisecond)
         return false;
     ulTimer = millis();
     return true;
-}
+}*/
 
 // Định dạng chuỗi %s,%d,...
 String StringFormat(const char *fmt, ...)
