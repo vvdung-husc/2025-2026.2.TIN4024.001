@@ -24,11 +24,9 @@ bool ledState = false;
 void setup()
 {
     Serial.begin(115200);
-
     pinMode(LED_PIN, OUTPUT);
 
     dht.begin();
-
     u8g2.begin();
 }
 
@@ -40,26 +38,20 @@ void loop()
     if (currentMillis - previousMillis >= interval)
     {
         previousMillis = currentMillis;
-
         ledState = !ledState;
         digitalWrite(LED_PIN, ledState);
     }
 
-// ===== Đọc DHT =====
-float temperature = dht.readTemperature();
-float humidity = dht.readHumidity();
+    // ===== Đọc DHT =====
+    float temperature = dht.readTemperature();
+    float humidity = dht.readHumidity();
 
-if (isnan(temperature) || isnan(humidity)) {
-    Serial.println("Failed to read from DHT sensor!");
-} else {
-    Serial.print("Temp: ");
-    Serial.print(temperature);
-    Serial.print(" C  ");
-
-    Serial.print("Humidity: ");
-    Serial.print(humidity);
-    Serial.print(" %  ");
-}
+    if (isnan(temperature) || isnan(humidity))
+    {
+        Serial.println("Failed to read from DHT sensor!");
+        temperature = 0;
+        humidity = 0;
+    }
 
     // ===== Đọc MQ2 =====
     int gasValue = analogRead(MQ2_PIN);
@@ -78,7 +70,6 @@ if (isnan(temperature) || isnan(humidity)) {
 
     // ===== Hiển thị OLED =====
     u8g2.clearBuffer();
-
     u8g2.setFont(u8g2_font_ncenB08_tr);
 
     u8g2.drawStr(0, 12, "ESP8266 CMU");
