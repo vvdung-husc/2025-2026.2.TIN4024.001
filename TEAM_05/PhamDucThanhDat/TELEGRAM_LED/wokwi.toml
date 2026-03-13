@@ -1,0 +1,7 @@
+[env]
+platform = "espressif32"
+board = "esp32dev"
+framework = "arduino"
+
+[project]
+name = "Telegram_Led"
