@@ -149,7 +149,11 @@ void loop()
         activeLed = LED_RED;
     }
 
+<<<<<<< HEAD
+    /* ========= PHẦN 3: HIỂN THỊ OLED ========= */
+=======
     // PHẦN 3: Hiển thị OLED
+>>>>>>> 41a3d0a019bde5b159dac01ae04998c6824c3671
     if (now - lastDisplayMillis >= DISPLAY_INTERVAL)
     {
         lastDisplayMillis = now;
@@ -178,7 +182,11 @@ void loop()
         display.display();
     }
 
+<<<<<<< HEAD
+    /* ========= PHẦN 4: LED NHẤP NHÁY (NON-BLOCKING) ========= */
+=======
     // PHẦN 4: LED nhấp nháy 
+>>>>>>> 41a3d0a019bde5b159dac01ae04998c6824c3671
     if (now - lastBlinkMillis >= BLINK_INTERVAL)
     {
         lastBlinkMillis = now;
@@ -193,4 +201,8 @@ void loop()
             digitalWrite(activeLed, HIGH);
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 41a3d0a019bde5b159dac01ae04998c6824c3671
