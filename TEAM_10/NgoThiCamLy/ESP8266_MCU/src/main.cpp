@@ -3,89 +3,50 @@
 #include <Wire.h>
 #include <DHT.h>
 
-// ===== Khai báo chân =====
-#define LED_PIN D0
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+
 #define DHTPIN D3
-#define MQ2_PIN A0
-
-#define DHTTYPE DHT22
-
-// ===== Khởi tạo cảm biến =====
+#define DHTTYPE DHT22 
 DHT dht(DHTPIN, DHTTYPE);
 
-// OLED SH1106 I2C
-U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
+const int ledPin = LED_BUILTIN; 
 
-// ===== Timer LED =====
-unsigned long previousMillis = 0;
-const long interval = 500;
-bool ledState = false;
-
-void setup()
-{
-    Serial.begin(115200);
-    pinMode(LED_PIN, OUTPUT);
-
-    dht.begin();
-    u8g2.begin();
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  dht.begin();
+  u8g2.begin();
 }
 
-void loop()
-{
-    // ===== LED nhấp nháy =====
-    unsigned long currentMillis = millis();
+void loop() {
+  float t = dht.readTemperature();
+  float h = dht.readHumidity();
 
-    if (currentMillis - previousMillis >= interval)
-    {
-        previousMillis = currentMillis;
-        ledState = !ledState;
-        digitalWrite(LED_PIN, ledState);
-    }
+  if (isnan(t) || isnan(h)) {
+    t = 0.0; h = 0.0;
+  }
 
-    // ===== Đọc DHT =====
-    float temperature = dht.readTemperature();
-    float humidity = dht.readHumidity();
+  // TRẠNG THÁI 1: BẬT ĐÈN 
+  digitalWrite(ledPin, LOW); 
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB08_tr);
+  u8g2.drawStr(0, 15, "HUSC - KHOA CNTT");
+  u8g2.setCursor(0, 35);
+  u8g2.print("Temp: "); u8g2.print(t); u8g2.print(" C");
+  u8g2.setCursor(0, 50);
+  u8g2.print("Humid: "); u8g2.print(h); u8g2.print(" %");
+  u8g2.drawStr(0, 64, "LED Status: ON");
+  u8g2.sendBuffer();
+  delay(1000);
 
-    if (isnan(temperature) || isnan(humidity))
-    {
-        Serial.println("Failed to read from DHT sensor!");
-        temperature = 0;
-        humidity = 0;
-    }
-
-    // ===== Đọc MQ2 =====
-    int gasValue = analogRead(MQ2_PIN);
-
-    // ===== Serial debug =====
-    Serial.print("Temp: ");
-    Serial.print(temperature);
-    Serial.print(" C  ");
-
-    Serial.print("Humidity: ");
-    Serial.print(humidity);
-    Serial.print(" %  ");
-
-    Serial.print("Gas: ");
-    Serial.println(gasValue);
-
-    // ===== Hiển thị OLED =====
-    u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_ncenB08_tr);
-
-    u8g2.drawStr(0, 12, "ESP8266 CMU");
-
-    char buffer[20];
-
-    sprintf(buffer, "Temp: %.1f C", temperature);
-    u8g2.drawStr(0, 30, buffer);
-
-    sprintf(buffer, "Humi: %.1f %%", humidity);
-    u8g2.drawStr(0, 45, buffer);
-
-    sprintf(buffer, "Gas: %d", gasValue);
-    u8g2.drawStr(0, 60, buffer);
-
-    u8g2.sendBuffer();
-
-    delay(2000);
+  //TRẠNG THÁI 2: TẮT ĐÈN
+  digitalWrite(ledPin, HIGH); 
+  u8g2.clearBuffer();
+  u8g2.drawStr(0, 15, "ESP6288_CMU");
+  u8g2.setCursor(0, 35);
+  u8g2.print("Temp: "); u8g2.print(t); u8g2.print(" C");
+  u8g2.setCursor(0, 50);
+  u8g2.print("Humid: "); u8g2.print(h); u8g2.print(" %");
+  u8g2.drawStr(0, 64, "LED Status: OFF");
+  u8g2.sendBuffer();
+  delay(1000);
 }
