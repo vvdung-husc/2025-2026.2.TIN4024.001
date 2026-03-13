@@ -71,7 +71,8 @@
 #### Tạo dự án - ESP32_Project 
 + Board ***NodeMCU 1.0*** trong 
 + Điều khiển đèn nhấp nháy trên Board ESP8266
-+ Đọc thông tin nhiệt độ
++ Đọc thông tin nhiệt độ, độ ẩm từ DHT
++ Đọc thông tin khí GAS từ MQ2
 + Hiển thị lên màn hình OLED (SH1106)
   > Thư viện hổ trợ U8g2 by oliver
 
