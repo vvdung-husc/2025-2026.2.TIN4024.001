@@ -29,7 +29,7 @@ void loop() {
   digitalWrite(ledPin, LOW); 
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_ncenB08_tr);
-  u8g2.drawStr(0, 15, "HUSC - KHOA CNTT");
+  u8g2.drawStr(0, 15, "ESP6288_CMU");
   u8g2.setCursor(0, 35);
   u8g2.print("Temp: "); u8g2.print(t); u8g2.print(" C");
   u8g2.setCursor(0, 50);
