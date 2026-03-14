@@ -25,11 +25,11 @@ void loop() {
     t = 0.0; h = 0.0;
   }
 
-  // TRẠNG THÁI 1: BẬT ĐÈN 
+  // BẬT ĐÈN 
   digitalWrite(ledPin, LOW); 
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_ncenB08_tr);
-  u8g2.drawStr(0, 15, "HUSC - KHOA CNTT");
+  u8g2.drawStr(0, 15, "ESP6288_CMU");
   u8g2.setCursor(0, 35);
   u8g2.print("Temp: "); u8g2.print(t); u8g2.print(" C");
   u8g2.setCursor(0, 50);
@@ -38,10 +38,10 @@ void loop() {
   u8g2.sendBuffer();
   delay(1000);
 
-  //TRẠNG THÁI 2: TẮT ĐÈN
+  // TẮT ĐÈN
   digitalWrite(ledPin, HIGH); 
   u8g2.clearBuffer();
-  u8g2.drawStr(0, 15, "NANG - KHOA CNTT");
+  u8g2.drawStr(0, 15, "ESP6288_CMU");
   u8g2.setCursor(0, 35);
   u8g2.print("Temp: "); u8g2.print(t); u8g2.print(" C");
   u8g2.setCursor(0, 50);
