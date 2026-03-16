@@ -154,9 +154,7 @@ void onceCalled() {
 
   Blynk.virtualWrite(V1, ip4Info.ip4.c_str());  
   Blynk.virtualWrite(V2, link.c_str());  
-  
-  // ---> Đã thêm gửi tên "Trần Văn Tiến" vào biến V4
-  Blynk.virtualWrite(V4, "Trần Văn Tiến"); 
+    Blynk.virtualWrite(V4, "Trần Văn Tiến"); 
 }
 
 // Cập nhật Uptime
