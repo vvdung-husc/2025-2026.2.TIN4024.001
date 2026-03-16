@@ -3,6 +3,9 @@ THÔNG TIN NHÓM 08
 1. Nguyễn Ngọc Thành Tài
 2. Trần Văn Quốc Khánh 
 3. Nguyễn Diệu Hằng
+4. Hồ Nguyễn Huyền Trang
+5. Võ Thị Hằng Nga
+>>>>>>> 5ddc00911f91681c32effb9b066747e2542cefc4
 */
 
 #include <Arduino.h>
