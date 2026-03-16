@@ -43611,721 +43611,720 @@ LOAD c:/users/admin/.platformio/packages/toolchain-xtensa-esp32/bin/../lib/gcc/x
  *(.rodata_wlog_error .rodata_wlog_error.*)
  *(EXCLUDE_FILE(*libspi_flash.a:spi_flash_rom_patch.* *libspi_flash.a:spi_flash_chip_winbond.* *libspi_flash.a:spi_flash_chip_th.* *libspi_flash.a:spi_flash_chip_mxic.* *libspi_flash.a:spi_flash_chip_issi.* *libspi_flash.a:spi_flash_chip_generic.* *libspi_flash.a:spi_flash_chip_gd.* *libspi_flash.a:spi_flash_chip_boya.* *libspi_flash.a:memspi_host_driver.* *libsoc.a:lldesc.* *libnewlib.a:stdatomic.* *libnewlib.a:heap.* *libnewlib.a:assert.* *libnewlib.a:abort.* *libhal.a:wdt_hal_iram.* *libhal.a:spi_slave_hal_iram.* *libhal.a:spi_hal_iram.* *libhal.a:spi_flash_hal_iram.* *libhal.a:spi_flash_encrypt_hal_iram.* *libhal.a:soc_hal.* *libhal.a:ledc_hal_iram.* *libhal.a:i2c_hal_iram.* *libhal.a:cpu_hal.* *libesp_system.a:ubsan.* *libesp_system.a:esp_err.* *libesp_hw_support.a:rtc_clk.* *libc.a:lock.* *libc.a:lib_a-wsetup.* *libc.a:lib_a-wctomb_r.* *libc.a:lib_a-wcrtomb.* *libc.a:lib_a-wbuf.* *libc.a:lib_a-utoa.* *libc.a:lib_a-ungetc.* *libc.a:lib_a-tzvars.* *libc.a:lib_a-tzset_r.* *libc.a:lib_a-tzset.* *libc.a:lib_a-tzlock.* *libc.a:lib_a-tzcalc_limits.* *libc.a:lib_a-toupper.* *libc.a:lib_a-tolower.* *libc.a:lib_a-toascii.* *libc.a:lib_a-timelocal.* *libc.a:lib_a-time.* *libc.a:lib_a-syswrite.* *libc.a:lib_a-systimes.* *libc.a:lib_a-system.* *libc.a:lib_a-syssbrk.* *libc.a:lib_a-sysread.* *libc.a:lib_a-sysopen.* *libc.a:lib_a-sysclose.* *libc.a:lib_a-strupr.* *libc.a:lib_a-strtoul.* *libc.a:lib_a-strtol.* *libc.a:lib_a-strtok_r.* *libc.a:lib_a-strstr.* *libc.a:lib_a-strspn.* *libc.a:lib_a-strsep.* *libc.a:lib_a-strrchr.* *libc.a:lib_a-strptime.* *libc.a:lib_a-strnlen.* *libc.a:lib_a-strndup_r.* *libc.a:lib_a-strndup.* *libc.a:lib_a-strncpy.* *libc.a:lib_a-strncmp.* *libc.a:lib_a-strncat.* *libc.a:lib_a-strncasecmp.* *libc.a:lib_a-strlwr.* *libc.a:lib_a-strlen.* *libc.a:lib_a-strlcpy.* *libc.a:lib_a-strlcat.* *libc.a:lib_a-strftime.* *libc.a:lib_a-strdup_r.* *libc.a:lib_a-strdup.* *libc.a:lib_a-strcspn.* *libc.a:lib_a-strcpy.* *libc.a:lib_a-strcoll.* *libc.a:lib_a-strcmp.* *libc.a:lib_a-strchr.* *libc.a:lib_a-strcat.* *libc.a:lib_a-strcasestr.* *libc.a:lib_a-strcasecmp.* *libc.a:lib_a-stdio.* *libc.a:lib_a-srand.* *libc.a:lib_a-sf_nan.* *libc.a:lib_a-setjmp.* *libc.a:lib_a-sccl.* *libc.a:lib_a-sbrk.* *libc.a:lib_a-s_fpclassify.* *libc.a:lib_a-rshift.* *libc.a:lib_a-refill.* *libc.a:lib_a-read.* *libc.a:lib_a-rand_r.* *libc.a:lib_a-rand.* *libc.a:lib_a-raise.* *libc.a:lib_a-quorem.* *libc.a:lib_a-open.* *libc.a:lib_a-month_lengths.* *libc.a:lib_a-mktime.* *libc.a:lib_a-memset.* *libc.a:lib_a-memrchr.* *libc.a:lib_a-memmove.* *libc.a:lib_a-memcpy.* *libc.a:lib_a-memcmp.* *libc.a:lib_a-memchr.* *libc.a:lib_a-memccpy.* *libc.a:lib_a-makebuf.* *libc.a:lib_a-longjmp.* *libc.a:lib_a-ldiv.* *libc.a:lib_a-lcltime_r.* *libc.a:lib_a-lcltime.* *libc.a:lib_a-labs.* *libc.a:lib_a-itoa.* *libc.a:lib_a-isupper.* *libc.a:lib_a-isspace.* *libc.a:lib_a-ispunct.* *libc.a:lib_a-isprint.* *libc.a:lib_a-islower.* *libc.a:lib_a-isgraph.* *libc.a:lib_a-isdigit.* *libc.a:lib_a-iscntrl.* *libc.a:lib_a-isblank.* *libc.a:lib_a-isascii.* *libc.a:lib_a-isalpha.* *libc.a:lib_a-isalnum.* *libc.a:lib_a-impure.* *libc.a:lib_a-gmtime_r.* *libc.a:lib_a-gmtime.* *libc.a:lib_a-gettzinfo.* *libc.a:lib_a-getenv_r.* *libc.a:lib_a-fwalk.* *libc.a:lib_a-fvwrite.* *libc.a:lib_a-fputwc.* *libc.a:lib_a-findfp.* *libc.a:lib_a-fflush.* *libc.a:lib_a-fclose.* *libc.a:lib_a-envlock.* *libc.a:lib_a-environ.* *libc.a:lib_a-div.* *libc.a:lib_a-ctype_.* *libc.a:lib_a-ctime_r.* *libc.a:lib_a-ctime.* *libc.a:lib_a-creat.* *libc.a:lib_a-close.* *libc.a:lib_a-bzero.* *libc.a:lib_a-atol.* *libc.a:lib_a-atoi.* *libc.a:lib_a-asctime_r.* *libc.a:lib_a-asctime.* *libc.a:lib_a-abs.* *libc.a:isatty.* *libc.a:creat.* *libapp_trace.a:app_trace_util.* *libapp_trace.a:app_trace.* *libphy.a *libgcov.a) .rodata EXCLUDE_FILE(*libspi_flash.a:spi_flash_rom_patch.* *libspi_flash.a:spi_flash_chip_winbond.* *libspi_flash.a:spi_flash_chip_th.* *libspi_flash.a:spi_flash_chip_mxic.* *libspi_flash.a:spi_flash_chip_issi.* *libspi_flash.a:spi_flash_chip_generic.* *libspi_flash.a:spi_flash_chip_gd.* *libspi_flash.a:spi_flash_chip_boya.* *libspi_flash.a:memspi_host_driver.* *libsoc.a:lldesc.* *libnewlib.a:stdatomic.* *libnewlib.a:heap.* *libnewlib.a:assert.* *libnewlib.a:abort.* *libhal.a:wdt_hal_iram.* *libhal.a:spi_slave_hal_iram.* *libhal.a:spi_hal_iram.* *libhal.a:spi_flash_hal_iram.* *libhal.a:spi_flash_encrypt_hal_iram.* *libhal.a:soc_hal.* *libhal.a:ledc_hal_iram.* *libhal.a:i2c_hal_iram.* *libhal.a:cpu_hal.* *libesp_system.a:ubsan.* *libesp_system.a:esp_err.* *libesp_hw_support.a:rtc_clk.* *libc.a:lock.* *libc.a:lib_a-wsetup.* *libc.a:lib_a-wctomb_r.* *libc.a:lib_a-wcrtomb.* *libc.a:lib_a-wbuf.* *libc.a:lib_a-utoa.* *libc.a:lib_a-ungetc.* *libc.a:lib_a-tzvars.* *libc.a:lib_a-tzset_r.* *libc.a:lib_a-tzset.* *libc.a:lib_a-tzlock.* *libc.a:lib_a-tzcalc_limits.* *libc.a:lib_a-toupper.* *libc.a:lib_a-tolower.* *libc.a:lib_a-toascii.* *libc.a:lib_a-timelocal.* *libc.a:lib_a-time.* *libc.a:lib_a-syswrite.* *libc.a:lib_a-systimes.* *libc.a:lib_a-system.* *libc.a:lib_a-syssbrk.* *libc.a:lib_a-sysread.* *libc.a:lib_a-sysopen.* *libc.a:lib_a-sysclose.* *libc.a:lib_a-strupr.* *libc.a:lib_a-strtoul.* *libc.a:lib_a-strtol.* *libc.a:lib_a-strtok_r.* *libc.a:lib_a-strstr.* *libc.a:lib_a-strspn.* *libc.a:lib_a-strsep.* *libc.a:lib_a-strrchr.* *libc.a:lib_a-strptime.* *libc.a:lib_a-strnlen.* *libc.a:lib_a-strndup_r.* *libc.a:lib_a-strndup.* *libc.a:lib_a-strncpy.* *libc.a:lib_a-strncmp.* *libc.a:lib_a-strncat.* *libc.a:lib_a-strncasecmp.* *libc.a:lib_a-strlwr.* *libc.a:lib_a-strlen.* *libc.a:lib_a-strlcpy.* *libc.a:lib_a-strlcat.* *libc.a:lib_a-strftime.* *libc.a:lib_a-strdup_r.* *libc.a:lib_a-strdup.* *libc.a:lib_a-strcspn.* *libc.a:lib_a-strcpy.* *libc.a:lib_a-strcoll.* *libc.a:lib_a-strcmp.* *libc.a:lib_a-strchr.* *libc.a:lib_a-strcat.* *libc.a:lib_a-strcasestr.* *libc.a:lib_a-strcasecmp.* *libc.a:lib_a-stdio.* *libc.a:lib_a-srand.* *libc.a:lib_a-sf_nan.* *libc.a:lib_a-setjmp.* *libc.a:lib_a-sccl.* *libc.a:lib_a-sbrk.* *libc.a:lib_a-s_fpclassify.* *libc.a:lib_a-rshift.* *libc.a:lib_a-refill.* *libc.a:lib_a-read.* *libc.a:lib_a-rand_r.* *libc.a:lib_a-rand.* *libc.a:lib_a-raise.* *libc.a:lib_a-quorem.* *libc.a:lib_a-open.* *libc.a:lib_a-month_lengths.* *libc.a:lib_a-mktime.* *libc.a:lib_a-memset.* *libc.a:lib_a-memrchr.* *libc.a:lib_a-memmove.* *libc.a:lib_a-memcpy.* *libc.a:lib_a-memcmp.* *libc.a:lib_a-memchr.* *libc.a:lib_a-memccpy.* *libc.a:lib_a-makebuf.* *libc.a:lib_a-longjmp.* *libc.a:lib_a-ldiv.* *libc.a:lib_a-lcltime_r.* *libc.a:lib_a-lcltime.* *libc.a:lib_a-labs.* *libc.a:lib_a-itoa.* *libc.a:lib_a-isupper.* *libc.a:lib_a-isspace.* *libc.a:lib_a-ispunct.* *libc.a:lib_a-isprint.* *libc.a:lib_a-islower.* *libc.a:lib_a-isgraph.* *libc.a:lib_a-isdigit.* *libc.a:lib_a-iscntrl.* *libc.a:lib_a-isblank.* *libc.a:lib_a-isascii.* *libc.a:lib_a-isalpha.* *libc.a:lib_a-isalnum.* *libc.a:lib_a-impure.* *libc.a:lib_a-gmtime_r.* *libc.a:lib_a-gmtime.* *libc.a:lib_a-gettzinfo.* *libc.a:lib_a-getenv_r.* *libc.a:lib_a-fwalk.* *libc.a:lib_a-fvwrite.* *libc.a:lib_a-fputwc.* *libc.a:lib_a-findfp.* *libc.a:lib_a-fflush.* *libc.a:lib_a-fclose.* *libc.a:lib_a-envlock.* *libc.a:lib_a-environ.* *libc.a:lib_a-div.* *libc.a:lib_a-ctype_.* *libc.a:lib_a-ctime_r.* *libc.a:lib_a-ctime.* *libc.a:lib_a-creat.* *libc.a:lib_a-close.* *libc.a:lib_a-bzero.* *libc.a:lib_a-atol.* *libc.a:lib_a-atoi.* *libc.a:lib_a-asctime_r.* *libc.a:lib_a-asctime.* *libc.a:lib_a-abs.* *libc.a:isatty.* *libc.a:creat.* *libapp_trace.a:app_trace_util.* *libapp_trace.a:app_trace.* *libphy.a *libgcov.a) .rodata.* EXCLUDE_FILE(*libspi_flash.a:spi_flash_rom_patch.* *libspi_flash.a:spi_flash_chip_winbond.* *libspi_flash.a:spi_flash_chip_th.* *libspi_flash.a:spi_flash_chip_mxic.* *libspi_flash.a:spi_flash_chip_issi.* *libspi_flash.a:spi_flash_chip_generic.* *libspi_flash.a:spi_flash_chip_gd.* *libspi_flash.a:spi_flash_chip_boya.* *libspi_flash.a:memspi_host_driver.* *libsoc.a:lldesc.* *libnewlib.a:stdatomic.* *libnewlib.a:heap.* *libnewlib.a:assert.* *libnewlib.a:abort.* *libhal.a:wdt_hal_iram.* *libhal.a:spi_slave_hal_iram.* *libhal.a:spi_hal_iram.* *libhal.a:spi_flash_hal_iram.* *libhal.a:spi_flash_encrypt_hal_iram.* *libhal.a:soc_hal.* *libhal.a:ledc_hal_iram.* *libhal.a:i2c_hal_iram.* *libhal.a:cpu_hal.* *libesp_system.a:ubsan.* *libesp_system.a:esp_err.* *libesp_hw_support.a:rtc_clk.* *libc.a:lock.* *libc.a:lib_a-wsetup.* *libc.a:lib_a-wctomb_r.* *libc.a:lib_a-wcrtomb.* *libc.a:lib_a-wbuf.* *libc.a:lib_a-utoa.* *libc.a:lib_a-ungetc.* *libc.a:lib_a-tzvars.* *libc.a:lib_a-tzset_r.* *libc.a:lib_a-tzset.* *libc.a:lib_a-tzlock.* *libc.a:lib_a-tzcalc_limits.* *libc.a:lib_a-toupper.* *libc.a:lib_a-tolower.* *libc.a:lib_a-toascii.* *libc.a:lib_a-timelocal.* *libc.a:lib_a-time.* *libc.a:lib_a-syswrite.* *libc.a:lib_a-systimes.* *libc.a:lib_a-system.* *libc.a:lib_a-syssbrk.* *libc.a:lib_a-sysread.* *libc.a:lib_a-sysopen.* *libc.a:lib_a-sysclose.* *libc.a:lib_a-strupr.* *libc.a:lib_a-strtoul.* *libc.a:lib_a-strtol.* *libc.a:lib_a-strtok_r.* *libc.a:lib_a-strstr.* *libc.a:lib_a-strspn.* *libc.a:lib_a-strsep.* *libc.a:lib_a-strrchr.* *libc.a:lib_a-strptime.* *libc.a:lib_a-strnlen.* *libc.a:lib_a-strndup_r.* *libc.a:lib_a-strndup.* *libc.a:lib_a-strncpy.* *libc.a:lib_a-strncmp.* *libc.a:lib_a-strncat.* *libc.a:lib_a-strncasecmp.* *libc.a:lib_a-strlwr.* *libc.a:lib_a-strlen.* *libc.a:lib_a-strlcpy.* *libc.a:lib_a-strlcat.* *libc.a:lib_a-strftime.* *libc.a:lib_a-strdup_r.* *libc.a:lib_a-strdup.* *libc.a:lib_a-strcspn.* *libc.a:lib_a-strcpy.* *libc.a:lib_a-strcoll.* *libc.a:lib_a-strcmp.* *libc.a:lib_a-strchr.* *libc.a:lib_a-strcat.* *libc.a:lib_a-strcasestr.* *libc.a:lib_a-strcasecmp.* *libc.a:lib_a-stdio.* *libc.a:lib_a-srand.* *libc.a:lib_a-sf_nan.* *libc.a:lib_a-setjmp.* *libc.a:lib_a-sccl.* *libc.a:lib_a-sbrk.* *libc.a:lib_a-s_fpclassify.* *libc.a:lib_a-rshift.* *libc.a:lib_a-refill.* *libc.a:lib_a-read.* *libc.a:lib_a-rand_r.* *libc.a:lib_a-rand.* *libc.a:lib_a-raise.* *libc.a:lib_a-quorem.* *libc.a:lib_a-open.* *libc.a:lib_a-month_lengths.* *libc.a:lib_a-mktime.* *libc.a:lib_a-memset.* *libc.a:lib_a-memrchr.* *libc.a:lib_a-memmove.* *libc.a:lib_a-memcpy.* *libc.a:lib_a-memcmp.* *libc.a:lib_a-memchr.* *libc.a:lib_a-memccpy.* *libc.a:lib_a-makebuf.* *libc.a:lib_a-longjmp.* *libc.a:lib_a-ldiv.* *libc.a:lib_a-lcltime_r.* *libc.a:lib_a-lcltime.* *libc.a:lib_a-labs.* *libc.a:lib_a-itoa.* *libc.a:lib_a-isupper.* *libc.a:lib_a-isspace.* *libc.a:lib_a-ispunct.* *libc.a:lib_a-isprint.* *libc.a:lib_a-islower.* *libc.a:lib_a-isgraph.* *libc.a:lib_a-isdigit.* *libc.a:lib_a-iscntrl.* *libc.a:lib_a-isblank.* *libc.a:lib_a-isascii.* *libc.a:lib_a-isalpha.* *libc.a:lib_a-isalnum.* *libc.a:lib_a-impure.* *libc.a:lib_a-gmtime_r.* *libc.a:lib_a-gmtime.* *libc.a:lib_a-gettzinfo.* *libc.a:lib_a-getenv_r.* *libc.a:lib_a-fwalk.* *libc.a:lib_a-fvwrite.* *libc.a:lib_a-fputwc.* *libc.a:lib_a-findfp.* *libc.a:lib_a-fflush.* *libc.a:lib_a-fclose.* *libc.a:lib_a-envlock.* *libc.a:lib_a-environ.* *libc.a:lib_a-div.* *libc.a:lib_a-ctype_.* *libc.a:lib_a-ctime_r.* *libc.a:lib_a-ctime.* *libc.a:lib_a-creat.* *libc.a:lib_a-close.* *libc.a:lib_a-bzero.* *libc.a:lib_a-atol.* *libc.a:lib_a-atoi.* *libc.a:lib_a-asctime_r.* *libc.a:lib_a-asctime.* *libc.a:lib_a-abs.* *libc.a:isatty.* *libc.a:creat.* *libapp_trace.a:app_trace_util.* *libapp_trace.a:app_trace.* *libphy.a *libgcov.a) .sdata2 EXCLUDE_FILE(*libspi_flash.a:spi_flash_rom_patch.* *libspi_flash.a:spi_flash_chip_winbond.* *libspi_flash.a:spi_flash_chip_th.* *libspi_flash.a:spi_flash_chip_mxic.* *libspi_flash.a:spi_flash_chip_issi.* *libspi_flash.a:spi_flash_chip_generic.* *libspi_flash.a:spi_flash_chip_gd.* *libspi_flash.a:spi_flash_chip_boya.* *libspi_flash.a:memspi_host_driver.* *libsoc.a:lldesc.* *libnewlib.a:stdatomic.* *libnewlib.a:heap.* *libnewlib.a:assert.* *libnewlib.a:abort.* *libhal.a:wdt_hal_iram.* *libhal.a:spi_slave_hal_iram.* *libhal.a:spi_hal_iram.* *libhal.a:spi_flash_hal_iram.* *libhal.a:spi_flash_encrypt_hal_iram.* *libhal.a:soc_hal.* *libhal.a:ledc_hal_iram.* *libhal.a:i2c_hal_iram.* *libhal.a:cpu_hal.* *libesp_system.a:ubsan.* *libesp_system.a:esp_err.* *libesp_hw_support.a:rtc_clk.* *libc.a:lock.* *libc.a:lib_a-wsetup.* *libc.a:lib_a-wctomb_r.* *libc.a:lib_a-wcrtomb.* *libc.a:lib_a-wbuf.* *libc.a:lib_a-utoa.* *libc.a:lib_a-ungetc.* *libc.a:lib_a-tzvars.* *libc.a:lib_a-tzset_r.* *libc.a:lib_a-tzset.* *libc.a:lib_a-tzlock.* *libc.a:lib_a-tzcalc_limits.* *libc.a:lib_a-toupper.* *libc.a:lib_a-tolower.* *libc.a:lib_a-toascii.* *libc.a:lib_a-timelocal.* *libc.a:lib_a-time.* *libc.a:lib_a-syswrite.* *libc.a:lib_a-systimes.* *libc.a:lib_a-system.* *libc.a:lib_a-syssbrk.* *libc.a:lib_a-sysread.* *libc.a:lib_a-sysopen.* *libc.a:lib_a-sysclose.* *libc.a:lib_a-strupr.* *libc.a:lib_a-strtoul.* *libc.a:lib_a-strtol.* *libc.a:lib_a-strtok_r.* *libc.a:lib_a-strstr.* *libc.a:lib_a-strspn.* *libc.a:lib_a-strsep.* *libc.a:lib_a-strrchr.* *libc.a:lib_a-strptime.* *libc.a:lib_a-strnlen.* *libc.a:lib_a-strndup_r.* *libc.a:lib_a-strndup.* *libc.a:lib_a-strncpy.* *libc.a:lib_a-strncmp.* *libc.a:lib_a-strncat.* *libc.a:lib_a-strncasecmp.* *libc.a:lib_a-strlwr.* *libc.a:lib_a-strlen.* *libc.a:lib_a-strlcpy.* *libc.a:lib_a-strlcat.* *libc.a:lib_a-strftime.* *libc.a:lib_a-strdup_r.* *libc.a:lib_a-strdup.* *libc.a:lib_a-strcspn.* *libc.a:lib_a-strcpy.* *libc.a:lib_a-strcoll.* *libc.a:lib_a-strcmp.* *libc.a:lib_a-strchr.* *libc.a:lib_a-strcat.* *libc.a:lib_a-strcasestr.* *libc.a:lib_a-strcasecmp.* *libc.a:lib_a-stdio.* *libc.a:lib_a-srand.* *libc.a:lib_a-sf_nan.* *libc.a:lib_a-setjmp.* *libc.a:lib_a-sccl.* *libc.a:lib_a-sbrk.* *libc.a:lib_a-s_fpclassify.* *libc.a:lib_a-rshift.* *libc.a:lib_a-refill.* *libc.a:lib_a-read.* *libc.a:lib_a-rand_r.* *libc.a:lib_a-rand.* *libc.a:lib_a-raise.* *libc.a:lib_a-quorem.* *libc.a:lib_a-open.* *libc.a:lib_a-month_lengths.* *libc.a:lib_a-mktime.* *libc.a:lib_a-memset.* *libc.a:lib_a-memrchr.* *libc.a:lib_a-memmove.* *libc.a:lib_a-memcpy.* *libc.a:lib_a-memcmp.* *libc.a:lib_a-memchr.* *libc.a:lib_a-memccpy.* *libc.a:lib_a-makebuf.* *libc.a:lib_a-longjmp.* *libc.a:lib_a-ldiv.* *libc.a:lib_a-lcltime_r.* *libc.a:lib_a-lcltime.* *libc.a:lib_a-labs.* *libc.a:lib_a-itoa.* *libc.a:lib_a-isupper.* *libc.a:lib_a-isspace.* *libc.a:lib_a-ispunct.* *libc.a:lib_a-isprint.* *libc.a:lib_a-islower.* *libc.a:lib_a-isgraph.* *libc.a:lib_a-isdigit.* *libc.a:lib_a-iscntrl.* *libc.a:lib_a-isblank.* *libc.a:lib_a-isascii.* *libc.a:lib_a-isalpha.* *libc.a:lib_a-isalnum.* *libc.a:lib_a-impure.* *libc.a:lib_a-gmtime_r.* *libc.a:lib_a-gmtime.* *libc.a:lib_a-gettzinfo.* *libc.a:lib_a-getenv_r.* *libc.a:lib_a-fwalk.* *libc.a:lib_a-fvwrite.* *libc.a:lib_a-fputwc.* *libc.a:lib_a-findfp.* *libc.a:lib_a-fflush.* *libc.a:lib_a-fclose.* *libc.a:lib_a-envlock.* *libc.a:lib_a-environ.* *libc.a:lib_a-div.* *libc.a:lib_a-ctype_.* *libc.a:lib_a-ctime_r.* *libc.a:lib_a-ctime.* *libc.a:lib_a-creat.* *libc.a:lib_a-close.* *libc.a:lib_a-bzero.* *libc.a:lib_a-atol.* *libc.a:lib_a-atoi.* *libc.a:lib_a-asctime_r.* *libc.a:lib_a-asctime.* *libc.a:lib_a-abs.* *libc.a:isatty.* *libc.a:creat.* *libapp_trace.a:app_trace_util.* *libapp_trace.a:app_trace.* *libphy.a *libgcov.a) .sdata2.* EXCLUDE_FILE(*libspi_flash.a:spi_flash_rom_patch.* *libspi_flash.a:spi_flash_chip_winbond.* *libspi_flash.a:spi_flash_chip_th.* *libspi_flash.a:spi_flash_chip_mxic.* *libspi_flash.a:spi_flash_chip_issi.* *libspi_flash.a:spi_flash_chip_generic.* *libspi_flash.a:spi_flash_chip_gd.* *libspi_flash.a:spi_flash_chip_boya.* *libspi_flash.a:memspi_host_driver.* *libsoc.a:lldesc.* *libnewlib.a:stdatomic.* *libnewlib.a:heap.* *libnewlib.a:assert.* *libnewlib.a:abort.* *libhal.a:wdt_hal_iram.* *libhal.a:spi_slave_hal_iram.* *libhal.a:spi_hal_iram.* *libhal.a:spi_flash_hal_iram.* *libhal.a:spi_flash_encrypt_hal_iram.* *libhal.a:soc_hal.* *libhal.a:ledc_hal_iram.* *libhal.a:i2c_hal_iram.* *libhal.a:cpu_hal.* *libesp_system.a:ubsan.* *libesp_system.a:esp_err.* *libesp_hw_support.a:rtc_clk.* *libc.a:lock.* *libc.a:lib_a-wsetup.* *libc.a:lib_a-wctomb_r.* *libc.a:lib_a-wcrtomb.* *libc.a:lib_a-wbuf.* *libc.a:lib_a-utoa.* *libc.a:lib_a-ungetc.* *libc.a:lib_a-tzvars.* *libc.a:lib_a-tzset_r.* *libc.a:lib_a-tzset.* *libc.a:lib_a-tzlock.* *libc.a:lib_a-tzcalc_limits.* *libc.a:lib_a-toupper.* *libc.a:lib_a-tolower.* *libc.a:lib_a-toascii.* *libc.a:lib_a-timelocal.* *libc.a:lib_a-time.* *libc.a:lib_a-syswrite.* *libc.a:lib_a-systimes.* *libc.a:lib_a-system.* *libc.a:lib_a-syssbrk.* *libc.a:lib_a-sysread.* *libc.a:lib_a-sysopen.* *libc.a:lib_a-sysclose.* *libc.a:lib_a-strupr.* *libc.a:lib_a-strtoul.* *libc.a:lib_a-strtol.* *libc.a:lib_a-strtok_r.* *libc.a:lib_a-strstr.* *libc.a:lib_a-strspn.* *libc.a:lib_a-strsep.* *libc.a:lib_a-strrchr.* *libc.a:lib_a-strptime.* *libc.a:lib_a-strnlen.* *libc.a:lib_a-strndup_r.* *libc.a:lib_a-strndup.* *libc.a:lib_a-strncpy.* *libc.a:lib_a-strncmp.* *libc.a:lib_a-strncat.* *libc.a:lib_a-strncasecmp.* *libc.a:lib_a-strlwr.* *libc.a:lib_a-strlen.* *libc.a:lib_a-strlcpy.* *libc.a:lib_a-strlcat.* *libc.a:lib_a-strftime.* *libc.a:lib_a-strdup_r.* *libc.a:lib_a-strdup.* *libc.a:lib_a-strcspn.* *libc.a:lib_a-strcpy.* *libc.a:lib_a-strcoll.* *libc.a:lib_a-strcmp.* *libc.a:lib_a-strchr.* *libc.a:lib_a-strcat.* *libc.a:lib_a-strcasestr.* *libc.a:lib_a-strcasecmp.* *libc.a:lib_a-stdio.* *libc.a:lib_a-srand.* *libc.a:lib_a-sf_nan.* *libc.a:lib_a-setjmp.* *libc.a:lib_a-sccl.* *libc.a:lib_a-sbrk.* *libc.a:lib_a-s_fpclassify.* *libc.a:lib_a-rshift.* *libc.a:lib_a-refill.* *libc.a:lib_a-read.* *libc.a:lib_a-rand_r.* *libc.a:lib_a-rand.* *libc.a:lib_a-raise.* *libc.a:lib_a-quorem.* *libc.a:lib_a-open.* *libc.a:lib_a-month_lengths.* *libc.a:lib_a-mktime.* *libc.a:lib_a-memset.* *libc.a:lib_a-memrchr.* *libc.a:lib_a-memmove.* *libc.a:lib_a-memcpy.* *libc.a:lib_a-memcmp.* *libc.a:lib_a-memchr.* *libc.a:lib_a-memccpy.* *libc.a:lib_a-makebuf.* *libc.a:lib_a-longjmp.* *libc.a:lib_a-ldiv.* *libc.a:lib_a-lcltime_r.* *libc.a:lib_a-lcltime.* *libc.a:lib_a-labs.* *libc.a:lib_a-itoa.* *libc.a:lib_a-isupper.* *libc.a:lib_a-isspace.* *libc.a:lib_a-ispunct.* *libc.a:lib_a-isprint.* *libc.a:lib_a-islower.* *libc.a:lib_a-isgraph.* *libc.a:lib_a-isdigit.* *libc.a:lib_a-iscntrl.* *libc.a:lib_a-isblank.* *libc.a:lib_a-isascii.* *libc.a:lib_a-isalpha.* *libc.a:lib_a-isalnum.* *libc.a:lib_a-impure.* *libc.a:lib_a-gmtime_r.* *libc.a:lib_a-gmtime.* *libc.a:lib_a-gettzinfo.* *libc.a:lib_a-getenv_r.* *libc.a:lib_a-fwalk.* *libc.a:lib_a-fvwrite.* *libc.a:lib_a-fputwc.* *libc.a:lib_a-findfp.* *libc.a:lib_a-fflush.* *libc.a:lib_a-fclose.* *libc.a:lib_a-envlock.* *libc.a:lib_a-environ.* *libc.a:lib_a-div.* *libc.a:lib_a-ctype_.* *libc.a:lib_a-ctime_r.* *libc.a:lib_a-ctime.* *libc.a:lib_a-creat.* *libc.a:lib_a-close.* *libc.a:lib_a-bzero.* *libc.a:lib_a-atol.* *libc.a:lib_a-atoi.* *libc.a:lib_a-asctime_r.* *libc.a:lib_a-asctime.* *libc.a:lib_a-abs.* *libc.a:isatty.* *libc.a:creat.* *libapp_trace.a:app_trace_util.* *libapp_trace.a:app_trace.* *libphy.a *libgcov.a) .srodata EXCLUDE_FILE(*libspi_flash.a:spi_flash_rom_patch.* *libspi_flash.a:spi_flash_chip_winbond.* *libspi_flash.a:spi_flash_chip_th.* *libspi_flash.a:spi_flash_chip_mxic.* *libspi_flash.a:spi_flash_chip_issi.* *libspi_flash.a:spi_flash_chip_generic.* *libspi_flash.a:spi_flash_chip_gd.* *libspi_flash.a:spi_flash_chip_boya.* *libspi_flash.a:memspi_host_driver.* *libsoc.a:lldesc.* *libnewlib.a:stdatomic.* *libnewlib.a:heap.* *libnewlib.a:assert.* *libnewlib.a:abort.* *libhal.a:wdt_hal_iram.* *libhal.a:spi_slave_hal_iram.* *libhal.a:spi_hal_iram.* *libhal.a:spi_flash_hal_iram.* *libhal.a:spi_flash_encrypt_hal_iram.* *libhal.a:soc_hal.* *libhal.a:ledc_hal_iram.* *libhal.a:i2c_hal_iram.* *libhal.a:cpu_hal.* *libesp_system.a:ubsan.* *libesp_system.a:esp_err.* *libesp_hw_support.a:rtc_clk.* *libc.a:lock.* *libc.a:lib_a-wsetup.* *libc.a:lib_a-wctomb_r.* *libc.a:lib_a-wcrtomb.* *libc.a:lib_a-wbuf.* *libc.a:lib_a-utoa.* *libc.a:lib_a-ungetc.* *libc.a:lib_a-tzvars.* *libc.a:lib_a-tzset_r.* *libc.a:lib_a-tzset.* *libc.a:lib_a-tzlock.* *libc.a:lib_a-tzcalc_limits.* *libc.a:lib_a-toupper.* *libc.a:lib_a-tolower.* *libc.a:lib_a-toascii.* *libc.a:lib_a-timelocal.* *libc.a:lib_a-time.* *libc.a:lib_a-syswrite.* *libc.a:lib_a-systimes.* *libc.a:lib_a-system.* *libc.a:lib_a-syssbrk.* *libc.a:lib_a-sysread.* *libc.a:lib_a-sysopen.* *libc.a:lib_a-sysclose.* *libc.a:lib_a-strupr.* *libc.a:lib_a-strtoul.* *libc.a:lib_a-strtol.* *libc.a:lib_a-strtok_r.* *libc.a:lib_a-strstr.* *libc.a:lib_a-strspn.* *libc.a:lib_a-strsep.* *libc.a:lib_a-strrchr.* *libc.a:lib_a-strptime.* *libc.a:lib_a-strnlen.* *libc.a:lib_a-strndup_r.* *libc.a:lib_a-strndup.* *libc.a:lib_a-strncpy.* *libc.a:lib_a-strncmp.* *libc.a:lib_a-strncat.* *libc.a:lib_a-strncasecmp.* *libc.a:lib_a-strlwr.* *libc.a:lib_a-strlen.* *libc.a:lib_a-strlcpy.* *libc.a:lib_a-strlcat.* *libc.a:lib_a-strftime.* *libc.a:lib_a-strdup_r.* *libc.a:lib_a-strdup.* *libc.a:lib_a-strcspn.* *libc.a:lib_a-strcpy.* *libc.a:lib_a-strcoll.* *libc.a:lib_a-strcmp.* *libc.a:lib_a-strchr.* *libc.a:lib_a-strcat.* *libc.a:lib_a-strcasestr.* *libc.a:lib_a-strcasecmp.* *libc.a:lib_a-stdio.* *libc.a:lib_a-srand.* *libc.a:lib_a-sf_nan.* *libc.a:lib_a-setjmp.* *libc.a:lib_a-sccl.* *libc.a:lib_a-sbrk.* *libc.a:lib_a-s_fpclassify.* *libc.a:lib_a-rshift.* *libc.a:lib_a-refill.* *libc.a:lib_a-read.* *libc.a:lib_a-rand_r.* *libc.a:lib_a-rand.* *libc.a:lib_a-raise.* *libc.a:lib_a-quorem.* *libc.a:lib_a-open.* *libc.a:lib_a-month_lengths.* *libc.a:lib_a-mktime.* *libc.a:lib_a-memset.* *libc.a:lib_a-memrchr.* *libc.a:lib_a-memmove.* *libc.a:lib_a-memcpy.* *libc.a:lib_a-memcmp.* *libc.a:lib_a-memchr.* *libc.a:lib_a-memccpy.* *libc.a:lib_a-makebuf.* *libc.a:lib_a-longjmp.* *libc.a:lib_a-ldiv.* *libc.a:lib_a-lcltime_r.* *libc.a:lib_a-lcltime.* *libc.a:lib_a-labs.* *libc.a:lib_a-itoa.* *libc.a:lib_a-isupper.* *libc.a:lib_a-isspace.* *libc.a:lib_a-ispunct.* *libc.a:lib_a-isprint.* *libc.a:lib_a-islower.* *libc.a:lib_a-isgraph.* *libc.a:lib_a-isdigit.* *libc.a:lib_a-iscntrl.* *libc.a:lib_a-isblank.* *libc.a:lib_a-isascii.* *libc.a:lib_a-isalpha.* *libc.a:lib_a-isalnum.* *libc.a:lib_a-impure.* *libc.a:lib_a-gmtime_r.* *libc.a:lib_a-gmtime.* *libc.a:lib_a-gettzinfo.* *libc.a:lib_a-getenv_r.* *libc.a:lib_a-fwalk.* *libc.a:lib_a-fvwrite.* *libc.a:lib_a-fputwc.* *libc.a:lib_a-findfp.* *libc.a:lib_a-fflush.* *libc.a:lib_a-fclose.* *libc.a:lib_a-envlock.* *libc.a:lib_a-environ.* *libc.a:lib_a-div.* *libc.a:lib_a-ctype_.* *libc.a:lib_a-ctime_r.* *libc.a:lib_a-ctime.* *libc.a:lib_a-creat.* *libc.a:lib_a-close.* *libc.a:lib_a-bzero.* *libc.a:lib_a-atol.* *libc.a:lib_a-atoi.* *libc.a:lib_a-asctime_r.* *libc.a:lib_a-asctime.* *libc.a:lib_a-abs.* *libc.a:isatty.* *libc.a:creat.* *libapp_trace.a:app_trace_util.* *libapp_trace.a:app_trace.* *libphy.a *libgcov.a) .srodata.*)
  .rodata._Z5setupv.str1.1
-                0x000000003f400120       0x1f .pio\build\esp32dev\src\main.cpp.o
+                0x000000003f400120       0x1d .pio\build\esp32dev\src\main.cpp.o
  .rodata._Z4loopv.str1.1
-                0x000000003f40013f       0x57 .pio\build\esp32dev\src\main.cpp.o
+                0x000000003f40013d       0x57 .pio\build\esp32dev\src\main.cpp.o
  .rodata._ZN14HardwareSerialC2Eh.str1.1
-                0x000000003f400196       0x95 .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
+                0x000000003f400194       0x95 .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
  .rodata._ZN14HardwareSerial16_createEventTaskEPv.str1.1
-                0x000000003f40022b       0x4b .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
+                0x000000003f400229       0x4b .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
  .rodata._ZN14HardwareSerial5beginEmjaabmh.str1.1
-                0x000000003f400276      0x162 .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
+                0x000000003f400274      0x162 .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
  .rodata._ZZN14HardwareSerial5beginEmjaabmhE12__FUNCTION__
-                0x000000003f4003d8        0x6 .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
+                0x000000003f4003d6        0x6 .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
  .rodata._ZZN14HardwareSerial16_createEventTaskEPvE12__FUNCTION__
-                0x000000003f4003de       0x11 .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
+                0x000000003f4003dc       0x11 .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
  .rodata._ZZN14HardwareSerialC4EhE12__FUNCTION__
-                0x000000003f4003ef        0xf .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
- *fill*         0x000000003f4003fe        0x2 
+                0x000000003f4003ed        0xf .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
  .rodata._ZTV14HardwareSerial
-                0x000000003f400400       0x38 .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
-                0x000000003f400400                vtable for HardwareSerial
+                0x000000003f4003fc       0x38 .pio\build\esp32dev\libFrameworkArduino.a(HardwareSerial.cpp.o)
+                0x000000003f4003fc                vtable for HardwareSerial
  .rodata._ZN5Print7printlnEv.str1.1
-                0x000000003f400438      0x162 .pio\build\esp32dev\libFrameworkArduino.a(Print.cpp.o)
+                0x000000003f400434      0x162 .pio\build\esp32dev\libFrameworkArduino.a(Print.cpp.o)
                                           0x3 (size before relaxing)
  .rodata._ZN6Stream10readStringEv.str1.1
-                0x000000003f400438      0x162 .pio\build\esp32dev\libFrameworkArduino.a(Stream.cpp.o)
+                0x000000003f400434      0x162 .pio\build\esp32dev\libFrameworkArduino.a(Stream.cpp.o)
                                           0x1 (size before relaxing)
  .rodata._ZNK6String9substringEjj.str1.1
-                0x000000003f400438        0x1 .pio\build\esp32dev\libFrameworkArduino.a(WString.cpp.o)
+                0x000000003f400434        0x1 .pio\build\esp32dev\libFrameworkArduino.a(WString.cpp.o)
  .rodata.__pinMode.str1.1
-                0x000000003f400438       0xb6 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-gpio.c.o)
+                0x000000003f400434       0xb6 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-gpio.c.o)
  .rodata.__FUNCTION__$9378
-                0x000000003f4004ee        0xa .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-gpio.c.o)
+                0x000000003f4004ea        0xa .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-gpio.c.o)
  .rodata.enableLoopWDT.str1.1
-                0x000000003f4004f8       0x95 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-misc.c.o)
+                0x000000003f4004f4       0x95 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-misc.c.o)
  .rodata.initArduino.str1.1
-                0x000000003f40058d      0x112 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-misc.c.o)
+                0x000000003f400589      0x112 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-misc.c.o)
  .rodata.__FUNCTION__$10517
-                0x000000003f40069f        0xc .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-misc.c.o)
+                0x000000003f40069b        0xc .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-misc.c.o)
  .rodata.uartSetFastReading.str1.1
-                0x000000003f4006ab       0x86 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f4006a7       0x86 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata.uartFlushTxOnly.str1.1
-                0x000000003f400731       0x1c .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f40072d       0x1c .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata.log_printfv.str1.1
-                0x000000003f40074d        0x3 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f400749        0x3 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata._uartDetachPins.str1.1
-                0x000000003f400750      0x106 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f40074c      0x106 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata._uartAttachPins.str1.1
-                0x000000003f400856      0x13b .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f400852      0x13b .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata.uartSetPins.str1.1
-                0x000000003f400991       0x30 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f40098d       0x30 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata.uartBegin.str1.1
-                0x000000003f4009c1      0x1d8 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
- *fill*         0x000000003f400b99        0x3 
+                0x000000003f4009bd      0x1d8 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+ *fill*         0x000000003f400b95        0x3 
  .rodata.default_rates$9375
-                0x000000003f400b9c       0x54 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f400b98       0x54 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata.__func__$9258
-                0x000000003f400bf0       0x10 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f400bec       0x10 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata.__FUNCTION__$9186
-                0x000000003f400c00        0x8 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f400bfc        0x8 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata.__FUNCTION__$9149
-                0x000000003f400c08        0xa .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f400c04        0xa .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata.__FUNCTION__$9078
-                0x000000003f400c12       0x10 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f400c0e       0x10 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata.__func__$9005
-                0x000000003f400c22       0x17 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f400c1e       0x17 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata.__FUNCTION__$9109
-                0x000000003f400c39        0xc .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
+                0x000000003f400c35        0xc .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-uart.c.o)
  .rodata.app_main.str1.1
-                0x000000003f400c45        0x9 .pio\build\esp32dev\libFrameworkArduino.a(main.cpp.o)
+                0x000000003f400c41        0x9 .pio\build\esp32dev\libFrameworkArduino.a(main.cpp.o)
  .rodata.addApbChangeCallback.str1.1
-                0x000000003f400c4e       0xc6 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-cpu.c.o)
+                0x000000003f400c4a       0xc6 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-cpu.c.o)
  .rodata.setCpuFrequencyMhz.str1.1
-                0x000000003f400d14      0x149 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-cpu.c.o)
+                0x000000003f400d10      0x149 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-cpu.c.o)
  .rodata.__FUNCTION__$9156
-                0x000000003f400e5d       0x13 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-cpu.c.o)
+                0x000000003f400e59       0x13 .pio\build\esp32dev\libFrameworkArduino.a(esp32-hal-cpu.c.o)
  .rodata.gpio_input_disable.str1.1
-                0x000000003f400e70       0x2e C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f400e6c       0x2e C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.gpio_output_disable.str1.1
-                0x000000003f400e9e       0xf0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f400e9a       0xf0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.gpio_input_enable.str1.1
-                0x000000003f400f8e       0xb8 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f400f8a       0xb8 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.gpio_output_enable.str1.1
-                0x000000003f401046       0x1b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401042       0x1b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.gpio_pullup_en.str1.1
-                0x000000003f401061       0xac C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f40105d       0xac C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.gpio_set_intr_type.str1.1
-                0x000000003f40110d       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401109       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.gpio_set_pull_mode.str1.1
-                0x000000003f401127       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401123       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.gpio_set_direction.str1.1
-                0x000000003f40113c       0x28 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401138       0x28 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.gpio_config.str1.1
-                0x000000003f401164       0x88 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401160       0x88 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
                                         0x114 (size before relaxing)
  .rodata.gpio_iomux_in.str1.1
-                0x000000003f4011ec       0xb0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f4011e8       0xb0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__func__$6918
-                0x000000003f40129c       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401298       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__func__$6926
-                0x000000003f4012ad       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f4012a9       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__func__$7083
-                0x000000003f4012c4        0xc C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f4012c0        0xc C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7041
-                0x000000003f4012d0       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f4012cc       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7045
-                0x000000003f4012e0        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f4012dc        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__func__$6757
-                0x000000003f4012ef       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f4012eb       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7033
-                0x000000003f401306       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401302       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7037
-                0x000000003f40131a       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401316       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7025
-                0x000000003f40132d       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401329       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__func__$6747
-                0x000000003f401340       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f40133c       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7029
-                0x000000003f401355       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401351       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7070
-                0x000000003f401367       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401363       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7058
-                0x000000003f40137a       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401376       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7050
-                0x000000003f40138d        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401389        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7021
-                0x000000003f40139c       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401398       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7013
-                0x000000003f4013ae       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f4013aa       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7017
-                0x000000003f4013c7       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f4013c3       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7008
-                0x000000003f4013d8       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f4013d4       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$7003
-                0x000000003f4013eb       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f4013e7       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__func__$6615
-                0x000000003f4013fd       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f4013f9       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$6999
-                0x000000003f401411       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f40140d       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$6995
-                0x000000003f401422       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f40141e       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__func__$6597
-                0x000000003f401432       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f40142e       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.__FUNCTION__$6991
-                0x000000003f401444        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
+                0x000000003f401440        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(gpio.c.obj)
  .rodata.rtc_gpio_init.str1.1
-                0x000000003f401453      0x117 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
+                0x000000003f40144f      0x117 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
  .rodata.rtc_gpio_deinit.str1.1
-                0x000000003f40156a       0xbc C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
+                0x000000003f401566       0xbc C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
  .rodata.__func__$7405
-                0x000000003f401626       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
+                0x000000003f401622       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
  .rodata.__FUNCTION__$7557
-                0x000000003f401640       0x16 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
+                0x000000003f40163c       0x16 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
  .rodata.__func__$7398
-                0x000000003f401656       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
+                0x000000003f401652       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
  .rodata.__FUNCTION__$7553
-                0x000000003f40166f       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
+                0x000000003f40166b       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
  .rodata.__func__$7391
-                0x000000003f401684       0x18 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
+                0x000000003f401680       0x18 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
  .rodata.__FUNCTION__$7549
-                0x000000003f40169c       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
+                0x000000003f401698       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
  .rodata.__func__$7384
-                0x000000003f4016b0       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
+                0x000000003f4016ac       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
  .rodata.__FUNCTION__$7545
-                0x000000003f4016c7       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
+                0x000000003f4016c3       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
  .rodata.__FUNCTION__$7512
-                0x000000003f4016da       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
+                0x000000003f4016d6       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
  .rodata.__func__$7326
-                0x000000003f4016ea       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
+                0x000000003f4016e6       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(rtc_io.c.obj)
  .rodata.uart_reenable_intr_mask$constprop$9.str1.1
-                0x000000003f401703       0x23 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f4016ff       0x23 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
                                          0x28 (size before relaxing)
  .rodata.uart_set_word_length.str1.1
-                0x000000003f401726       0x23 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401722       0x23 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_set_stop_bits.str1.1
-                0x000000003f401749       0x23 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401745       0x23 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_set_hw_flow_ctrl.str1.1
-                0x000000003f40176c       0x54 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401768       0x54 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_pattern_pop_pos.str1.1
-                0x000000003f4017c0       0x26 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f4017bc       0x26 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_enable_tx_intr.str1.1
-                0x000000003f4017e6       0x2f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f4017e2       0x2f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_set_pin.str1.1
-                0x000000003f401815       0x92 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401811       0x92 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
                                         0x14e (size before relaxing)
  .rodata.uart_param_config.str1.1
-                0x000000003f4018a7       0x1f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f4018a3       0x1f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_wait_tx_done.str1.1
-                0x000000003f4018c6       0x8a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f4018c2       0x8a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_tx_chars.str1.1
-                0x000000003f401950       0x20 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f40194c       0x20 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_write_bytes_with_break.str1.1
-                0x000000003f401970       0x6b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f40196c       0x6b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_get_tx_buffer_free_size.str1.1
-                0x000000003f4019db       0x28 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f4019d7       0x28 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_flush_input.str1.1
-                0x000000003f401a03       0x22 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f4019ff       0x22 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_driver_install.str1.1
-                0x000000003f401a25       0xaf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
- .rodata        0x000000003f401ad4        0x8 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401a21       0xaf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+ .rodata        0x000000003f401ad0        0x8 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_set_rx_full_threshold.str1.1
-                0x000000003f401adc       0x66 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401ad8       0x66 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.uart_set_rx_timeout.str1.1
-                0x000000003f401b42       0x32 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401b3e       0x32 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$8202
-                0x000000003f401b74       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401b70       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$8192
-                0x000000003f401b88       0x1b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401b84       0x1b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$8172
-                0x000000003f401ba3       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401b9f       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$8166
-                0x000000003f401bb6       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401bb2       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$8139
-                0x000000003f401bca       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401bc6       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$8133
-                0x000000003f401bdb       0x1d C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401bd7       0x1d C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$8128
-                0x000000003f401bf8       0x1b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401bf4       0x1b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7868
-                0x000000003f401c13       0x18 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401c0f       0x18 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$8117
-                0x000000003f401c2b       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401c27       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$8099
-                0x000000003f401c3b       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401c37       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__func__$8066
-                0x000000003f401c4c       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401c48       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$8061
-                0x000000003f401c5e       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401c5a       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$8016
-                0x000000003f401c70       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401c6c       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$8011
-                0x000000003f401c81       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401c7d       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__func__$7291
-                0x000000003f401c93       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401c8f       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7991
-                0x000000003f401caa        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401ca6        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7971
-                0x000000003f401cb7       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401cb3       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7960
-                0x000000003f401cc9       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401cc5       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7917
-                0x000000003f401cdd       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401cd9       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7874
-                0x000000003f401cf6       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401cf2       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7834
-                0x000000003f401d0d       0x16 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401d09       0x16 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7829
-                0x000000003f401d23       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401d1f       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7824
-                0x000000003f401d35       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401d31       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7819
-                0x000000003f401d47       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401d43       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7814
-                0x000000003f401d57       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401d53       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7809
-                0x000000003f401d67       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401d63       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7804
-                0x000000003f401d7a       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401d76       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7799
-                0x000000003f401d8d       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401d89       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.__FUNCTION__$7794
-                0x000000003f401da2       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
+                0x000000003f401d9e       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(uart.c.obj)
  .rodata.periph_module_enable.str1.1
-                0x000000003f401db7       0x40 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(periph_ctrl.c.obj)
+                0x000000003f401db3       0x40 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(periph_ctrl.c.obj)
  .rodata.__func__$4963
-                0x000000003f401df7       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(periph_ctrl.c.obj)
+                0x000000003f401df3       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(periph_ctrl.c.obj)
  .rodata.__func__$4959
-                0x000000003f401e0b       0x16 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(periph_ctrl.c.obj)
+                0x000000003f401e07       0x16 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(periph_ctrl.c.obj)
  .rodata.__func__$4955
-                0x000000003f401e21       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(periph_ctrl.c.obj)
+                0x000000003f401e1d       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libdriver.a(periph_ctrl.c.obj)
  .rodata.read_otadata.str1.1
-                0x000000003f401e36       0x54 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libapp_update.a(esp_ota_ops.c.obj)
+                0x000000003f401e32       0x54 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libapp_update.a(esp_ota_ops.c.obj)
  .rodata.esp_ota_get_running_partition.str1.1
-                0x000000003f401e8a       0x5b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libapp_update.a(esp_ota_ops.c.obj)
+                0x000000003f401e86       0x5b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libapp_update.a(esp_ota_ops.c.obj)
  .rodata.esp_ota_get_app_partition_count.str1.1
-                0x000000003f401ee5       0x46 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libapp_update.a(esp_ota_ops.c.obj)
+                0x000000003f401ee1       0x46 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libapp_update.a(esp_ota_ops.c.obj)
  .rodata.esp_ota_current_ota_is_workable.str1.1
-                0x000000003f401f2b       0x75 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libapp_update.a(esp_ota_ops.c.obj)
+                0x000000003f401f27       0x75 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libapp_update.a(esp_ota_ops.c.obj)
  .rodata.__func__$5101
-                0x000000003f401fa0       0x1e C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libapp_update.a(esp_ota_ops.c.obj)
+                0x000000003f401f9c       0x1e C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libapp_update.a(esp_ota_ops.c.obj)
  .rodata.__func__$5058
-                0x000000003f401fbe       0x20 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libapp_update.a(esp_ota_ops.c.obj)
+                0x000000003f401fba       0x20 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libapp_update.a(esp_ota_ops.c.obj)
  .rodata.bootloader_common_check_chip_validity.str1.1
-                0x000000003f401fde       0xc2 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_common_loader.c.obj)
+                0x000000003f401fda       0xc2 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_common_loader.c.obj)
  .rodata.bootloader_mmap.str1.1
-                0x000000003f4020a0       0x63 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_flash.c.obj)
+                0x000000003f40209c       0x63 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_flash.c.obj)
  .rodata.str1.1
-                0x000000003f402103       0x6b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_flash.c.obj)
+                0x000000003f4020ff       0x6b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_flash.c.obj)
  .rodata.__func__$4592
-                0x000000003f40216e       0x28 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_flash.c.obj)
+                0x000000003f40216a       0x28 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_flash.c.obj)
  .rodata.process_checksum.str1.1
-                0x000000003f402196       0x41 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(esp_image_format.c.obj)
+                0x000000003f402192       0x41 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(esp_image_format.c.obj)
  .rodata.process_image_header.str1.1
-                0x000000003f4021d7       0x83 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(esp_image_format.c.obj)
+                0x000000003f4021d3       0x83 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(esp_image_format.c.obj)
  .rodata.process_appended_hash_and_sig$constprop$2.str1.1
-                0x000000003f40225a       0x3f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(esp_image_format.c.obj)
+                0x000000003f402256       0x3f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(esp_image_format.c.obj)
  .rodata.process_segments$constprop$0.str1.1
-                0x000000003f402299       0xf5 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(esp_image_format.c.obj)
+                0x000000003f402295       0xf5 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(esp_image_format.c.obj)
  .rodata.image_load.str1.1
-                0x000000003f40238e       0x89 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(esp_image_format.c.obj)
+                0x000000003f40238a       0x89 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(esp_image_format.c.obj)
  .rodata.bootloader_sha256_data.str1.1
-                0x000000003f402417       0x54 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_sha.c.obj)
+                0x000000003f402413       0x54 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_sha.c.obj)
  .rodata.__func__$3726
-                0x000000003f40246b       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_sha.c.obj)
+                0x000000003f402467       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_sha.c.obj)
  .rodata.__func__$3719
-                0x000000003f402484       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_sha.c.obj)
+                0x000000003f402480       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libbootloader_support.a(bootloader_sha.c.obj)
  .rodata.ensure_partitions_loaded$part$0.str1.1
-                0x000000003f40249b       0x89 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
+                0x000000003f402497       0x89 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
  .rodata.esp_partition_next.str1.1
-                0x000000003f402524       0x26 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
+                0x000000003f402520       0x26 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
                                          0x29 (size before relaxing)
  .rodata.esp_partition_get.str1.1
-                0x000000003f40254a       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
+                0x000000003f402546       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
  .rodata.esp_partition_verify.str1.1
-                0x000000003f40255b       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
+                0x000000003f402557       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
  .rodata.__func__$4841
-                0x000000003f40256d       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
+                0x000000003f402569       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
  .rodata.__func__$4832
-                0x000000003f402580       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
+                0x000000003f40257c       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
  .rodata.__func__$4826
-                0x000000003f40259a       0x18 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
+                0x000000003f402596       0x18 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
  .rodata.__func__$4819
-                0x000000003f4025b2       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
+                0x000000003f4025ae       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
  .rodata.__func__$4812
-                0x000000003f4025c9       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
+                0x000000003f4025c5       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
  .rodata.__func__$4802
-                0x000000003f4025dd       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
+                0x000000003f4025d9       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
  .rodata.__func__$4757
-                0x000000003f4025f0       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
+                0x000000003f4025ec       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
  .rodata.__func__$4708
-                0x000000003f402602       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
+                0x000000003f4025fe       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(partition.c.obj)
  .rodata.str1.1
-                0x000000003f402615      0x1a1 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(flash_mmap.c.obj)
+                0x000000003f402611      0x1a1 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(flash_mmap.c.obj)
  .rodata.__func__$6194
-                0x000000003f4027b6       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(flash_mmap.c.obj)
+                0x000000003f4027b2       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(flash_mmap.c.obj)
  .rodata.__func__$6185
-                0x000000003f4027c7       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(flash_mmap.c.obj)
+                0x000000003f4027c3       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(flash_mmap.c.obj)
  .rodata.str1.1
-                0x000000003f4027dc      0x135 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_api.c.obj)
+                0x000000003f4027d8      0x135 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_api.c.obj)
  .rodata.__func__$8525
-                0x000000003f402911       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_api.c.obj)
+                0x000000003f40290d       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_api.c.obj)
  .rodata.__func__$8507
-                0x000000003f40292b       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_api.c.obj)
+                0x000000003f402927       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_api.c.obj)
  .rodata.__func__$8435
-                0x000000003f40293b       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_api.c.obj)
- .rodata.TAG    0x000000003f402952        0xa C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_api.c.obj)
+                0x000000003f402937       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_api.c.obj)
+ .rodata.TAG    0x000000003f40294e        0xa C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_api.c.obj)
  .rodata.esp_flash_init_default_chip.str1.1
-                0x000000003f40295c       0x64 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_spi_init.c.obj)
- .rodata.TAG    0x000000003f4029c0        0xa C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_spi_init.c.obj)
+                0x000000003f402958       0x64 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_spi_init.c.obj)
+ .rodata.TAG    0x000000003f4029bc        0xa C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(esp_flash_spi_init.c.obj)
  .rodata.str1.1
-                0x000000003f4029ca       0x43 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(spi_flash_os_func_app.c.obj)
+                0x000000003f4029c6       0x43 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(spi_flash_os_func_app.c.obj)
  .rodata.__func__$8090
-                0x000000003f402a0d       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(spi_flash_os_func_app.c.obj)
+                0x000000003f402a09       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(spi_flash_os_func_app.c.obj)
  .rodata.spi_flash_init_lock.str1.1
-                0x000000003f402a27       0x41 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(cache_utils.c.obj)
+                0x000000003f402a23       0x41 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(cache_utils.c.obj)
  .rodata.str1.1
-                0x000000003f402a68      0x111 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(cache_utils.c.obj)
+                0x000000003f402a64      0x111 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(cache_utils.c.obj)
                                         0x138 (size before relaxing)
  .rodata.__func__$5896
-                0x000000003f402b79       0x31 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(cache_utils.c.obj)
+                0x000000003f402b75       0x31 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(cache_utils.c.obj)
  .rodata.__func__$5883
-                0x000000003f402baa       0x32 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(cache_utils.c.obj)
+                0x000000003f402ba6       0x32 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(cache_utils.c.obj)
  .rodata.__func__$5866
-                0x000000003f402bdc       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(cache_utils.c.obj)
+                0x000000003f402bd8       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\dio_qspi\libspi_flash.a(cache_utils.c.obj)
  .rodata.nvs_flash_init.str1.1
-                0x000000003f402bf0        0x4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libnvs_flash.a(nvs_api.cpp.obj)
+                0x000000003f402bec        0x4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libnvs_flash.a(nvs_api.cpp.obj)
  .rodata._ZTVN3nvs12NVSPartitionE
-                0x000000003f402bf4       0x30 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libnvs_flash.a(nvs_partition.cpp.obj)
-                0x000000003f402bf4                vtable for nvs::NVSPartition
+                0x000000003f402bf0       0x30 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libnvs_flash.a(nvs_partition.cpp.obj)
+                0x000000003f402bf0                vtable for nvs::NVSPartition
  .rodata._ZTVN3nvs19NVSPartitionManagerE
-                0x000000003f402c24       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libnvs_flash.a(nvs_partition_manager.cpp.obj)
-                0x000000003f402c24                vtable for nvs::NVSPartitionManager
+                0x000000003f402c20       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libnvs_flash.a(nvs_partition_manager.cpp.obj)
+                0x000000003f402c20                vtable for nvs::NVSPartitionManager
  .rodata._ZN3nvs11PageManager4loadEPNS_9PartitionEjj.str1.1
-                0x000000003f402c34       0x5a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libnvs_flash.a(nvs_pagemanager.cpp.obj)
+                0x000000003f402c30       0x5a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libnvs_flash.a(nvs_pagemanager.cpp.obj)
  .rodata._ZZN3nvs11PageManager4loadEPNS_9PartitionEjjE19__PRETTY_FUNCTION__
-                0x000000003f402c8e       0x46 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libnvs_flash.a(nvs_pagemanager.cpp.obj)
+                0x000000003f402c8a       0x46 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libnvs_flash.a(nvs_pagemanager.cpp.obj)
  .rodata.pthread_create.str1.1
-                0x000000003f402cd4       0xcc C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
+                0x000000003f402cd0       0xcc C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
  .rodata.pthread_cancel.str1.1
-                0x000000003f402da0       0x1f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
+                0x000000003f402d9c       0x1f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
  .rodata.pthread_mutex_destroy.str1.1
-                0x000000003f402dbf       0x24 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
+                0x000000003f402dbb       0x24 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
  .rodata.str1.1
-                0x000000003f402de3       0x23 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
+                0x000000003f402ddf       0x23 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
  .rodata.__func__$6680
-                0x000000003f402e06       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
+                0x000000003f402e02       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
  .rodata.__func__$6651
-                0x000000003f402e1b       0x16 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
+                0x000000003f402e17       0x16 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
  .rodata.__FUNCTION__$6615
-                0x000000003f402e31        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
+                0x000000003f402e2d        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread.c.obj)
  .rodata.pthread_local_storage_thread_deleted_callback.str1.1
-                0x000000003f402e40       0x3c C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread_local_storage.c.obj)
+                0x000000003f402e3c       0x3c C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread_local_storage.c.obj)
  .rodata.__func__$6360
-                0x000000003f402e7c       0x2e C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread_local_storage.c.obj)
+                0x000000003f402e78       0x2e C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libpthread.a(pthread_local_storage.c.obj)
  .rodata.task_wdt_isr.str1.1
-                0x000000003f402eaa      0x112 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(task_wdt.c.obj)
+                0x000000003f402ea6      0x112 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(task_wdt.c.obj)
  .rodata.esp_task_wdt_init.str1.1
-                0x000000003f402fbc       0x85 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(task_wdt.c.obj)
+                0x000000003f402fb8       0x85 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(task_wdt.c.obj)
  .rodata.esp_task_wdt_add.str1.1
-                0x000000003f403041       0x39 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(task_wdt.c.obj)
+                0x000000003f40303d       0x39 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(task_wdt.c.obj)
  .rodata.__func__$6898
-                0x000000003f40307a       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(task_wdt.c.obj)
+                0x000000003f403076       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(task_wdt.c.obj)
  .rodata.__func__$6880
-                0x000000003f40308b       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(task_wdt.c.obj)
+                0x000000003f403087       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(task_wdt.c.obj)
  .rodata.str1.1
-                0x000000003f40309d       0xb2 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(cpu_start.c.obj)
+                0x000000003f403099       0xb2 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(cpu_start.c.obj)
  .rodata.esp_clk_init.str1.1
-                0x000000003f40314f       0x62 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(clk.c.obj)
- *fill*         0x000000003f4031b1        0x3 
- .rodata        0x000000003f4031b4        0x4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(clk.c.obj)
+                0x000000003f40314b       0x62 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(clk.c.obj)
+ *fill*         0x000000003f4031ad        0x3 
+ .rodata        0x000000003f4031b0        0x4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(clk.c.obj)
  .rodata.__func__$7842
-                0x000000003f4031b8        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(clk.c.obj)
+                0x000000003f4031b4        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(clk.c.obj)
  .rodata.str1.1
-                0x000000003f4031c5       0x5a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(reset_reason.c.obj)
+                0x000000003f4031c1       0x5a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(reset_reason.c.obj)
  .rodata.__func__$4659
-                0x000000003f40321f       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(reset_reason.c.obj)
- *fill*         0x000000003f403239        0x3 
- .rodata        0x000000003f40323c       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(system_internal.c.obj)
+                0x000000003f40321b       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(reset_reason.c.obj)
+ *fill*         0x000000003f403235        0x3 
+ .rodata        0x000000003f403238       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(system_internal.c.obj)
  .rodata.str1.1
-                0x000000003f40324c       0x3e C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(debug_helpers.c.obj)
+                0x000000003f403248       0x3e C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(debug_helpers.c.obj)
                                          0x47 (size before relaxing)
  .rodata.str1.1
-                0x000000003f40328a       0x46 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(crosscore_int.c.obj)
+                0x000000003f403286       0x46 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(crosscore_int.c.obj)
  .rodata.esp_crosscore_int_init.str1.1
-                0x000000003f4032d0        0x4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(crosscore_int.c.obj)
+                0x000000003f4032cc        0x4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(crosscore_int.c.obj)
                                          0x2e (size before relaxing)
  .rodata.__func__$4909
-                0x000000003f4032d4       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(crosscore_int.c.obj)
+                0x000000003f4032d0       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(crosscore_int.c.obj)
  .rodata.__func__$4904
-                0x000000003f4032eb       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(crosscore_int.c.obj)
- *fill*         0x000000003f403302        0x2 
- .rodata        0x000000003f403304       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic.c.obj)
+                0x000000003f4032e7       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(crosscore_int.c.obj)
+ *fill*         0x000000003f4032fe        0x2 
+ .rodata        0x000000003f403300       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic.c.obj)
  .rodata.esp_panic_handler.str1.1
-                0x000000003f403314       0xba C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic.c.obj)
+                0x000000003f403310       0xba C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic.c.obj)
                                          0xbd (size before relaxing)
  .rodata.start_cpu0_default.str1.1
-                0x000000003f4033ce       0xb1 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(startup.c.obj)
+                0x000000003f4033ca       0xb1 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(startup.c.obj)
                                          0xb3 (size before relaxing)
  .rodata.__func__$13085
-                0x000000003f40347f        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(startup.c.obj)
+                0x000000003f40347b        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(startup.c.obj)
  .rodata.g_startup_fn
-                0x000000003f40348c        0x8 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(startup.c.obj)
-                0x000000003f40348c                g_startup_fn
+                0x000000003f403488        0x8 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(startup.c.obj)
+                0x000000003f403488                g_startup_fn
  .rodata.panic_handler.str1.1
-                0x000000003f403494        0x8 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_handler.c.obj)
+                0x000000003f403490        0x8 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_handler.c.obj)
  .rodata.print_state_for_core.str1.1
-                0x000000003f40349c        0x3 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_handler.c.obj)
+                0x000000003f403498        0x3 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_handler.c.obj)
  .rodata.rtc_brownout_isr_handler.str1.1
-                0x000000003f40349c       0x26 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(brownout.c.obj)
- .rodata        0x000000003f4034c2        0x5 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(brownout.c.obj)
+                0x000000003f403498       0x26 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(brownout.c.obj)
+ .rodata        0x000000003f4034be        0x5 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(brownout.c.obj)
  .rodata.print_illegal_instruction_details.str1.1
-                0x000000003f4034c7       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
+                0x000000003f4034c3       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
                                          0x17 (size before relaxing)
  .rodata.print_debug_exception_details.str1.1
-                0x000000003f4034d9       0x98 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
+                0x000000003f4034d5       0x98 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
  .rodata.panic_print_registers.str1.1
-                0x000000003f403571      0x141 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
+                0x000000003f40356d      0x141 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
                                         0x152 (size before relaxing)
- *fill*         0x000000003f4036b2        0x2 
- .rodata        0x000000003f4036b4       0x60 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
+ *fill*         0x000000003f4036ae        0x2 
+ .rodata        0x000000003f4036b0       0x60 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
  .rodata.panic_arch_fill_info.str1.1
-                0x000000003f403714       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
+                0x000000003f403710       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
                                          0x21 (size before relaxing)
  .rodata.panic_soc_fill_info.str1.1
-                0x000000003f40372d        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
+                0x000000003f403729        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
  .rodata.str1.1
-                0x000000003f40373c      0x27d C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
+                0x000000003f403738      0x27d C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
                                         0x281 (size before relaxing)
- *fill*         0x000000003f4039b9        0x3 
+ *fill*         0x000000003f4039b5        0x3 
  .rodata.pseudo_reason$5200
-                0x000000003f4039bc       0x20 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
+                0x000000003f4039b8       0x20 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
  .rodata.reason$5194
-                0x000000003f4039dc       0xa0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
+                0x000000003f4039d8       0xa0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_system.a(panic_arch.c.obj)
  .rodata.spi_flash_clk_cfg_reg
-                0x000000003f403a7c       0x38 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libhal.a(spi_flash_hal.c.obj)
+                0x000000003f403a78       0x38 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libhal.a(spi_flash_hal.c.obj)
  .rodata.translate_path.str1.1
-                0x000000003f403ab4       0x59 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs.c.obj)
+                0x000000003f403ab0       0x59 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs.c.obj)
                                          0x5b (size before relaxing)
  .rodata.__func__$7018
-                0x000000003f403b0d        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs.c.obj)
+                0x000000003f403b09        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs.c.obj)
  .rodata.console_open.str1.1
-                0x000000003f403b1c        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_console.c.obj)
+                0x000000003f403b18        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_console.c.obj)
  .rodata.esp_vfs_dev_console_register.str1.1
-                0x000000003f403b29        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_console.c.obj)
- *fill*         0x000000003f403b36        0x2 
- .rodata.vfs    0x000000003f403b38       0xa4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_console.c.obj)
+                0x000000003f403b25        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_console.c.obj)
+ *fill*         0x000000003f403b32        0x2 
+ .rodata.vfs    0x000000003f403b34       0xa4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_console.c.obj)
  .rodata.uart_fcntl.str1.1
-                0x000000003f403bdc       0x30 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+                0x000000003f403bd8       0x30 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
  .rodata.uart_return_char$part$5.str1.1
-                0x000000003f403c0c       0x1d C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+                0x000000003f403c08       0x1d C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
  .rodata.uart_access.str1.1
-                0x000000003f403c29        0x6 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+                0x000000003f403c25        0x6 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
                                           0x9 (size before relaxing)
  .rodata.uart_fsync.str1.1
-                0x000000003f403c2f       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+                0x000000003f403c2b       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
  .rodata.__func__$8095
-                0x000000003f403c41        0xb C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+                0x000000003f403c3d        0xb C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
  .rodata.__func__$8111
-                0x000000003f403c4c       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+                0x000000003f403c48       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
  .rodata.__func__$8117
-                0x000000003f403c5d        0xa C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+                0x000000003f403c59        0xa C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
  .rodata.__func__$8133
-                0x000000003f403c67        0xb C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+                0x000000003f403c63        0xb C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
  .rodata.__func__$8129
-                0x000000003f403c72        0xb C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+                0x000000003f403c6e        0xb C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
  .rodata.__func__$8139
-                0x000000003f403c7d        0xb C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+                0x000000003f403c79        0xb C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
  .rodata.__func__$8149
-                0x000000003f403c88        0xb C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
- *fill*         0x000000003f403c93        0x1 
- .rodata.vfs    0x000000003f403c94       0xa4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
- .rodata.s_ctx  0x000000003f403d38        0xc C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+                0x000000003f403c84        0xb C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+ *fill*         0x000000003f403c8f        0x1 
+ .rodata.vfs    0x000000003f403c90       0xa4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
+ .rodata.s_ctx  0x000000003f403d34        0xc C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libvfs.a(vfs_uart.c.obj)
  .rodata.s_log_level_get_and_unlock.str1.1
-                0x000000003f403d44       0x64 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\liblog.a(log.c.obj)
+                0x000000003f403d40       0x64 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\liblog.a(log.c.obj)
  .rodata.esp_log_level_set.str1.1
-                0x000000003f403da8        0x2 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\liblog.a(log.c.obj)
+                0x000000003f403da4        0x2 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\liblog.a(log.c.obj)
  .rodata.__func__$3607
-                0x000000003f403da8       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\liblog.a(log.c.obj)
+                0x000000003f403da4       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\liblog.a(log.c.obj)
  .rodata.__func__$3571
-                0x000000003f403dbd       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\liblog.a(log.c.obj)
+                0x000000003f403db9       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\liblog.a(log.c.obj)
  .rodata.str1.1
-                0x000000003f403dcf      0x112 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
+                0x000000003f403dcb      0x112 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
  .rodata.__func__$5212
-                0x000000003f403ee1       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
+                0x000000003f403edd       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
  .rodata.__func__$5198
-                0x000000003f403ef2       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
+                0x000000003f403eee       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
  .rodata.__func__$5178
-                0x000000003f403f04        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
+                0x000000003f403f00        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
  .rodata.__func__$5188
-                0x000000003f403f13       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
+                0x000000003f403f0f       0x17 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
  .rodata.__func__$5129
-                0x000000003f403f2a       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
+                0x000000003f403f26       0x1a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
  .rodata.__func__$5123
-                0x000000003f403f44       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
+                0x000000003f403f40       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
  .rodata.__func__$5081
-                0x000000003f403f5d       0x18 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
+                0x000000003f403f59       0x18 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
  .rodata.__func__$5114
-                0x000000003f403f75       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
+                0x000000003f403f71       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps.c.obj)
  .rodata.register_heap.str1.1
-                0x000000003f403f86       0x41 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps_init.c.obj)
+                0x000000003f403f82       0x41 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps_init.c.obj)
  .rodata.heap_caps_init.str1.1
-                0x000000003f403fc7       0x5f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps_init.c.obj)
+                0x000000003f403fc3       0x5f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps_init.c.obj)
  .rodata.__func__$5111
-                0x000000003f404026        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps_init.c.obj)
+                0x000000003f404022        0xf C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps_init.c.obj)
  .rodata.__func__$5080
-                0x000000003f404035        0xe C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps_init.c.obj)
+                0x000000003f404031        0xe C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_caps_init.c.obj)
  .rodata.assert_valid_block.str1.1
-                0x000000003f404043       0x32 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap.c.obj)
+                0x000000003f40403f       0x32 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap.c.obj)
  .rodata.multi_heap_register_impl.str1.1
-                0x000000003f404075       0x2c C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap.c.obj)
+                0x000000003f404071       0x2c C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap.c.obj)
  .rodata.multi_heap_get_first_block.str1.1
-                0x000000003f4040a1        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap.c.obj)
+                0x000000003f40409d        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap.c.obj)
  .rodata.__func__$5234
-                0x000000003f4040ae       0x18 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap.c.obj)
+                0x000000003f4040aa       0x18 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap.c.obj)
  .rodata.__func__$5192
-                0x000000003f4040c6       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap.c.obj)
+                0x000000003f4040c2       0x19 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap.c.obj)
  .rodata.default_walker.str1.1
-                0x000000003f4040df       0x20 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f4040db       0x20 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.tlsf_add_pool.str1.1
-                0x000000003f4040ff      0x124 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f4040fb      0x124 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.tlsf_remove_pool.str1.1
-                0x000000003f404223      0x10f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f40421f      0x10f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.tlsf_create.str1.1
-                0x000000003f404332       0xf5 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f40432e       0xf5 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.tlsf_malloc.str1.1
-                0x000000003f404427      0x17f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f404423      0x17f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.tlsf_free.str1.1
-                0x000000003f4045a6      0x145 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f4045a2      0x145 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.tlsf_realloc.str1.1
-                0x000000003f4046eb       0x2e C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f4046e7       0x2e C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3689
-                0x000000003f404719       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f404715       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3905
-                0x000000003f404729        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f404725        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3676
-                0x000000003f404736       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f404732       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3664
-                0x000000003f404747        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f404743        0xd C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3670
-                0x000000003f404754       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f404750       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3892
-                0x000000003f404765        0xa C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f404761        0xa C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3659
-                0x000000003f40476f        0xc C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f40476b        0xc C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3682
-                0x000000003f40477b       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f404777       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3619
-                0x000000003f40478b       0x16 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f404787       0x16 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3704
-                0x000000003f4047a1       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f40479d       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3716
-                0x000000003f4047b3       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f4047af       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3628
-                0x000000003f4047c5       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f4047c1       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.__func__$3636
-                0x000000003f4047d7       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
+                0x000000003f4047d3       0x12 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(heap_tlsf.c.obj)
  .rodata.verify_allocated_region.str1.1
-                0x000000003f4047e9       0x74 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap_poisoning.c.obj)
+                0x000000003f4047e5       0x74 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap_poisoning.c.obj)
  .rodata.multi_heap_free.str1.1
-                0x000000003f40485d       0x39 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap_poisoning.c.obj)
+                0x000000003f404859       0x39 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap_poisoning.c.obj)
  .rodata.__func__$5093
-                0x000000003f404896       0x1e C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap_poisoning.c.obj)
+                0x000000003f404892       0x1e C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap_poisoning.c.obj)
  .rodata.__func__$5073
-                0x000000003f4048b4       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap_poisoning.c.obj)
+                0x000000003f4048b0       0x13 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap_poisoning.c.obj)
  .rodata.__func__$5060
-                0x000000003f4048c7       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap_poisoning.c.obj)
+                0x000000003f4048c3       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(multi_heap_poisoning.c.obj)
  .rodata.soc_get_available_memory_regions.str1.1
-                0x000000003f4048d7       0xee C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(memory_layout_utils.c.obj)
+                0x000000003f4048d3       0xee C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(memory_layout_utils.c.obj)
  .rodata.__func__$2746
-                0x000000003f4049c5       0x1b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(memory_layout_utils.c.obj)
+                0x000000003f4049c1       0x1b C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(memory_layout_utils.c.obj)
  .rodata.soc_memory_region_count
-                0x000000003f4049e0        0x4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(memory_layout.c.obj)
-                0x000000003f4049e0                soc_memory_region_count
+                0x000000003f4049dc        0x4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(memory_layout.c.obj)
+                0x000000003f4049dc                soc_memory_region_count
  .rodata.soc_memory_regions
-                0x000000003f4049e4      0x2c0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(memory_layout.c.obj)
-                0x000000003f4049e4                soc_memory_regions
+                0x000000003f4049e0      0x2c0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(memory_layout.c.obj)
+                0x000000003f4049e0                soc_memory_regions
  .rodata.str1.1
-                0x000000003f404ca4       0x81 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(memory_layout.c.obj)
+                0x000000003f404ca0       0x81 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(memory_layout.c.obj)
                                          0x8b (size before relaxing)
- *fill*         0x000000003f404d25        0x3 
+ *fill*         0x000000003f404d21        0x3 
  .rodata.soc_memory_types
-                0x000000003f404d28      0x154 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(memory_layout.c.obj)
-                0x000000003f404d28                soc_memory_types
+                0x000000003f404d24      0x154 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libheap.a(memory_layout.c.obj)
+                0x000000003f404d24                soc_memory_types
  .rodata.GPIO_PIN_MUX_REG
-                0x000000003f404e7c       0xa0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libsoc.a(gpio_periph.c.obj)
-                0x000000003f404e7c                GPIO_PIN_MUX_REG
+                0x000000003f404e78       0xa0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libsoc.a(gpio_periph.c.obj)
+                0x000000003f404e78                GPIO_PIN_MUX_REG
  .rodata.rtc_io_desc
-                0x000000003f404f1c      0x3f0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libsoc.a(rtc_io_periph.c.obj)
-                0x000000003f404f1c                rtc_io_desc
+                0x000000003f404f18      0x3f0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libsoc.a(rtc_io_periph.c.obj)
+                0x000000003f404f18                rtc_io_desc
  .rodata.rtc_io_num_map
-                0x000000003f40530c       0xa0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libsoc.a(rtc_io_periph.c.obj)
-                0x000000003f40530c                rtc_io_num_map
+                0x000000003f405308       0xa0 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libsoc.a(rtc_io_periph.c.obj)
+                0x000000003f405308                rtc_io_num_map
  .rodata.uart_periph_signal
-                0x000000003f4053ac       0x48 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libsoc.a(uart_periph.c.obj)
-                0x000000003f4053ac                uart_periph_signal
+                0x000000003f4053a8       0x48 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libsoc.a(uart_periph.c.obj)
+                0x000000003f4053a8                uart_periph_signal
  .rodata.compare_and_set_extram.str1.1
-                0x000000003f4053f4       0xd1 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(compare_set.c.obj)
+                0x000000003f4053f0       0xd1 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(compare_set.c.obj)
  .rodata.__func__$3918
-                0x000000003f4054c5       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(compare_set.c.obj)
+                0x000000003f4054c1       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(compare_set.c.obj)
  .rodata.__func__$3905
-                0x000000003f4054d6       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(compare_set.c.obj)
- *fill*         0x000000003f4054e7        0x1 
- .rodata        0x000000003f4054e8       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(cpu_util.c.obj)
+                0x000000003f4054d2       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(compare_set.c.obj)
+ *fill*         0x000000003f4054e3        0x1 
+ .rodata        0x000000003f4054e4       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(cpu_util.c.obj)
  .rodata.is_vect_desc_usable.str1.1
-                0x000000003f4054fc       0x6f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
+                0x000000003f4054f8       0x6f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
  .rodata.str1.1
-                0x000000003f40556b        0xc C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
+                0x000000003f405567        0xc C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
  .rodata.esp_intr_free.str1.1
-                0x000000003f405577        0x4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
+                0x000000003f405573        0x4 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
  .rodata.__func__$5676
-                0x000000003f40557b       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
+                0x000000003f405577       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
  .rodata.__func__$5656
-                0x000000003f40558c        0xe C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
+                0x000000003f405588        0xe C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
  .rodata.__func__$5586
-                0x000000003f40559a       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
+                0x000000003f405596       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
  .rodata.__func__$5562
-                0x000000003f4055ae       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
+                0x000000003f4055aa       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(intr_alloc.c.obj)
  .rodata.esp_deep_sleep_wakeup_io_reset.str1.1
-                0x000000003f4055c3       0xac C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(sleep_gpio.c.obj)
+                0x000000003f4055bf       0xac C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(sleep_gpio.c.obj)
                                          0xde (size before relaxing)
  .rodata.__func__$5933
-                0x000000003f40566f       0x1c C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(sleep_gpio.c.obj)
+                0x000000003f40566b       0x1c C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(sleep_gpio.c.obj)
  .rodata.rtc_clk_cal_internal.str1.1
-                0x000000003f40568b       0x93 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(rtc_time.c.obj)
+                0x000000003f405687       0x93 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(rtc_time.c.obj)
  .rodata.rtc_time_get.str1.1
-                0x000000003f40571e       0x1d C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(rtc_time.c.obj)
+                0x000000003f40571a       0x1d C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(rtc_time.c.obj)
  .rodata.rtc_clk_wait_for_slow_cycle.str1.1
-                0x000000003f40573b       0x28 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(rtc_time.c.obj)
+                0x000000003f405737       0x28 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(rtc_time.c.obj)
  .rodata.__func__$4140
-                0x000000003f405763       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(rtc_time.c.obj)
+                0x000000003f40575f       0x15 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_hw_support.a(rtc_time.c.obj)
  .rodata.str1.1
-                0x000000003f405778       0x23 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libxtensa.a(xtensa_intr.c.obj)
+                0x000000003f405774       0x23 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libxtensa.a(xtensa_intr.c.obj)
  .rodata.esp_unknown_msg
-                0x000000003f40579b        0x6 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_common.a(esp_err_to_name.c.obj)
+                0x000000003f405797        0x6 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_common.a(esp_err_to_name.c.obj)
  .rodata.str1.1
-                0x000000003f4057a1     0x166a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_common.a(esp_err_to_name.c.obj)
+                0x000000003f40579d     0x166a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_common.a(esp_err_to_name.c.obj)
                                        0x1671 (size before relaxing)
- *fill*         0x000000003f406e0b        0x1 
+ *fill*         0x000000003f406e07        0x1 
  .rodata.esp_err_msg_table
-                0x000000003f406e0c      0x6b8 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_common.a(esp_err_to_name.c.obj)
+                0x000000003f406e08      0x6b8 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_common.a(esp_err_to_name.c.obj)
  .rodata.esp_timer_init.str1.1
-                0x000000003f4074c4        0xa C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(esp_timer.c.obj)
+                0x000000003f4074c0        0xa C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(esp_timer.c.obj)
  .rodata.ets_timer_setfn.str1.1
-                0x000000003f4074ce       0x53 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(ets_timer_legacy.c.obj)
+                0x000000003f4074ca       0x53 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(ets_timer_legacy.c.obj)
                                          0x83 (size before relaxing)
  .rodata.str1.1
-                0x000000003f407521       0xb1 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(ets_timer_legacy.c.obj)
+                0x000000003f40751d       0xb1 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(ets_timer_legacy.c.obj)
  .rodata.__func__$5543
-                0x000000003f4075d2       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(ets_timer_legacy.c.obj)
+                0x000000003f4075ce       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(ets_timer_legacy.c.obj)
  .rodata.__func__$5537
-                0x000000003f4075e3       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(ets_timer_legacy.c.obj)
+                0x000000003f4075df       0x10 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(ets_timer_legacy.c.obj)
  .rodata.str1.1
-                0x000000003f4075f3       0xc8 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(esp_timer_impl_lac.c.obj)
+                0x000000003f4075ef       0xc8 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(esp_timer_impl_lac.c.obj)
  .rodata.esp_timer_impl_init.str1.1
-                0x000000003f4076bb       0x63 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(esp_timer_impl_lac.c.obj)
+                0x000000003f4076b7       0x63 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(esp_timer_impl_lac.c.obj)
                                          0x95 (size before relaxing)
  .rodata.__func__$6422
-                0x000000003f40771e       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(esp_timer_impl_lac.c.obj)
+                0x000000003f40771a       0x14 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(esp_timer_impl_lac.c.obj)
  .rodata.__func__$6389
-                0x000000003f407732       0x1f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(esp_timer_impl_lac.c.obj)
+                0x000000003f40772e       0x1f C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libesp_timer.a(esp_timer_impl_lac.c.obj)
  .rodata.pxPortInitialiseStack.str1.1
-                0x000000003f407751       0x48 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
- *fill*         0x000000003f407799        0x3 
+                0x000000003f40774d       0x48 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
+ *fill*         0x000000003f407795        0x3 
  .rodata.xPortEnterCriticalTimeout.str1.4
-                0x000000003f40779c       0xb3 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
- *fill*         0x000000003f40784f        0x1 
+                0x000000003f407798       0xb3 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
+ *fill*         0x000000003f40784b        0x1 
  .rodata.vPortExitCritical.str1.4
-                0x000000003f407850       0x2c C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
+                0x000000003f40784c       0x2c C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
  .rodata.vApplicationStackOverflowHook.str1.1
-                0x000000003f40787c       0x3a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
+                0x000000003f407878       0x3a C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
  .rodata.__func__$4485
-                0x000000003f4078b6       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
+                0x000000003f4078b2       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
  .rodata.__func__$4472
-                0x000000003f4078c7       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
+                0x000000003f4078c3       0x11 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
  .rodata.__func__$5539
-                0x000000003f4078d8       0x16 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
- *fill*         0x000000003f4078ee        0x2 
+                0x000000003f4078d4       0x16 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(port.c.obj)
+ *fill*         0x000000003f4078ea        0x6 
  .rodata        0x000000003f4078f0       0x24 C:\Users\Admin\.platformio\packages\framework-arduinoespressif32\tools\sdk\esp32\lib\libfreertos.a(xtensa_vectors.S.obj)
                 0x000000003f4078f0                _xt_coproc_sa_offset
  .rodata.main_task.str1.1
