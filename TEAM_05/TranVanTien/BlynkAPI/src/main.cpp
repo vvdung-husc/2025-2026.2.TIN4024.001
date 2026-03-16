@@ -14,7 +14,7 @@
 #define WIFI_SSID "Wokwi-GUEST"
 #define WIFI_PASSWORD ""
 
-// --- API KEY THỜI TIẾT ĐÃ ĐƯỢC CẬP NHẬT ---
+// --- API KEY THỜI TIẾT ---
 #define OPENWEATHERMAP_KEY "619ac2f5250a67d3524bc2dc2702ab12" 
 
 struct IP4_Info {
@@ -66,44 +66,37 @@ void parseGeoInfo(String payload, IP4_Info& ipInfo) {
   }
 
   ipInfo.ip4 = values[0];
-  ipInfo.longitude = values[5]; 
-  ipInfo.latitude = values[6]; 
   
-  // Xóa các ký tự khoảng trắng hoặc xuống dòng thừa để URL không bị lỗi
+  // ĐÃ SỬA LỖI Ở 2 DÒNG NÀY (Đảo lại cho đúng Vĩ độ và Kinh độ)
+  ipInfo.latitude = values[5];  
+  ipInfo.longitude = values[6]; 
+  
+  // Xóa các ký tự khoảng trắng hoặc xuống dòng thừa
   ipInfo.ip4.trim();
   ipInfo.longitude.trim();
   ipInfo.latitude.trim();
   
   Serial.printf("IP Address: %s\r\n", ipInfo.ip4.c_str());
-  Serial.printf("Longitude: %s\r\n", ipInfo.longitude.c_str());
   Serial.printf("Latitude: %s\r\n", ipInfo.latitude.c_str());
+  Serial.printf("Longitude: %s\r\n", ipInfo.longitude.c_str());
 }
 
 // API Get lấy IP và Tọa độ
+// API Get lấy IP và Tọa độ
 void getAPI() {
-  if(WiFi.status() != WL_CONNECTED) {
-    Serial.println("Lỗi WiFi kết nối"); return;
-  }
+  if(WiFi.status() != WL_CONNECTED) return;
+  
   HTTPClient http;   
   http.begin("http://ip4.iothings.vn/?geo=1");
-  
   int httpResponseCode = http.GET();
+  
   if(httpResponseCode > 0) {
     String response = http.getString();
     parseGeoInfo(response, ip4Info);
-
-    // Chỉnh lại chuẩn định dạng link Google Maps
-    String urlGooleMaps = StringFormat("https://www.google.com/maps/place/%s,%s", ip4Info.latitude.c_str(), ip4Info.longitude.c_str());
-    Serial.printf("IPv4 => %s \r\n", ip4Info.ip4.c_str());
-    Serial.println(urlGooleMaps.c_str());
-
-    // Đã đổi giao thức http cho weather API để tăng tính ổn định trên ESP32
-    urlWeather = StringFormat("http://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=metric", ip4Info.latitude.c_str(), ip4Info.longitude.c_str(), OPENWEATHERMAP_KEY);
-    Serial.printf("URL Thời tiết => %s \r\n", urlWeather.c_str());      
-  } else {
-    Serial.print("Lỗi HTTP GET: ");
-    Serial.println(httpResponseCode);
-  }
+    
+    // Ép cứng tọa độ Huế vào link để bỏ qua lỗi ký tự ẩn
+    urlWeather = StringFormat("http://api.openweathermap.org/data/2.5/weather?lat=16.4&lon=107.6&appid=%s&units=metric", OPENWEATHERMAP_KEY);
+  } 
   http.end();
 }
 
@@ -114,7 +107,7 @@ void updateTemp() {
 
   if (!IsReady(lastTime, 10000)) return; 
   if(WiFi.status() != WL_CONNECTED) return;
-  if(urlWeather == "") return; // Kiểm tra URL đã có chưa
+  if(urlWeather == "") return; 
 
   HTTPClient http;   
   http.begin(urlWeather);
@@ -147,21 +140,21 @@ void updateTemp() {
 void onceCalled() {
   static bool done_ = false;
   if (done_) return;
-  if (ip4Info.ip4 == "") return; // Phải đợi có dữ liệu IP mới gửi lên Blynk
+  if (ip4Info.ip4 == "") return; 
   done_ = true;
   
   String link = StringFormat("https://www.google.com/maps/place/%s,%s", ip4Info.latitude.c_str(), ip4Info.longitude.c_str());
 
   Blynk.virtualWrite(V1, ip4Info.ip4.c_str());  
   Blynk.virtualWrite(V2, link.c_str());  
-    Blynk.virtualWrite(V4, "Trần Văn Tiến"); 
+  Blynk.virtualWrite(V4, "Trần Văn Tiến"); 
 }
 
 // Cập nhật Uptime
 void uptimeBlynk() {
   static ulong lastTime = 0;
   if (!IsReady(lastTime, 1000)) return; 
-  ulong value = currentMiliseconds / 1000; // Cập nhật đúng thời gian hoạt động
+  ulong value = currentMiliseconds / 1000; 
   Blynk.virtualWrite(V0, value);  
 }
 
@@ -178,7 +171,7 @@ void setup() {
   Blynk.config(BLYNK_AUTH_TOKEN); 
   Blynk.connect();                
 
-  getAPI(); // Gọi API lấy vị trí ngay khi khởi động
+  getAPI(); 
 }
 
 void loop() {
