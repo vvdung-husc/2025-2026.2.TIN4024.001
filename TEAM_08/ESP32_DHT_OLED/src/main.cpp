@@ -5,6 +5,7 @@ THÔNG TIN NHÓM 08
 3. Nguyễn Diệu Hằng
 4. Hồ Nguyễn Huyền Trang
 5. Võ Thị Hằng Nga
+>>>>>>> 5ddc00911f91681c32effb9b066747e2542cefc4
 */
 
 #include <Arduino.h>
@@ -49,7 +50,7 @@ void setup() {
   display.setTextColor(WHITE);
 }
 
-// Hàm nhấp nháy LED
+
 void blinkLED(int pin) {
   digitalWrite(pin, HIGH);
   delay(200);
