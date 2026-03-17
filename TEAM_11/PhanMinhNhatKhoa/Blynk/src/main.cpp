@@ -1,62 +1,66 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
-#include <DHT.h>                    // Thêm thư viện DHT
+#include <DHT.h> // Thêm thư viện DHT
 
-#define BLYNK_TEMPLATE_ID "TMPL64YL8fJrk"
-#define BLYNK_TEMPLATE_NAME "ESP32 LED TM1637"
-#define BLYNK_AUTH_TOKEN "S9-UuqRP6ItPoUGPZYbtSWknol03FF-0"
+/* Điền thông tin Blynk của bạn vào đây */
+#define BLYNK_TEMPLATE_ID "TMPL6yrROMUTd"
+#define BLYNK_TEMPLATE_NAME "He Thong Giam Sat"
+#define BLYNK_AUTH_TOKEN "OatJPynbJCRUlXD4nyATNRlrYr1vJ_FY"
 
 #include <WiFi.h>
+#include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
 
-char ssid[] = "Wokwi-GUEST";
-char pass[] = "";
+char ssid[] = "Wokwi-GUEST"; 
+char pass[] = "";             
 
 #define btnBLED  23
 #define pinBLED  21
-#define CLK      18
-#define DIO      19
-#define DHTPIN   16                 // SDA của DHT22 nối chân 16
-#define DHTTYPE  DHT22
+#define CLK 18  
+#define DIO 19  
 
-DHT dht(DHTPIN, DHTTYPE);           // Khởi tạo DHT
+// --- Cấu hình cảm biến DHT22 ---
+#define DHTPIN 4        // Chân kết nối DHT22
+#define DHTTYPE DHT22   // Loại cảm biến
+DHT dht(DHTPIN, DHTTYPE);
+// -------------------------------
+
+ulong currentMiliseconds = 0; 
+bool blueButtonON = true;     
 
 TM1637Display display(CLK, DIO);
-
-ulong currentMiliseconds = 0;
-bool blueButtonON = true;
 
 bool IsReady(ulong &ulTimer, uint32_t milisecond);
 void updateBlueButton();
 void uptimeBlynk();
-void readDHT();
+void updateDHT22(); // Hàm mới để đọc nhiệt độ/độ ẩm
 
 void setup() {
   Serial.begin(115200);
   pinMode(pinBLED, OUTPUT);
   pinMode(btnBLED, INPUT_PULLUP);
-  
+    
   display.setBrightness(0x0f);
-  dht.begin();                      // Khởi động DHT22
+  dht.begin(); // Khởi động DHT22
   
-  Serial.print("Connecting to "); Serial.println(ssid);
+  Serial.print("Connecting to ");Serial.println(ssid);
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  Serial.println("\nWiFi connected");
   
-  Serial.println("WiFi connected");
+  digitalWrite(pinBLED, blueButtonON? HIGH : LOW);  
+  Blynk.virtualWrite(V1, blueButtonON); 
   
-  digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
-  Blynk.virtualWrite(V1, blueButtonON);
-  
-  Serial.println("== START ==");
+  Serial.println("== START ==>");
 }
 
-void loop() {
-  Blynk.run();
+void loop() {  
+  Blynk.run(); 
+
   currentMiliseconds = millis();
-  
   uptimeBlynk();
   updateBlueButton();
-  readDHT();                        // Đọc cảm biến mỗi vòng lặp
+  updateDHT22(); // Chạy hàm cập nhật cảm biến
 }
 
 bool IsReady(ulong &ulTimer, uint32_t milisecond) {
@@ -65,70 +69,69 @@ bool IsReady(ulong &ulTimer, uint32_t milisecond) {
   return true;
 }
 
-void updateBlueButton() {
+void updateBlueButton(){
   static ulong lastTime = 0;
   static int lastValue = HIGH;
   if (!IsReady(lastTime, 50)) return;
-  
   int v = digitalRead(btnBLED);
   if (v == lastValue) return;
   lastValue = v;
   if (v == LOW) return;
 
-  blueButtonON = !blueButtonON;
-  digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
-  Blynk.virtualWrite(V1, blueButtonON);
-  
-  if (blueButtonON) {
+  if (!blueButtonON){
     Serial.println("Blue Light ON");
+    digitalWrite(pinBLED, HIGH);
+    blueButtonON = true;
+    Blynk.virtualWrite(V1, blueButtonON);
   } else {
     Serial.println("Blue Light OFF");
+    digitalWrite(pinBLED, LOW);    
+    blueButtonON = false;
+    Blynk.virtualWrite(V1, blueButtonON);
     display.clear();
-  }
+  }    
 }
 
-void uptimeBlynk() {
+void uptimeBlynk(){
   static ulong lastTime = 0;
-  if (!IsReady(lastTime, 1000)) return;
-  
+  if (!IsReady(lastTime, 1000)) return; 
   ulong value = lastTime / 1000;
-  Blynk.virtualWrite(V0, value);
-  
-  if (blueButtonON) {
-    display.showNumberDec(value);   // Hiển thị uptime khi đèn ON
+  Blynk.virtualWrite(V0, value);  
+  if (blueButtonON){
+    display.showNumberDec(value);
   }
 }
 
-void readDHT() {
+// Hàm mới: Đọc và gửi dữ liệu DHT22 lên Blynk mỗi 2 giây
+void updateDHT22() {
   static ulong lastTime = 0;
-  if (!IsReady(lastTime, 2000)) return;  // Đọc mỗi 2 giây
-  
+  if (!IsReady(lastTime, 2000)) return; // Đọc 2 giây/lần
+
   float h = dht.readHumidity();
   float t = dht.readTemperature();
-  
+
+  // Kiểm tra lỗi nếu không đọc được
   if (isnan(h) || isnan(t)) {
-    Serial.println("Failed to read from DHT sensor!");
+    Serial.println("Lỗi: Không thể đọc dữ liệu từ DHT22!");
     return;
   }
+
+  // Gửi lên Blynk qua V2 và V3
+  Blynk.virtualWrite(V2, t);
+  Blynk.virtualWrite(V3, h);
   
-  Blynk.virtualWrite(V2, t);     // Nhiệt độ → V2
-  Blynk.virtualWrite(V3, h);     // Độ ẩm → V3
-  
-  Serial.printf("Temp: %.1f °C | Hum: %.1f %%\n", t, h);
-  
-  if (blueButtonON) {
-    display.showNumberDec(t, true);  // Hiển thị nhiệt độ trên TM1637 (có dấu chấm)
-  }
+  Serial.print("Nhiệt độ: "); Serial.print(t);
+  Serial.print(" °C - Độ ẩm: "); Serial.print(h); Serial.println(" %");
 }
 
 BLYNK_WRITE(V1) {
-  blueButtonON = param.asInt();
-  digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
-  
-  if (blueButtonON) {
+  blueButtonON = param.asInt();  
+  if (blueButtonON){
     Serial.println("Blynk -> Blue Light ON");
+    digitalWrite(pinBLED, HIGH);
   } else {
     Serial.println("Blynk -> Blue Light OFF");
-    display.clear();
+    digitalWrite(pinBLED, LOW);   
+    display.clear(); 
   }
 }
