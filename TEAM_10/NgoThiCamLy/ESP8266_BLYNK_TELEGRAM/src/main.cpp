@@ -1,6 +1,6 @@
 #define BLYNK_TEMPLATE_ID "TMPL6Q9z66kmy"
 #define BLYNK_TEMPLATE_NAME "ESP8266 BLYNK TELEGRAM"
-#define BLYNK_AUTH_TOKEN "YOUR_BLYNK_TOKEN"
+#define BLYNK_AUTH_TOKEN "FSsnExhIXIltL4vd79Onm9gA-LdkEdHA"
 
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
@@ -13,7 +13,7 @@ char ssid[] = "YOUR_WIFI";
 char pass[] = "YOUR_PASSWORD";
 
 // ===== TELEGRAM =====
-#define BOT_TOKEN "YOUR_NEW_TOKEN"
+#define BOT_TOKEN "8665074207:AAEl9awOa1D0j8Jp-M2bWq9zlgM4HIscF-s"
 #define CHAT_ID  "-5237059167"
 
 WiFiClientSecure client;
