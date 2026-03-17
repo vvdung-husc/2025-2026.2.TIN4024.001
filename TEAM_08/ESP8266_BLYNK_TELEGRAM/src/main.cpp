@@ -6,9 +6,9 @@ THÔNG TIN NHÓM 08
 */
 
 // --- THÔNG SỐ BLYNK ---
-#define BLYNK_TEMPLATE_ID "TMPL_CUA_BAN"
-#define BLYNK_TEMPLATE_NAME "Team 08 Project"
-#define BLYNK_AUTH_TOKEN "TOKEN_BLYNK_CUA_BAN"
+#define BLYNK_TEMPLATE_ID "TMPL60jzGNK9O"
+#define BLYNK_TEMPLATE_NAME "ESP8266 Team 08"
+#define BLYNK_AUTH_TOKEN "Your_Blynk_Auth_Token_Here" // Điền token Blynk của bạn vào đây
 
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
@@ -20,11 +20,11 @@ THÔNG TIN NHÓM 08
 #include <DHT.h>
 
 // --- THÔNG SỐ WIFI & TELEGRAM ---
-const char* ssid = "TEN_WIFI_NHA_BAN";
-const char* password = "MAT_KHAU_WIFI";
+const char* ssid = "LAB502-29 5164";
+const char* password = "68686868";
 
-#define BOT_TOKEN "TOKEN_TELEGRAM_BOT_CUA_BAN"
-#define GROUP_ID "-5108587371"
+#define BOT_TOKEN "Your_Telegram_Bot_Token_Here" // Điền token Bot của bạn vào đây
+#define GROUP_ID "Your_Telegram_Group_ID_Here"   // Điền ID nhóm Telegram của bạn vào đây
 
 X509List cert(TELEGRAM_CERTIFICATE_ROOT);
 WiFiClientSecure secured_client;
@@ -60,7 +60,19 @@ void handleTelegramMessages(int numNewMessages) {
     String text = bot.messages[i].text;
     String from_name = bot.messages[i].from_name;
 
-    if (text == "/led_on") {
+    // --- TÍNH NĂNG MỚI: MENU LỆNH GỢI Ý ---
+    if (text == "/start" || text == "/help") {
+      String welcome = "Xin chào " + from_name + "!\n\n";
+      welcome += "🤖 Đây là Bot quản lý IoT của **Team 08**.\n";
+      welcome += "Vui lòng chọn các lệnh bên dưới để điều khiển hệ thống:\n";
+      
+      // Tạo layout cho bàn phím ảo (2 hàng, mỗi hàng 2 nút)
+      String keyboardJson = "[[\"/led_on\", \"/led_off\"], [\"/led_status\", \"/get_weather\"]]";
+      
+      // Gửi tin nhắn kèm theo bàn phím ảo
+      bot.sendMessageWithReplyKeyboard(chat_id, welcome, "", keyboardJson, true);
+    }
+    else if (text == "/led_on") {
       ledState = true;
       digitalWrite(LED_PIN, HIGH);
       Blynk.virtualWrite(V1, 1); // Đồng bộ trạng thái lên nút Blynk
@@ -80,6 +92,10 @@ void handleTelegramMessages(int numNewMessages) {
       float h = dht.readHumidity();
       String msg = "🌤 Thời tiết hiện tại:\n- Nhiệt độ: " + String(t, 1) + "°C\n- Độ ẩm: " + String(h, 1) + "%";
       bot.sendMessage(chat_id, msg, "");
+    }
+    // Nếu gõ nội dung linh tinh không nằm trong lệnh
+    else {
+      bot.sendMessage(chat_id, "Lệnh không hợp lệ. Hãy gõ /start để xem danh sách lệnh nhé!", "");
     }
   }
 }
@@ -146,7 +162,8 @@ void setup() {
   // Thiết lập Timer chạy hàm sensorRoutine mỗi 2 giây
   timer.setInterval(2000L, sensorRoutine);
   
-  bot.sendMessage(GROUP_ID, "🚀 Thiết bị ESP8266 của Team 08 đã khởi động thành công!");
+  // Thông báo khởi động và gợi ý lệnh
+  bot.sendMessage(GROUP_ID, "🚀 Thiết bị ESP8266 của Team 08 đã khởi động thành công!\n👉 Hãy gõ /start để hiển thị Menu điều khiển.");
 }
 
 void loop() {
