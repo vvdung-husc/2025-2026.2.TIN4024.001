@@ -8,114 +8,118 @@
 #include <WiFiClientSecure.h>
 #include <DHT.h>
 #include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SH110X.h>
+#include <U8g2lib.h> 
 
-#define DHTPIN D3
+#define DHTPIN D5 
 #define DHTTYPE DHT22
 #define LED_PIN D4 
 #define GAS_PIN A0
 
-char ssid[] = "Wokwi-GUEST"; 
-char pass[] = "";
+char ssid[] = "HostpotThuan"; 
+char pass[] = "12345678";
 String botToken = "8618224007:AAFkL2FH9sNNCbmfc0fsHXIYqv2Qy3KW1Yg";
 
 WiFiClientSecure client;
 UniversalTelegramBot bot(botToken, client);
 DHT dht(DHTPIN, DHTTYPE);
-Adafruit_SH1106G display = Adafruit_SH1106G(128, 64, &Wire);
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
 BlynkTimer timer;
-float t, h;
-int gas;
+float t = 0, h = 0;
+int gas = 0;
 unsigned long lastTimeBotRan;
-const unsigned long botRequestDelay = 2000; // Tăng lên 2 giây để tránh treo
-
-bool ledState = LOW;
+const unsigned long botRequestDelay = 2000; 
 
 void updateOLED() {
-  display.clearDisplay();
-  display.setCursor(0, 0);
-  display.println("TEAM: ITHACA ENERGY");
-  display.drawLine(0, 9, 128, 9, SH110X_WHITE);
-  display.setCursor(0, 12);
-  display.printf("Temp: %.1f C | Hum: %.1f%%", t, h);
-  display.setCursor(0, 24);
-  display.printf("Gas: %d", gas);
-  display.setCursor(0, 36);
-  display.printf("Uptime: %lu s", millis() / 1000);
-  display.setCursor(0, 54);
-  display.println("Status: Online");
-  display.display();
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_6x10_tf);
+  u8g2.drawStr(0, 10, "TEAM: ITHACA ENERGY");
+  u8g2.drawLine(0, 12, 128, 12);
+  u8g2.setCursor(0, 28);
+  u8g2.printf("Temp: %.1f C", t);
+  u8g2.setCursor(0, 42);
+  u8g2.printf("Hum : %.1f %%", h);
+  u8g2.setCursor(0, 56);
+  u8g2.printf("Gas : %d", gas);
+  u8g2.sendBuffer(); 
 }
 
 void sendSensorData() {
   h = dht.readHumidity();
   t = dht.readTemperature();
   gas = analogRead(GAS_PIN);
-
-  if (isnan(h) || isnan(t)) return;
-
-  Blynk.virtualWrite(V1, t);   
-  Blynk.virtualWrite(V2, h);   
-  Blynk.virtualWrite(V3, gas); 
-  Blynk.virtualWrite(V0, millis() / 1000); 
-  updateOLED();
-}
-
-BLYNK_WRITE(V4) {
-  ledState = param.asInt();
-  digitalWrite(LED_PIN, ledState ? LOW : HIGH); 
+  if (!isnan(h) && !isnan(t)) {
+    Blynk.virtualWrite(V1, t);   
+    Blynk.virtualWrite(V2, h);   
+    Blynk.virtualWrite(V3, gas); 
+    updateOLED();
+  }
 }
 
 void handleNewMessages(int numNewMessages) {
   for (int i = 0; i < numNewMessages; i++) {
     String chat_id = String(bot.messages[i].chat_id);
     String text = bot.messages[i].text;
-
     if (text == "/led_on") {
       digitalWrite(LED_PIN, LOW);
-      ledState = HIGH;
       bot.sendMessage(chat_id, "LED ON", "");
     } else if (text == "/led_off") {
       digitalWrite(LED_PIN, HIGH);
-      ledState = LOW;
       bot.sendMessage(chat_id, "LED OFF", "");
     } else if (text == "/get_weather") {
-      bot.sendMessage(chat_id, "Temp: " + String(t) + "C, Hum: " + String(h) + "%", "");
+      bot.sendMessage(chat_id, "Nhiet do: " + String(t) + "C, Do am: " + String(h) + "%", "");
     }
-    yield(); // Quan trọng: Trả lại quyền cho hệ thống
   }
 }
 
 void setup() {
-  Serial.begin(115200); // Đảm bảo Monitor cũng để 115200
-  delay(100);
-  
+  Serial.begin(115200);
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, HIGH); 
-  
   dht.begin();
   Wire.begin(D2, D1);
-  display.begin(0x3C, true);
+  u8g2.begin();
   
-  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB08_tr);
+  u8g2.drawStr(10, 35, "WiFi Connecting...");
+  u8g2.sendBuffer();
+
+  Serial.println("\nConnecting to WiFi...");
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, pass);
   client.setInsecure(); 
-  
-  timer.setInterval(3000L, sendSensorData); // Tăng thời gian lấy mẫu lên 3s
+
+  // Chờ kết nối và hiển thị dấu chấm ra Serial
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nWiFi Connected!");
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
+
+  u8g2.clearBuffer();
+  u8g2.drawStr(10, 35, "WiFi OK!");
+  u8g2.sendBuffer();
+  delay(1000);
+
+  Blynk.config(BLYNK_AUTH_TOKEN);
+  timer.setInterval(3000L, sendSensorData);
 }
 
 void loop() {
-  Blynk.run();
-  timer.run();
-
-  if (millis() > lastTimeBotRan + botRequestDelay) {
-    int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
-    while (numNewMessages) {
-      handleNewMessages(numNewMessages);
-      numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+  // Chỉ chạy khi có mạng
+  if (WiFi.status() == WL_CONNECTED) {
+    Blynk.run();
+    if (millis() - lastTimeBotRan > botRequestDelay) {
+      int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+      if (numNewMessages > 0) {
+        handleNewMessages(numNewMessages);
+      }
+      lastTimeBotRan = millis();
     }
-    lastTimeBotRan = millis();
   }
-  yield(); // Giữ cho WiFi ổn định
+  timer.run();
 }
