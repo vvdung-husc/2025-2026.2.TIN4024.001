@@ -13,7 +13,7 @@ const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 
 /* TELEGRAM BOT */
-#define BOTtoken "8668121676:AAE7AOv_XbPBKxesFAKI_5X15hHy9WUDN4k"
+#define BOTtoken "8668121676:AAE7A0v_XbPBKxesFAkI_5X15hHy9WUDN4k"
 #define CHAT_ID "8654734301"
 
 WiFiClientSecure client;
