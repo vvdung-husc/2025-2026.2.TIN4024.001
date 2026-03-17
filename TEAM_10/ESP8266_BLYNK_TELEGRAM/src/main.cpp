@@ -1,6 +1,7 @@
 /*
-1. Phạm Năng-22T1020253
-2. Ngô Thị Cẩm Ly -22T1020662
+1. Phạm Năng - 22T1020253
+2. Ngô Thị Cẩm Ly - 22T1020662
+3. Lê Thị Khánh Ly - 22T1020661
 */
 
 #define BLYNK_TEMPLATE_ID "TMPL6EqnKy0dk"
