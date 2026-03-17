@@ -2,6 +2,8 @@
 1. Phạm Năng - 22T1020253
 2. Ngô Thị Cẩm Ly - 22T1020662
 3. Lê Thị Khánh Ly - 22T1020661
+4. Trần Thị Quỳnh Anh - 22T1020016
+5. Lê Yến Nhi - 22T1020694
 */
 
 #define BLYNK_TEMPLATE_ID "TMPL6EqnKy0dk"
