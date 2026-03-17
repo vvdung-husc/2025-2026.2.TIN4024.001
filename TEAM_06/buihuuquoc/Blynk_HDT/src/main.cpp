@@ -1,187 +1,118 @@
-#define BLYNK_TEMPLATE_ID "TMPL6xB0NbhkA"
-#define BLYNK_TEMPLATE_NAME "Blynk"
-#define BLYNK_AUTH_TOKEN "41jGiQCKYOVqKZako90AvPvhfpE9dd_Z"
 
+#define BLYNK_TEMPLATE_ID "TMPL6qQOyySTN"
+#define BLYNK_TEMPLATE_NAME "BuiHuuQuoc"
+#define BLYNK_AUTH_TOKEN "OWQPDCzueGndM1bG63Lz99JQ8vkaMo5U"
+
+#define BLYNK_PRINT Serial
+
+#include <Arduino.h>
 #include <WiFi.h>
+#include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
-#include <TM1637Display.h>
 #include <DHT.h>
+#include <TM1637Display.h>
 
-// WIFI (Wokwi)
 char ssid[] = "Wokwi-GUEST";
 char pass[] = "";
 
-// ===== PIN =====
+// --- CẤU HÌNH CHÂN THEO DIAGRAM.JSON ---
 #define DHTPIN 16
 #define DHTTYPE DHT22
 #define LED_PIN 21
-#define BUTTON_PIN 23
+#define BTN_PIN 23
 #define CLK 18
 #define DIO 19
 
-// ===== SENSOR =====
+// --- KHỞI TẠO ĐỐI TƯỢNG ---
 DHT dht(DHTPIN, DHTTYPE);
 TM1637Display display(CLK, DIO);
-
-// ===== BLYNK TIMER =====
 BlynkTimer timer;
 
-bool ledState = false;
-unsigned long startTime = 0;
-unsigned long elapsedSeconds = 0;
+// --- BIẾN TRẠNG THÁI ---
+int uptime = 0;
+bool isDeviceOn = false; // Trạng thái của Đèn và Màn hình
+int lastBtnState = HIGH; // Mặc định nút nhấn nhả (Pull-up)
 
-// ============================
-// GỬI NHIỆT ĐỘ + ĐỘ ẨM
-// ============================
-void sendSensor()
+// 1. Hàm nhận lệnh từ Nút nhấn trên Blynk (Virtual Pin V1)
+BLYNK_WRITE(V1)
 {
+  isDeviceOn = param.asInt(); // Đọc giá trị từ app (0 hoặc 1)
+  digitalWrite(LED_PIN, isDeviceOn ? HIGH : LOW);
 
-  float humidity = dht.readHumidity();
-  float temperature = dht.readTemperature();
-
-  if (!isnan(humidity) && !isnan(temperature))
+  if (!isDeviceOn)
   {
-
-    Serial.print("Nhiet do: ");
-    Serial.print(temperature);
-    Serial.print(" C | Do am: ");
-    Serial.println(humidity);
-
-    // GỬI LÊN BLYNK
-    if (Blynk.connected())
-    { // <<< BỔ SUNG
-      Blynk.virtualWrite(V0, temperature);
-      Blynk.virtualWrite(V1, humidity);
-    }
+    display.clear(); // Tắt màn hình nếu nút đang OFF
   }
 }
 
-// ============================
-// GỬI THỜI GIAN LED
-// ============================
-void sendTime()
+// 2. Hàm đọc cảm biến và gửi lên Blynk (Chạy mỗi 1 giây)
+void sendDataToBlynk()
 {
+  // Gửi thời gian hoạt động
+  uptime++;
+  Blynk.virtualWrite(V3, uptime);
 
-  if (ledState)
+  // Hiển thị thời gian lên TM1637 nếu trạng thái đang BẬT
+  if (isDeviceOn)
   {
+    display.showNumberDec(uptime);
+  }
 
-    elapsedSeconds = (millis() - startTime) / 1000;
+  // Đọc và gửi Nhiệt độ, Độ ẩm
+  float t = dht.readTemperature();
+  float h = dht.readHumidity();
 
-    display.showNumberDec(elapsedSeconds);
-
-    if (Blynk.connected())
-    { // <<< BỔ SUNG
-      Blynk.virtualWrite(V2, elapsedSeconds);
-    }
+  if (!isnan(t) && !isnan(h))
+  {
+    Blynk.virtualWrite(V1, t); // V2 cho Nhiệt độ
+    Blynk.virtualWrite(V2, h); // V3 cho Độ ẩm
   }
 }
 
-// ============================
-// SWITCH TRÊN BLYNK
-// ============================
-BLYNK_WRITE(V3)
+// 3. Hàm xử lý nút nhấn cứng (Trên sơ đồ mạch)
+void checkPhysicalButton()
 {
+  int btnState = digitalRead(BTN_PIN);
 
-  int value = param.asInt();
-
-  if (value == 1 && ledState == false)
+  // Phát hiện cạnh lên (nhấn vào)
+  if (lastBtnState == HIGH && btnState == LOW)
   {
-    startTime = millis();
+    isDeviceOn = !isDeviceOn; // Đảo trạng thái
+    digitalWrite(LED_PIN, isDeviceOn ? HIGH : LOW);
+
+    if (!isDeviceOn)
+      display.clear();
+
+    // Cập nhật trạng thái mới này lên Nút nhấn trên App Blynk
+    Blynk.virtualWrite(V0, isDeviceOn);
   }
-
-  ledState = value;
-
-  digitalWrite(LED_PIN, ledState);
-
-  if (!ledState)
-  {
-    display.showNumberDec(0);
-    Blynk.virtualWrite(V2, 0);
-  }
+  lastBtnState = btnState;
 }
 
-// ============================
-// ĐỒNG BỘ KHI CONNECT
-// ============================
-BLYNK_CONNECTED()
-{
-
-  Blynk.syncVirtual(V3);
-
-  // <<< BỔ SUNG ĐỒNG BỘ NGAY LẬP TỨC
-  sendSensor();
-  sendTime();
-}
-
-// ============================
-// SETUP
-// ============================
 void setup()
 {
-
   Serial.begin(115200);
 
+  // Cài đặt chân
   pinMode(LED_PIN, OUTPUT);
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(BTN_PIN, INPUT_PULLUP);
 
+  // Khởi động thiết bị
   dht.begin();
+  display.setBrightness(0x0f); // Độ sáng tối đa
+  display.clear();
 
-  display.setBrightness(7);
-  display.showNumberDec(0);
+  // Kết nối Blynk
+  Serial.println("Dang ket noi WiFi va Blynk...");
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
 
-  // WIFI
-  WiFi.begin(ssid, pass);
-
-  Serial.print("Connecting WiFi");
-
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println(" OK");
-
-  // BLYNK
-  Blynk.config(BLYNK_AUTH_TOKEN, "blynk.cloud", 80);
-  Blynk.connect();
-
-  // TIMER
-  timer.setInterval(2000L, sendSensor);
-  timer.setInterval(1000L, sendTime);
+  // Thiết lập Timer
+  timer.setInterval(1000L, sendDataToBlynk);    // Gửi dữ liệu mỗi 1s
+  timer.setInterval(100L, checkPhysicalButton); // Kiểm tra nút nhấn mỗi 0.1s
 }
 
-// ============================
-// LOOP
-// ============================
 void loop()
 {
-
   Blynk.run();
   timer.run();
-
-  static bool lastButton = HIGH;
-  bool button = digitalRead(BUTTON_PIN);
-
-  if (button == LOW && lastButton == HIGH)
-  {
-
-    ledState = !ledState;
-
-    digitalWrite(LED_PIN, ledState);
-
-    Blynk.virtualWrite(V3, ledState);
-
-    if (ledState)
-    {
-      startTime = millis();
-    }
-    else
-    {
-      display.showNumberDec(0);
-      Blynk.virtualWrite(V2, 0);
-    }
-  }
-
-  lastButton = button;
 }
