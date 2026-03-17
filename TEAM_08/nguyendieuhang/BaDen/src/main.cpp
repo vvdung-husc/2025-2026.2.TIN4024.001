@@ -17,12 +17,12 @@ void setup() {
   Serial.begin(115200); // Khởi động Serial để in log
   printf("HE THONG DEN GIAO THONG - NON BLOCKING\n");
 
-  // Cấu hình 3 chân là Output
+ 
   pinMode(PIN_YELLOW, OUTPUT);
   pinMode(PIN_RED, OUTPUT);
   pinMode(PIN_GREEN, OUTPUT);
 
-  // Trạng thái ban đầu: Bật đèn Vàng lên trước
+  
   digitalWrite(PIN_YELLOW, HIGH);
   digitalWrite(PIN_RED, LOW);
   digitalWrite(PIN_GREEN, LOW);
