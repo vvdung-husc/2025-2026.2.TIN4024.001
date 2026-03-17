@@ -54,7 +54,7 @@ void loop() {
   // Hàng 1: Tên (Cố định)
   display.setCursor(0, 0);
   display.println("Hoang Van Quoc Thinh");
-  display.drawLine(0, 9, 120, 9, SH110X_WHITE); // Đường kẻ phân cách nhẹ
+  display.drawLine(0, 9, 120, 9, SH110X_WHITE); // Đường kẻ phân cách
 
   // Hàng 2: Nhiệt độ
   display.setCursor(0, 12);
