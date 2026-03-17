@@ -73,7 +73,7 @@ void loop() {
   u8g2.clearBuffer();
 
   u8g2.setFont(u8g2_font_ncenB08_tr);
-  u8g2.drawStr(0,12,"Luong Thanh Ngoc Nhu");
+  u8g2.drawStr(0,12,"Nguyen Van Phong");
 
   if(dht_error){
     u8g2.drawStr(0,28,"DHT ERROR!");
