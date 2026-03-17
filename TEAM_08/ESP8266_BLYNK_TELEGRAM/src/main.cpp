@@ -2,7 +2,7 @@
 THÔNG TIN NHÓM 08
 1. Nguyễn Ngọc Thành Tài
 2. Trần Văn Quốc Khánh
-3. [Điền tên thành viên 3]
+3. Hồ Nguyễn Huyền Trang
 */
 
 // --- THÔNG SỐ BLYNK ---
