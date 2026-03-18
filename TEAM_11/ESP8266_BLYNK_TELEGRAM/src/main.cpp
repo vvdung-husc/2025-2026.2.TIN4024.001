@@ -1,7 +1,7 @@
 /*
 	THÔNG TIN NHÓM 11
 	1. Đào Văn Lợi
-	2. 
+	2. Phan Minh Nhật Khoa
 	3.
 	*/
 #define BLYNK_TEMPLATE_ID "TMPL6g5wadXBg"
