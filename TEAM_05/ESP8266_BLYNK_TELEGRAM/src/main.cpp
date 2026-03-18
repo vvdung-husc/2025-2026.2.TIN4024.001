@@ -2,7 +2,7 @@
 THÔNG TIN NHÓM 5
 1. Nguyễn Công Hiếu
 2. Phạm Đức Thành Đạt
-3.
+3.Trần Văn Tiến
 4.
 */
 #include <Arduino.h>
