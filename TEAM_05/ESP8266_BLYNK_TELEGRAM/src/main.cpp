@@ -16,7 +16,7 @@ THÔNG TIN NHÓM 05
 #include <BlynkSimpleEsp32.h>
 #include <DHT.h>
 #include <UniversalTelegramBot.h> 
-#include <ArduinoJson.h>      
+#include <ArduinoJson.h>
 
 // --- CẤU HÌNH WIFI WOKWI ---
 char ssid[] = "Wokwi-GUEST";
