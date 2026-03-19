@@ -1,6 +1,7 @@
 /* 
 THÔNG TIN NHÓM 07
 1. Hồ Văn Diễn
+2. Bùi Khắc Hiếu
 
 
 */
