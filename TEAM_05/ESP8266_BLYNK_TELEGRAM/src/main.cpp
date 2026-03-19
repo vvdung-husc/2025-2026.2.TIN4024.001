@@ -136,7 +136,9 @@ void sendSensorData() {
 
   // Gửi thông tin Team (V5, V6, V7)
   Blynk.virtualWrite(V5, "1. Nguyen Cong Hieu");
+  Blynk.virtualWrite(V6, "2. Pham Duc Thanh Dat");
   Blynk.virtualWrite(V7, "3. Tran Van Tien");
+  Blynk.virtualWrite(V8, "4. Dau Thien Nhat");
 }
 
 void setup() {
