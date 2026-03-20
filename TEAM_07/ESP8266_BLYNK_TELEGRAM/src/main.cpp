@@ -1,9 +1,3 @@
-/* 
-THÔNG TIN NHÓM 07
-1. Hồ Văn Diễn
-
-
-*/
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -11,18 +5,25 @@ THÔNG TIN NHÓM 07
 #include <TM1637Display.h>
 #include "DHTesp.h"
 
+//=========== TELEGRAM ===========
+#include <WiFiClientSecure.h>
+#include <UniversalTelegramBot.h>
+#include <ArduinoJson.h>
+
+#define BOT_TOKEN "8616279864:AAGgAliUwCuRsBECjFbCwrnXAQRyeqf7II8"
+#define CHAT_ID "-1003847372840"
+
+WiFiClientSecure client;
+UniversalTelegramBot bot(BOT_TOKEN, client);
 
 //=========== BLYNK ===========
 #define BLYNK_TEMPLATE_ID "TMPL6PPonUtRv"
 #define BLYNK_TEMPLATE_NAME "blynk telegram"
 #define BLYNK_AUTH_TOKEN "793CtBqmPKSmHW4CJqNXl_Auc2AnYeDT"
 
-
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
-
-
 
 char ssid[] = "Wokwi-GUEST";
 char pass[] = "";
@@ -36,6 +37,7 @@ char pass[] = "";
 
 #define DHT_PIN 16
 #define MQ2_PIN 34
+#define PIR_PIN 27
 
 #define OLED_SDA 13
 #define OLED_SCL 12
@@ -56,6 +58,33 @@ float temperature;
 float humidity;
 int gasValue;
 
+float lastTemp = -1000;
+float lastHumi = -1000;
+
+bool motionDetected = false;
+bool gasAlertSent = false;
+
+unsigned long lastTelegramCheck = 0;
+
+// TIMER LED
+unsigned long savedTime = 0;
+unsigned long startTime = 0;
+
+//=========== HÀM TẠO MENU ===========
+String getWelcome(String from_name = "User") {
+  String welcome = "Xin chào, " + from_name + ".\n";
+  welcome += "Sử dụng các lệnh sau để điều khiển đèn LED.\n\n";
+  welcome += "/led_on bật sáng đèn\n";
+  welcome += "/led_off tắt đèn\n";
+  welcome += "/led_status trạng thái đèn\n";
+  welcome += "/get_weather thời tiết\n";
+
+  // BONUS
+  welcome = "🤖 ESP32 đã sẵn sàng!\n\n" + welcome;
+
+  return welcome;
+}
+
 //=========== PROTOTYPE ===========
 bool IsReady(ulong &ulTimer, uint32_t milisecond);
 void updateBlueButton();
@@ -63,6 +92,7 @@ void uptimeBlynk();
 void readDHT22();
 void readGas();
 void displayOLED();
+void handleTelegram();
 
 //=========== SETUP ===========
 void setup() {
@@ -71,6 +101,7 @@ void setup() {
 
   pinMode(pinBLED, OUTPUT);
   pinMode(btnBLED, INPUT_PULLUP);
+  pinMode(PIR_PIN, INPUT);
 
   display.setBrightness(7);
 
@@ -82,189 +113,14 @@ void setup() {
   oled.setTextSize(1);
   oled.setTextColor(WHITE);
 
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  // TELEGRAM
+  client.setInsecure();
+  bot.sendMessage(CHAT_ID, getWelcome("ESP32"), "");
 
   digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
   Blynk.virtualWrite(V1, blueButtonON);
-
-  Serial.println("== START ==");
 }
 
 //=========== LOOP ===========
-void loop() {
-
-  Blynk.run();
-
-  currentMiliseconds = millis();
-
-  uptimeBlynk();
-
-  updateBlueButton();
-
-  readDHT22();
-
-  readGas();
-
-  displayOLED();
-}
-
-//=========== TIMER ===========
-bool IsReady(ulong &ulTimer, uint32_t milisecond) {
-
-  if (currentMiliseconds - ulTimer < milisecond) return false;
-
-  ulTimer = currentMiliseconds;
-
-  return true;
-}
-
-//=========== BUTTON ===========
-void updateBlueButton() {
-
-  static ulong lastTime = 0;
-  static int lastValue = HIGH;
-
-  if (!IsReady(lastTime, 50)) return;
-
-  int v = digitalRead(btnBLED);
-
-  if (v == lastValue) return;
-
-  lastValue = v;
-
-  if (v == LOW) return;
-
-  if (!blueButtonON) {
-
-    Serial.println("Blue Light ON");
-
-    digitalWrite(pinBLED, HIGH);
-
-    blueButtonON = true;
-
-    Blynk.virtualWrite(V1, blueButtonON);
-
-  } else {
-
-    Serial.println("Blue Light OFF");
-
-    digitalWrite(pinBLED, LOW);
-
-    blueButtonON = false;
-
-    Blynk.virtualWrite(V1, blueButtonON);
-
-    display.clear();
-  }
-}
-
-//=========== UPTIME ===========
-void uptimeBlynk() {
-
-  static ulong lastTime = 0;
-
-  if (!IsReady(lastTime, 1000)) return;
-
-  ulong value = lastTime / 1000;
-
-  Blynk.virtualWrite(V0, value);
-
-  if (blueButtonON) {
-
-    display.showNumberDec(value);
-
-  }
-}
-
-//=========== DHT22 ===========
-void readDHT22() {
-
-  static ulong lastTime = 0;
-
-  if (!IsReady(lastTime, 2000)) return;
-
-  TempAndHumidity data = dht.getTempAndHumidity();
-
-  if (isnan(data.temperature) || isnan(data.humidity)) {
-
-    Serial.println("DHT22 read failed!");
-
-    return;
-  }
-
-  temperature = data.temperature;
-  humidity = data.humidity;
-
-  Serial.print("Temp: ");
-  Serial.print(temperature);
-  Serial.print(" °C | Humidity: ");
-  Serial.print(humidity);
-  Serial.println(" %");
-
-  Blynk.virtualWrite(V2, temperature);
-  Blynk.virtualWrite(V3, humidity);
-}
-
-//=========== GAS ===========
-void readGas() {
-
-  static ulong lastTime = 0;
-
-  if (!IsReady(lastTime, 2000)) return;
-
-  gasValue = analogRead(MQ2_PIN);
-
-  Serial.print("Gas: ");
-  Serial.println(gasValue);
-  Blynk.virtualWrite(V4, gasValue);
-}
-
-//=========== OLED ===========
-void displayOLED() {
-
-  static ulong lastTime = 0;
-
-  if (!IsReady(lastTime, 1000)) return;
-
-  oled.clearDisplay();
-
-  oled.setCursor(0,0);
-  oled.print("Nhiet Do: ");
-  oled.print(temperature);
-  oled.println(" C");
-
-  oled.setCursor(0,20);
-  oled.print("Do am: ");
-  oled.print(humidity);
-  oled.println(" %");
-
-  oled.setCursor(0,40);
-  oled.print("Gas: ");
-  oled.println(gasValue);
-
-  oled.display();
-}
-
-//=========== BLYNK ===========
-BLYNK_WRITE(V1) {
-
-  blueButtonON = param.asInt();
-
-  if (blueButtonON) {
-
-    Serial.println("Blynk -> Blue Light ON");
-
-    digitalWrite(pinBLED, HIGH);
-
-  } else {
-
-    Serial.println("Blynk -> Blue Light OFF");
-
-    digitalWrite(pinBLED, LOW);
-
-    display.clear();
-  }
-}
