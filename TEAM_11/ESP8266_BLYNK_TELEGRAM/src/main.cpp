@@ -1,8 +1,9 @@
 /*
 	THÔNG TIN NHÓM 11
 	1. Đào Văn Lợi
-	2. 
-	3.
+	2. Phan Minh Nhật Khoa
+	3. Phạm Mạnh Lân
+  
 	*/
 #define BLYNK_TEMPLATE_ID "TMPL6g5wadXBg"
 #define BLYNK_TEMPLATE_NAME "iOTTeam11"
