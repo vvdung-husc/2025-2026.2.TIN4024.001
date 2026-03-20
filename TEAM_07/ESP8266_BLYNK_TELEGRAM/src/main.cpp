@@ -66,6 +66,25 @@ bool gasAlertSent = false;
 
 unsigned long lastTelegramCheck = 0;
 
+// TIMER LED
+unsigned long savedTime = 0;
+unsigned long startTime = 0;
+
+//=========== HÀM TẠO MENU ===========
+String getWelcome(String from_name = "User") {
+  String welcome = "Xin chào, " + from_name + ".\n";
+  welcome += "Sử dụng các lệnh sau để điều khiển đèn LED.\n\n";
+  welcome += "/led_on bật sáng đèn\n";
+  welcome += "/led_off tắt đèn\n";
+  welcome += "/led_status trạng thái đèn\n";
+  welcome += "/get_weather thời tiết\n";
+
+  // BONUS
+  welcome = "🤖 ESP32 đã sẵn sàng!\n\n" + welcome;
+
+  return welcome;
+}
+
 //=========== PROTOTYPE ===========
 bool IsReady(ulong &ulTimer, uint32_t milisecond);
 void updateBlueButton();
@@ -98,7 +117,7 @@ void setup() {
 
   // TELEGRAM
   client.setInsecure();
-  bot.sendMessage(CHAT_ID, "ESP32 Started", "");
+  bot.sendMessage(CHAT_ID, getWelcome("ESP32"), "");
 
   digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
   Blynk.virtualWrite(V1, blueButtonON);
@@ -119,7 +138,6 @@ void loop() {
 
   handleTelegram();
 
-  // PIR
   if (digitalRead(PIR_PIN) == HIGH) {
     if (!motionDetected) {
       bot.sendMessage(CHAT_ID, "⚠ Phát hiện chuyển động!");
@@ -151,43 +169,39 @@ void handleTelegram() {
 
       // START
       if (text == "/start") {
-        String welcome = "Xin chào, " + from_name + ".\n";
-      welcome += "Sử dụng các lệnh sau để điều khiển đèn LED.\n\n";
-        welcome += "/led_on bật sáng đèn\n";
-        welcome += "/led_off tắt đèn\n";
-        welcome += "/led_status trạng thái đèn\n";
-        welcome += "/get_weather thời tiết\n";
-
-        bot.sendMessage(chat_id, welcome, "");
+        bot.sendMessage(chat_id, getWelcome(from_name), "");
       }
 
-      // LED ON
       if (text == "/led_on") {
+        startTime = millis();
+
         digitalWrite(pinBLED, HIGH);
         blueButtonON = true;
         Blynk.virtualWrite(V1, blueButtonON);
         bot.sendMessage(chat_id, "💡 LED ĐÃ BẬT", "");
       }
 
-      // LED OFF
       if (text == "/led_off") {
+
+        savedTime += (millis() - startTime) / 1000;
+
         digitalWrite(pinBLED, LOW);
         blueButtonON = false;
+        display.clear();
+
         Blynk.virtualWrite(V1, blueButtonON);
         bot.sendMessage(chat_id, "💡 LED ĐÃ TẮT", "");
       }
 
-      // LED STATUS
       if (text == "/led_status") {
         String msg = "💡 LED đang: ";
         msg += (blueButtonON ? "BẬT" : "TẮT");
         bot.sendMessage(chat_id, msg, "");
       }
 
-      // GET WEATHER
       if (text == "/get_weather") {
-        String msg = "🌡 Nhiệt độ: " + String(temperature) + " °C\n";
-        msg += "💧 Độ ẩm: " + String(humidity) + " %";
+        String msg = "🌡 " + String(temperature) + " °C\n";
+        msg += "💧 " + String(humidity) + " %";
         bot.sendMessage(chat_id, msg, "");
       }
     }
@@ -218,6 +232,14 @@ void updateBlueButton() {
   if (v == LOW) return;
 
   blueButtonON = !blueButtonON;
+
+  if (blueButtonON) {
+    startTime = millis();
+  } else {
+    savedTime += (millis() - startTime) / 1000;
+    display.clear();
+  }
+
   digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
   Blynk.virtualWrite(V1, blueButtonON);
 }
@@ -228,12 +250,22 @@ void uptimeBlynk() {
   static ulong lastTime = 0;
   if (!IsReady(lastTime, 1000)) return;
 
-  ulong value = lastTime / 1000;
+  if (startTime == 0) startTime = millis();
 
-  Blynk.virtualWrite(V0, value);
+  unsigned long currentTime;
 
   if (blueButtonON) {
-    display.showNumberDec(value);
+    currentTime = (millis() - startTime) / 1000 + savedTime;
+  } else {
+    currentTime = savedTime;
+  }
+
+  Blynk.virtualWrite(V0, currentTime);
+
+  if (blueButtonON) {
+    display.showNumberDec(currentTime);
+  } else {
+    display.clear();
   }
 }
 
@@ -253,12 +285,12 @@ void readDHT22() {
   Blynk.virtualWrite(V2, temperature);
   Blynk.virtualWrite(V3, humidity);
 
-  // 🔥 GỬI TELEGRAM KHI THAY ĐỔI
+  // ✅ GỬI TELEGRAM KHI CÓ THAY ĐỔI
   if (abs(temperature - lastTemp) > 0.5 || abs(humidity - lastHumi) > 1) {
 
     String msg = "📡 Cập nhật môi trường\n";
-    msg += "🌡 " + String(temperature) + " °C\n";
-    msg += "💧 " + String(humidity) + " %";
+    msg += "🌡 Nhiệt độ: " + String(temperature) + " °C\n";
+    msg += "💧 Độ ẩm: " + String(humidity) + " %";
 
     bot.sendMessage(CHAT_ID, msg, "");
 
@@ -266,7 +298,6 @@ void readDHT22() {
     lastHumi = humidity;
   }
 }
-
 //=========== GAS ===========
 void readGas() {
 
@@ -276,18 +307,6 @@ void readGas() {
   gasValue = analogRead(MQ2_PIN);
 
   Blynk.virtualWrite(V4, gasValue);
-
-  if (gasValue > 2000) {
-    if (!gasAlertSent) {
-      bot.sendMessage(CHAT_ID, "⚠ Cảnh báo khí GAS!");
-      gasAlertSent = true;
-    }
-  } else {
-    if (gasAlertSent) {
-      bot.sendMessage(CHAT_ID, "✅ GAS an toàn");
-      gasAlertSent = false;
-    }
-  }
 }
 
 //=========== OLED ===========
@@ -317,6 +336,18 @@ void displayOLED() {
 
 //=========== BLYNK ===========
 BLYNK_WRITE(V1) {
-  blueButtonON = param.asInt();
+
+  bool newState = param.asInt();
+
+  if (newState && !blueButtonON) {
+    startTime = millis();
+  }
+
+  if (!newState && blueButtonON) {
+    savedTime += (millis() - startTime) / 1000;
+    display.clear();
+  }
+
+  blueButtonON = newState;
   digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
 }
