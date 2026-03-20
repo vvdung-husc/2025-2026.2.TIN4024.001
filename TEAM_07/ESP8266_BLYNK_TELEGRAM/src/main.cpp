@@ -58,6 +58,9 @@ float temperature;
 float humidity;
 int gasValue;
 
+float lastTemp = -1000;
+float lastHumi = -1000;
+
 bool motionDetected = false;
 bool gasAlertSent = false;
 
@@ -91,9 +94,6 @@ void setup() {
   oled.setTextSize(1);
   oled.setTextColor(WHITE);
 
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
 
   // TELEGRAM
@@ -102,8 +102,6 @@ void setup() {
 
   digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
   Blynk.virtualWrite(V1, blueButtonON);
-
-  Serial.println("== START ==");
 }
 
 //=========== LOOP ===========
@@ -153,12 +151,12 @@ void handleTelegram() {
 
       // START
       if (text == "/start") {
-
         String welcome = "Xin chào, " + from_name + ".\n";
-        welcome += "Sử dụng các lệnh sau để điều khiển hệ thống.\n\n";
-        welcome += "/led_on bật đèn\n";
+      welcome += "Sử dụng các lệnh sau để điều khiển đèn LED.\n\n";
+        welcome += "/led_on bật sáng đèn\n";
         welcome += "/led_off tắt đèn\n";
-        welcome += "/status xem trạng thái hệ thống\n";
+        welcome += "/led_status trạng thái đèn\n";
+        welcome += "/get_weather thời tiết\n";
 
         bot.sendMessage(chat_id, welcome, "");
       }
@@ -179,24 +177,17 @@ void handleTelegram() {
         bot.sendMessage(chat_id, "💡 LED ĐÃ TẮT", "");
       }
 
-      // STATUS
-      if (text == "/status") {
+      // LED STATUS
+      if (text == "/led_status") {
+        String msg = "💡 LED đang: ";
+        msg += (blueButtonON ? "BẬT" : "TẮT");
+        bot.sendMessage(chat_id, msg, "");
+      }
 
-        String msg = "📊 TRẠNG THÁI HỆ THỐNG\n";
-        msg += "----------------------\n";
-        msg += "🌡 Nhiệt độ: " + String(temperature) + " °C\n";
-        msg += "💧 Độ ẩm: " + String(humidity) + " %\n";
-        msg += "💨 Gas: " + String(gasValue) + "\n";
-
-        if (gasValue > 2000) {
-          msg += "⚠ Trạng thái: NGUY HIỂM\n";
-        } else {
-          msg += "✅ Trạng thái: An toàn\n";
-        }
-
-        msg += "💡 LED: ";
-        msg += (blueButtonON ? "ĐANG BẬT\n" : "ĐANG TẮT\n");
-
+      // GET WEATHER
+      if (text == "/get_weather") {
+        String msg = "🌡 Nhiệt độ: " + String(temperature) + " °C\n";
+        msg += "💧 Độ ẩm: " + String(humidity) + " %";
         bot.sendMessage(chat_id, msg, "");
       }
     }
@@ -226,16 +217,9 @@ void updateBlueButton() {
   lastValue = v;
   if (v == LOW) return;
 
-  if (!blueButtonON) {
-    digitalWrite(pinBLED, HIGH);
-    blueButtonON = true;
-    Blynk.virtualWrite(V1, blueButtonON);
-  } else {
-    digitalWrite(pinBLED, LOW);
-    blueButtonON = false;
-    Blynk.virtualWrite(V1, blueButtonON);
-    display.clear();
-  }
+  blueButtonON = !blueButtonON;
+  digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
+  Blynk.virtualWrite(V1, blueButtonON);
 }
 
 //=========== UPTIME ===========
@@ -268,6 +252,19 @@ void readDHT22() {
 
   Blynk.virtualWrite(V2, temperature);
   Blynk.virtualWrite(V3, humidity);
+
+  // 🔥 GỬI TELEGRAM KHI THAY ĐỔI
+  if (abs(temperature - lastTemp) > 0.5 || abs(humidity - lastHumi) > 1) {
+
+    String msg = "📡 Cập nhật môi trường\n";
+    msg += "🌡 " + String(temperature) + " °C\n";
+    msg += "💧 " + String(humidity) + " %";
+
+    bot.sendMessage(CHAT_ID, msg, "");
+
+    lastTemp = temperature;
+    lastHumi = humidity;
+  }
 }
 
 //=========== GAS ===========
@@ -281,16 +278,13 @@ void readGas() {
   Blynk.virtualWrite(V4, gasValue);
 
   if (gasValue > 2000) {
-
     if (!gasAlertSent) {
-      bot.sendMessage(CHAT_ID, "⚠ Cảnh báo khí GAS NGUY HIỂM!");
+      bot.sendMessage(CHAT_ID, "⚠ Cảnh báo khí GAS!");
       gasAlertSent = true;
     }
-
   } else {
-
     if (gasAlertSent) {
-      bot.sendMessage(CHAT_ID, "✅ Khí GAS đã trở lại an toàn");
+      bot.sendMessage(CHAT_ID, "✅ GAS an toàn");
       gasAlertSent = false;
     }
   }
@@ -323,7 +317,6 @@ void displayOLED() {
 
 //=========== BLYNK ===========
 BLYNK_WRITE(V1) {
-
   blueButtonON = param.asInt();
   digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
 }
