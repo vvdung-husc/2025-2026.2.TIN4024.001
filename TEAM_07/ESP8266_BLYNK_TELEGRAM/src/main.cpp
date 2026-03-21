@@ -1,3 +1,11 @@
+/*
+Thông tin nhóm 7
+1. Nguyễn Văn Tiến Đạt
+2. Hồ Văn Diễn
+3. Nguyễn Văn Phong
+4. Lương Thanh Ngọc Như
+5. Bùi Khắc Hiếu
+*/
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
