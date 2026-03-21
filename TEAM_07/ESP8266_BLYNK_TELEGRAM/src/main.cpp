@@ -132,3 +132,26 @@ void setup() {
 }
 
 //=========== LOOP ===========
+void loop() {
+
+  Blynk.run();
+
+  currentMiliseconds = millis();
+
+  uptimeBlynk();
+  updateBlueButton();
+  readDHT22();
+  readGas();
+  displayOLED();
+
+  handleTelegram();
+
+  if (digitalRead(PIR_PIN) == HIGH) {
+    if (!motionDetected) {
+      bot.sendMessage(CHAT_ID, "⚠ Phát hiện chuyển động!");
+      motionDetected = true;
+    }
+  } else {
+    motionDetected = false;
+  }
+}
