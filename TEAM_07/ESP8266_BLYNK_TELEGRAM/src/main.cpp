@@ -222,3 +222,29 @@ bool IsReady(ulong &ulTimer, uint32_t milisecond) {
   ulTimer = currentMiliseconds;
   return true;
 }
+//=========== BUTTON ===========
+void updateBlueButton() {
+
+  static ulong lastTime = 0;
+  static int lastValue = HIGH;
+
+  if (!IsReady(lastTime, 50)) return;
+
+  int v = digitalRead(btnBLED);
+  if (v == lastValue) return;
+
+  lastValue = v;
+  if (v == LOW) return;
+
+  blueButtonON = !blueButtonON;
+
+  if (blueButtonON) {
+    startTime = millis();
+  } else {
+    savedTime += (millis() - startTime) / 1000;
+    display.clear();
+  }
+
+  digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
+  Blynk.virtualWrite(V1, blueButtonON);
+}
