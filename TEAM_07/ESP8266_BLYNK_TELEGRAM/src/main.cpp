@@ -216,3 +216,9 @@ void handleTelegram() {
     numNewMessages = bot.getUpdates(bot.last_message_received + 1);
   }
 }
+//=========== TIMER ===========
+bool IsReady(ulong &ulTimer, uint32_t milisecond) {
+  if (currentMiliseconds - ulTimer < milisecond) return false;
+  ulTimer = currentMiliseconds;
+  return true;
+}
