@@ -1,4 +1,11 @@
-
+/*
+THONG TIN NHOM 04
+1. Le Van Thuan
+2. Tran Khanh
+3. ...
+4. ...
+5. ...
+*/
 #define BLYNK_TEMPLATE_ID "TMPL6MyJqLjlR"
 #define BLYNK_TEMPLATE_NAME "ESP32 BLYNK TELEGRAM"
 // #define BLYNK_AUTH_TOKEN "IjYOhlTwfLPUKOrUiGVBpqjPbuBtXMm1"
