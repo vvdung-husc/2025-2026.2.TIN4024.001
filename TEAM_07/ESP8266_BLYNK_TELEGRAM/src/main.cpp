@@ -155,3 +155,64 @@ void loop() {
     motionDetected = false;
   }
 }
+//=========== TELEGRAM ===========
+void handleTelegram() {
+
+  if (millis() - lastTelegramCheck < 1000) return;
+  lastTelegramCheck = millis();
+
+  int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+
+  while (numNewMessages) {
+
+    for (int i = 0; i < numNewMessages; i++) {
+
+      String text = bot.messages[i].text;
+      String chat_id = bot.messages[i].chat_id;
+      String from_name = bot.messages[i].from_name;
+
+      int botname = text.indexOf("@");
+      if (botname != -1) text = text.substring(0, botname);
+
+      // START
+      if (text == "/start") {
+        bot.sendMessage(chat_id, getWelcome(from_name), "");
+      }
+
+      if (text == "/led_on") {
+        startTime = millis();
+
+        digitalWrite(pinBLED, HIGH);
+        blueButtonON = true;
+        Blynk.virtualWrite(V1, blueButtonON);
+        bot.sendMessage(chat_id, "💡 LED ĐÃ BẬT", "");
+      }
+
+      if (text == "/led_off") {
+
+        savedTime += (millis() - startTime) / 1000;
+
+        digitalWrite(pinBLED, LOW);
+        blueButtonON = false;
+        display.clear();
+
+        Blynk.virtualWrite(V1, blueButtonON);
+        bot.sendMessage(chat_id, "💡 LED ĐÃ TẮT", "");
+      }
+
+      if (text == "/led_status") {
+        String msg = "💡 LED đang: ";
+        msg += (blueButtonON ? "BẬT" : "TẮT");
+        bot.sendMessage(chat_id, msg, "");
+      }
+
+      if (text == "/get_weather") {
+        String msg = "🌡 " + String(temperature) + " °C\n";
+        msg += "💧 " + String(humidity) + " %";
+        bot.sendMessage(chat_id, msg, "");
+      }
+    }
+
+    numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+  }
+}
