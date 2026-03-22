@@ -856,3 +856,532 @@ void loop() {
   timer.run();
   checkTelegram();
 }
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////
+/*
+THONG TIN NHOM 04
+1. Le Van Thuan
+2. Nguyen Cong Thanh
+3. ...
+4. ...
+5. ...
+*/
+
+// #define BLYNK_TEMPLATE_ID   "TMPL6scT0Job2"
+// #define BLYNK_TEMPLATE_NAME "ESP8266 BLYNK TELEGRAM"
+// #define BLYNK_AUTH_TOKEN    "RC4iydZWVV92FAZFII_Zf_MDGsbC5pSb"
+
+// #define BLYNK_PRINT Serial
+
+// #include <Arduino.h>
+// #include <math.h>
+// #include <ESP8266WiFi.h>
+// #include <WiFiClientSecure.h>
+// #include <BlynkSimpleEsp8266.h>
+// #include <UniversalTelegramBot.h>
+// #include <ArduinoJson.h>
+// #include <DHT.h>
+// #include <Wire.h>
+// #include <Adafruit_GFX.h>
+// #include <Adafruit_SH110X.h>
+
+// // ===================== WIFI =====================
+// char ssid[] = "abc";
+// char pass[] = "12345678";
+
+// // ===================== TELEGRAM =====================
+// #define BOT_TOKEN "8513235724:AAGfkRD5BLb7zPl6uA6lPWX5Bzevu-o2fSo"
+// #define CHAT_ID   "-5275641584"
+
+// // ===================== PIN CONFIG =====================
+// #define DHTPIN      D3
+// #define DHTTYPE     DHT22
+// #define RELAY_PIN   2
+// #define MQ2_PIN     A0
+// #define OLED_SDA    D2
+// #define OLED_SCL    D1
+
+// // ===================== TEAM INFO =====================
+// const char* TEAM_NAME = "Team 04";
+
+// // ===================== GAS THRESHOLD =====================
+// const int GAS_MEDIUM_THRESHOLD = 400;
+// const int GAS_HIGH_THRESHOLD   = 700;
+
+// // ===================== OBJECTS =====================
+// DHT dht(DHTPIN, DHTTYPE);
+// Adafruit_SH1106G display(128, 64, &Wire, -1);
+// BlynkTimer timer;
+// WiFiClientSecure secured_client;
+// UniversalTelegramBot bot(BOT_TOKEN, secured_client);
+
+// // ===================== GLOBAL VARIABLES =====================
+// float temperature = 0.0f;
+// float humidity = 0.0f;
+// int gasValue = 0;
+// bool relayState = false;
+
+// unsigned long lastTelegramCheck = 0;
+// float lastSentTemp = -999.0f;
+// float lastSentHum = -999.0f;
+// int lastSentGas = -1;
+// bool useRandomGas = false;
+
+// // Rate limit notifications
+// unsigned long lastGasNotify = 0;
+// unsigned long lastWeatherNotify = 0;
+
+// // ===================== HELPER FUNCTIONS =====================
+// String formatUptime(unsigned long ms) {
+//   unsigned long totalSec = ms / 1000;
+//   unsigned long days = totalSec / 86400;
+//   unsigned long hours = (totalSec % 86400) / 3600;
+//   unsigned long mins = (totalSec % 3600) / 60;
+//   unsigned long secs = totalSec % 60;
+
+//   char buf[32];
+//   snprintf(buf, sizeof(buf), "%luD %02lu:%02lu:%02lu", days, hours, mins, secs);
+//   return String(buf);
+// }
+
+// String formatUptimeShort(unsigned long ms) {
+//   unsigned long totalSec = ms / 1000;
+//   unsigned long hours = (totalSec % 86400) / 3600;
+//   unsigned long mins = (totalSec % 3600) / 60;
+//   unsigned long secs = totalSec % 60;
+
+//   char buf[16];
+//   snprintf(buf, sizeof(buf), "%02lu:%02lu:%02lu", hours, mins, secs);
+//   return String(buf);
+// }
+
+// void setRelay(bool state) {
+//   relayState = state;
+
+//   // LOW = BAT, HIGH = TAT
+//   digitalWrite(RELAY_PIN, state ? LOW : HIGH);
+
+//   if (Blynk.connected()) {
+//     Blynk.virtualWrite(V0, state ? 1 : 0);
+//   }
+// }
+
+// void sendTelegramMessage(const String& text) {
+//   if (WiFi.status() == WL_CONNECTED) {
+//     bot.sendMessage(CHAT_ID, text, "Markdown");
+//   }
+// }
+
+// // ===================== FORMATTED MESSAGES =====================
+// String getFormattedSensorData() {
+//   String msg = "📊 *BAO CAO CAM BIEN*\n";
+//   msg += "━━━━━━━━━━━━━━\n";
+//   msg += "🌡️ Nhiet do: `" + String(temperature, 1) + " C`\n";
+//   msg += "💧 Do am: `" + String(humidity, 1) + " %`\n";
+//   msg += "☁️ Khi gas: `" + String(gasValue) + "`\n";
+//   msg += "💡 Den: `" + String(relayState ? "BAT" : "TAT") + "`\n";
+//   msg += "⏱️ Uptime: `" + formatUptime(millis()) + "`\n";
+//   msg += "━━━━━━━━━━━━━━\n";
+//   msg += "👥 " + String(TEAM_NAME);
+//   return msg;
+// }
+
+// void sendCommandHelp(const String& chat_id) {
+//   String help = "🤖 *ESP8266 Control Bot*\n";
+//   help += "━━━━━━━━━━━━━━━━━━\n";
+//   help += "🔧 *Lenh dieu khien:*\n";
+//   help += "  /led_on - Bat den\n";
+//   help += "  /led_off - Tat den\n";
+//   help += "  /led_status - Xem trang thai den\n";
+//   help += "\n";
+//   help += "📊 *Lenh cam bien:*\n";
+//   help += "  /get_weather - Nhiet do & do am\n";
+//   help += "  /get_gas - Gia tri khi gas\n";
+//   help += "  /get_all - Xem tat ca du lieu\n";
+//   help += "\n";
+//   help += "⚙️ *He thong:*\n";
+//   help += "  /start - Menu chinh\n";
+//   help += "  /uptime - Thoi gian hoat dong\n";
+//   help += "━━━━━━━━━━━━━━━━━━\n";
+//   help += "👥 " + String(TEAM_NAME);
+
+//   bot.sendMessage(chat_id, help, "Markdown");
+// }
+
+// // ===================== NOTIFICATIONS =====================
+// void notifyWeatherChange() {
+//   if (WiFi.status() != WL_CONNECTED) return;
+//   if (millis() - lastWeatherNotify < 300000) return;
+
+//   bool tempChanged = fabs(temperature - lastSentTemp) >= 0.5f;
+//   bool humChanged  = fabs(humidity - lastSentHum) >= 1.0f;
+
+//   if (tempChanged || humChanged) {
+//     String alert = "🌤️ *THAY DOI MOI TRUONG*\n";
+//     alert += "━━━━━━━━━━━━━━\n";
+
+//     if (tempChanged) {
+//       if (temperature > 30) alert += "🔥 Nong: ";
+//       else if (temperature < 18) alert += "❄️ Lanh: ";
+//       else alert += "🌡️ Nhiet do: ";
+//       alert += "`" + String(temperature, 1) + " C`\n";
+//     }
+
+//     if (humChanged) {
+//       if (humidity > 80) alert += "🌧️ Am cao: ";
+//       else if (humidity < 40) alert += "🏜️ Kho: ";
+//       else alert += "💧 Do am: ";
+//       alert += "`" + String(humidity, 1) + " %`\n";
+//     }
+
+//     alert += "━━━━━━━━━━━━━━\n";
+//     alert += "👥 " + String(TEAM_NAME);
+
+//     sendTelegramMessage(alert);
+//     lastSentTemp = temperature;
+//     lastSentHum = humidity;
+//     lastWeatherNotify = millis();
+//   }
+// }
+
+// void notifyGasLevel() {
+//   if (WiFi.status() != WL_CONNECTED) return;
+//   if (millis() - lastGasNotify < 300000) return;
+
+//   if (lastSentGas < 0 || abs(gasValue - lastSentGas) >= 50) {
+//     String alert;
+
+//     if (gasValue > GAS_HIGH_THRESHOLD) {
+//       alert = "🚨 *CANH BAO KHI GAS CAO!* 🚨\n";
+//       alert += "━━━━━━━━━━━━━━\n";
+//       alert += "☁️ Gia tri: `" + String(gasValue) + "`\n";
+//       alert += "⚠️ Vui long kiem tra ngay!\n";
+//     }
+//     else if (gasValue > GAS_MEDIUM_THRESHOLD) {
+//       alert = "⚡ *Khi gas tang*\n";
+//       alert += "━━━━━━━━━━━━━━\n";
+//       alert += "☁️ Gia tri: `" + String(gasValue) + "`\n";
+//       alert += "👀 Dang theo doi...\n";
+//     }
+//     else {
+//       alert = "☁️ *Cap nhat khi gas*\n";
+//       alert += "━━━━━━━━━━━━━━\n";
+//       alert += "📊 Gia tri: `" + String(gasValue) + "`\n";
+//       alert += "✅ Muc binh thuong\n";
+//     }
+
+//     alert += "━━━━━━━━━━━━━━\n";
+//     alert += "👥 " + String(TEAM_NAME);
+
+//     sendTelegramMessage(alert);
+//     lastSentGas = gasValue;
+//     lastGasNotify = millis();
+//   }
+// }
+
+// // ===================== SENSOR READ =====================
+// int readGasAverage() {
+//   long sum = 0;
+//   for (int i = 0; i < 10; i++) {
+//     sum += analogRead(MQ2_PIN);
+//     delay(5);
+//   }
+//   return sum / 10;
+// }
+
+// void readSensors() {
+//   static unsigned long lastRead = 0;
+//   if (millis() - lastRead < 2200) return;
+//   lastRead = millis();
+
+//   float t = dht.readTemperature();
+//   float h = dht.readHumidity();
+
+//   if (!isnan(t)) temperature = t;
+//   else Serial.println("Loi doc nhiet do DHT!");
+
+//   if (!isnan(h)) humidity = h;
+//   else Serial.println("Loi doc do am DHT!");
+
+//   gasValue = useRandomGas ? random(200, 900) : readGasAverage();
+// }
+
+// void printSerialData() {
+//   Serial.println("=================================");
+//   Serial.printf("Uptime    : %s\n", formatUptime(millis()).c_str());
+//   Serial.printf("Nhiet do  : %.1f C\n", temperature);
+//   Serial.printf("Do am     : %.1f %%\n", humidity);
+//   Serial.printf("Khi gas   : %d\n", gasValue);
+//   Serial.printf("Relay     : %s\n", relayState ? "BAT" : "TAT");
+// }
+
+// // ===================== OLED DISPLAY =====================
+// void updateOLED() {
+//   display.clearDisplay();
+//   display.setTextSize(1);
+//   display.setTextColor(SH110X_WHITE);
+
+//   display.setCursor(0, 0);
+//   display.println("ESP8266 IoT");
+
+//   display.setCursor(0, 10);
+//   display.printf("Temp: %.1f C", temperature);
+
+//   display.setCursor(0, 20);
+//   display.printf("Hum : %.1f %%", humidity);
+
+//   display.setCursor(0, 30);
+//   display.printf("Gas : %d", gasValue);
+
+//   display.setCursor(0, 40);
+//   display.printf("Lamp: %s", relayState ? "ON" : "OFF");
+
+//   display.setCursor(0, 50);
+//   display.print("Up  : ");
+//   display.print(formatUptimeShort(millis()));
+
+//   display.setCursor(88, 50);
+//   display.print("T04");
+
+//   display.display();
+// }
+
+// // ===================== BLYNK CALLBACKS =====================
+// BLYNK_CONNECTED() {
+//   Blynk.syncVirtual(V0);
+// }
+
+// BLYNK_WRITE(V0) {
+//   int value = param.asInt();
+//   setRelay(value == 1);
+// }
+
+// void updateBlynk() {
+//   if (!Blynk.connected()) return;
+
+//   Blynk.virtualWrite(V0, relayState ? 1 : 0);
+//   Blynk.virtualWrite(V1, temperature);
+//   Blynk.virtualWrite(V2, humidity);
+//   Blynk.virtualWrite(V3, gasValue);
+//   Blynk.virtualWrite(V4, formatUptime(millis()));
+//   Blynk.virtualWrite(V5, TEAM_NAME);
+// }
+
+// // ===================== TELEGRAM HANDLER =====================
+// void handleNewMessages(int numNewMessages) {
+//   for (int i = 0; i < numNewMessages; i++) {
+//     String chat_id = bot.messages[i].chat_id;
+//     String text = bot.messages[i].text;
+//     String from_name = bot.messages[i].from_name;
+
+//     Serial.println("Telegram: " + text);
+
+//     if (chat_id != CHAT_ID) {
+//       bot.sendMessage(chat_id, "❌ *Truy cap bi tu choi!*\nBot chi danh cho admin.", "Markdown");
+//       continue;
+//     }
+
+//     if (text == "/start") {
+//       String welcome = "Xin chao " + from_name + "\n";
+//       bot.sendMessage(chat_id, welcome, "");
+//       sendCommandHelp(chat_id);
+//     }
+//     else if (text == "/led_on") {
+//       setRelay(true);
+//       bot.sendMessage(chat_id, "💡 *Den da BAT*\n👥 " + String(TEAM_NAME), "Markdown");
+//     }
+//     else if (text == "/led_off") {
+//       setRelay(false);
+//       bot.sendMessage(chat_id, "🔴 *Den da TAT*\n👥 " + String(TEAM_NAME), "Markdown");
+//     }
+//     else if (text == "/led_status") {
+//       String status = relayState ? "🟢 *Dang BAT*" : "🔴 *Dang TAT*";
+//       bot.sendMessage(chat_id, status + "\n👥 " + String(TEAM_NAME), "Markdown");
+//     }
+//     else if (text == "/get_weather") {
+//       String weather = "🌤️ *THOI TIET HIEN TAI*\n";
+//       weather += "━━━━━━━━━━━━━━\n";
+//       weather += "🌡️ `" + String(temperature, 1) + " C`\n";
+//       weather += "💧 `" + String(humidity, 1) + " %`\n";
+//       weather += "━━━━━━━━━━━━━━\n";
+//       weather += "👥 " + String(TEAM_NAME);
+//       bot.sendMessage(chat_id, weather, "Markdown");
+//     }
+//     else if (text == "/get_gas") {
+//       String gasMsg = "☁️ *KHI GAS*\n";
+//       gasMsg += "━━━━━━━━━━━━━━\n";
+//       gasMsg += "📊 `" + String(gasValue) + "`\n";
+
+//       if (gasValue > GAS_HIGH_THRESHOLD) gasMsg += "🚨 *MUC CAO!*";
+//       else if (gasValue > GAS_MEDIUM_THRESHOLD) gasMsg += "⚠️ *MUC TRUNG BINH*";
+//       else gasMsg += "✅ *MUC BINH THUONG*";
+
+//       gasMsg += "\n━━━━━━━━━━━━━━\n👥 " + String(TEAM_NAME);
+//       bot.sendMessage(chat_id, gasMsg, "Markdown");
+//     }
+//     else if (text == "/get_all") {
+//       bot.sendMessage(chat_id, getFormattedSensorData(), "Markdown");
+//     }
+//     else if (text == "/uptime") {
+//       String uptime = "⏱️ *THOI GIAN HOAT DONG*\n";
+//       uptime += "━━━━━━━━━━━━━━\n";
+//       uptime += "`" + formatUptime(millis()) + "`\n";
+//       uptime += "━━━━━━━━━━━━━━\n";
+//       uptime += "👥 " + String(TEAM_NAME);
+//       bot.sendMessage(chat_id, uptime, "Markdown");
+//     }
+//     else {
+//       bot.sendMessage(chat_id, "❓ *Lenh khong hop le!*\nGo /start de xem danh sach lenh.", "Markdown");
+//     }
+//   }
+// }
+
+// void checkTelegram() {
+//   if (WiFi.status() != WL_CONNECTED) return;
+//   if (millis() - lastTelegramCheck < 2000) return;
+
+//   lastTelegramCheck = millis();
+
+//   int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+
+//   while (numNewMessages) {
+//     handleNewMessages(numNewMessages);
+//     numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+//   }
+// }
+
+// // ===================== TASKS =====================
+// void taskReadData() {
+//   readSensors();
+//   printSerialData();
+// }
+
+// void taskDisplayUpdate() {
+//   updateOLED();
+// }
+
+// void taskCloudUpdate() {
+//   updateBlynk();
+// }
+
+// void taskTelegramNotify() {
+//   notifyWeatherChange();
+//   notifyGasLevel();
+// }
+
+// // ===================== WIFI =====================
+// void connectWiFi() {
+//   WiFi.mode(WIFI_STA);
+//   WiFi.begin(ssid, pass);
+
+//   Serial.print("Dang ket noi WiFi");
+//   unsigned long startAttemptTime = millis();
+
+//   while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 20000) {
+//     delay(500);
+//     Serial.print(".");
+//   }
+//   Serial.println();
+
+//   if (WiFi.status() == WL_CONNECTED) {
+//     Serial.print("WiFi OK. IP: ");
+//     Serial.println(WiFi.localIP());
+//   } else {
+//     Serial.println("Khong ket noi duoc WiFi.");
+//   }
+// }
+
+// void reconnectIfNeeded() {
+//   static unsigned long lastReconnectAttempt = 0;
+//   if (millis() - lastReconnectAttempt < 5000) return;
+//   lastReconnectAttempt = millis();
+
+//   if (WiFi.status() != WL_CONNECTED) {
+//     connectWiFi();
+//   }
+
+//   if (WiFi.status() == WL_CONNECTED && !Blynk.connected()) {
+//     Serial.println("Dang ket noi lai Blynk...");
+//     Blynk.connect(5000);
+//   }
+// }
+
+// // ===================== SETUP =====================
+// void setup() {
+//   Serial.begin(115200);
+//   delay(200);
+
+//   pinMode(RELAY_PIN, OUTPUT);
+//   digitalWrite(RELAY_PIN, HIGH);
+
+//   dht.begin();
+
+//   Wire.begin(OLED_SDA, OLED_SCL);
+//   if (!display.begin(0x3C, true)) {
+//     Serial.println("Khong tim thay OLED SH1106!");
+//     while (true) {
+//       delay(1000);
+//     }
+//   }
+
+//   display.clearDisplay();
+//   display.setTextSize(1);
+//   display.setTextColor(SH110X_WHITE);
+//   display.setCursor(0, 0);
+//   display.println("Dang khoi dong...");
+//   display.display();
+
+//   randomSeed(analogRead(A0));
+
+//   connectWiFi();
+
+//   Blynk.config(BLYNK_AUTH_TOKEN);
+//   if (WiFi.status() == WL_CONNECTED) {
+//     Blynk.connect(10000);
+//   }
+
+//   secured_client.setInsecure();
+
+//   setRelay(false);
+//   readSensors();
+//   updateOLED();
+//   updateBlynk();
+
+//   timer.setInterval(2500L, taskReadData);       // doc cam bien
+//   timer.setInterval(200L, taskDisplayUpdate);   // OLED cap nhat lien tuc
+//   timer.setInterval(3000L, taskCloudUpdate);
+//   timer.setInterval(5000L, taskTelegramNotify);
+
+//   Serial.println("He thong san sang.");
+
+//   if (WiFi.status() == WL_CONNECTED) {
+//     String msg = "✨ *ESP8266 DA KHOI DONG!* ✨\n";
+//     msg += "━━━━━━━━━━━━━━\n";
+//     msg += "📡 IP: `" + WiFi.localIP().toString() + "`\n";
+//     msg += "📶 WiFi: `" + String(ssid) + "`\n";
+//     msg += "🌡️ Temp: `" + String(temperature, 1) + " C`\n";
+//     msg += "💡 Relay: `" + String(relayState ? "BAT" : "TAT") + "`\n";
+//     msg += "━━━━━━━━━━━━━━\n";
+//     msg += "🤖 San sang nhan lenh!\n";
+//     msg += "👥 " + String(TEAM_NAME);
+
+//     sendTelegramMessage(msg);
+//   }
+// }
+
+// // ===================== LOOP =====================
+// void loop() {
+//   reconnectIfNeeded();
+//   Blynk.run();
+//   timer.run();
+//   checkTelegram();
+// }

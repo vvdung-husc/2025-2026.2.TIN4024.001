@@ -1,18 +1,34 @@
 {
   "version": 1,
-  "author": "Hieu",
+  "author": "Nguyễn Công Hiếu",
   "editor": "wokwi",
   "parts": [
-    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": -9.6, "left": -110.36, "attrs": {} },
-    { "type": "board-ssd1306", "id": "oled", "top": -35.26, "left": 86.63, "attrs": {} }
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 9.6, "left": -167.96, "attrs": {} },
+    { "type": "board-ssd1306", "id": "oled", "top": 108.74, "left": 125.03, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -95.7, "left": -34.2, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": 82.8, "left": 42.2, "attrs": { "color": "blue" } },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 148.25,
+      "left": -1.4,
+      "rotate": 180,
+      "attrs": { "value": "220" }
+    }
   ],
   "connections": [
     [ "esp:TX", "$serialMonitor:RX", "", [] ],
     [ "esp:RX", "$serialMonitor:TX", "", [] ],
-    [ "esp:21", "oled:SDA", "green", [ "h57.6", "v-115.2", "h105.53" ] ],
-    [ "esp:22", "oled:SCL", "blue", [ "h38.4", "v-96", "h114.9" ] ],
-    [ "esp:3V3", "oled:VCC", "red", [ "v-57.6", "h192" ] ],
-    [ "esp:GND", "oled:GND", "black", [ "v0" ] ]
+    [ "esp:21", "oled:SDA", "green", [ "h9.6", "h274.5" ] ],
+    [ "esp:22", "oled:SCL", "blue", [ "h274.27" ] ],
+    [ "esp:3V3", "oled:VCC", "red", [ "h-28.65", "v211.2", "h288", "v-153.6", "h115.05" ] ],
+    [ "esp:GND", "oled:GND", "black", [ "v0" ] ],
+    [ "esp:15", "dht1:SDA", "green", [ "h57.6", "v-163.2" ] ],
+    [ "esp:3V3", "dht1:VCC", "red", [ "h-28.65", "v-57.6", "h144", "v38.4" ] ],
+    [ "esp:GND", "dht1:GND", "black", [ "v0" ] ],
+    [ "esp:2", "led1:A", "blue", [ "h134.4", "v-48" ] ],
+    [ "led1:C", "r1:1", "black", [ "v9.6", "h-47.6" ] ],
+    [ "r1:2", "esp:GND", "black", [ "v0" ] ]
   ],
   "dependencies": {}
 }
