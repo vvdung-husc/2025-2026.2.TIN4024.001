@@ -3,7 +3,7 @@ THONG TIN NHOM 04
 1. Le Van Thuan
 2. Tran Khanh
 3. Nguyen Cong Thanh
-4. ...
+4. Hoang Van Quoc Thinh
 5. ...
 */
 
