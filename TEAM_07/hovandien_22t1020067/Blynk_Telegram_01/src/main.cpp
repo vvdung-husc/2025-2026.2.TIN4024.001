@@ -1,10 +1,4 @@
-/*
-	THÔNG TIN NHÓM 07
-	1. Hồ Văn Diễn - Telegram: Hồ Văn Diễn
-    2. Lương Thanh Ngọc Như - Telegram: Luong Nhu
-    3. Nguyễn Văn Phong - Telegram: Phong Nguyễn Văn
-	4. Nguyễn Văn Tiến Đạt - Telegram: Nguyễn Văn Tiến Đạt
-    */
+
 #include <Arduino.h>
 
 /* --- 1. CẤU HÌNH BLYNK --- */
