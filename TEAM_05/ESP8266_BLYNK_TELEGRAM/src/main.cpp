@@ -1,6 +1,6 @@
 /*
 THÔNG TIN NHÓM 05
-1. Nguyễn Công Hiếu - Telegram: hiieunc
+1. Nguyễn Công Hiếu
 2. Phạm Đức Thành Đạt
 3. Trần Văn Tiến
 4.
