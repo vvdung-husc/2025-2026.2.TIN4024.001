@@ -1,7 +1,5 @@
 /* * Thông tin thành viên nhóm:
-1. Hồ Văn Diễn - Telegram: Hồ Văn Diễn
-
-
+ 1. Hồ Văn Diễn - Telegram: Hồ Văn Diễn
  */
 
 #include <Arduino.h>
