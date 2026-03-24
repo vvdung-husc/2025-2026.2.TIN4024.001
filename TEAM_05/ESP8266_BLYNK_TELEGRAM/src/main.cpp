@@ -28,10 +28,44 @@ WiFiClientSecure secured_client;
 UniversalTelegramBot bot(BOT_TOKEN, secured_client);
 
 // --- CẤU HÌNH CHÂN LINH KIỆN ---
-//#define DHTPIN 15
-#define DHTPIN 14
+// ⚠ Đổi DHTPIN cho đúng sau khi chạy scanDHTPin() để xác định chân
+#define DHTPIN 14  // GPIO14 = D5 — đổi nếu scan tìm ra pin khác
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
+
+// Hàm scan tự động tìm chân DATA và loại cảm biến DHT
+void scanDHTPin() {
+  int pins[]    = { 0,  2, 13, 14, 12, 15 };
+  String names[]= {"D3","D4","D7","D5","D6","D8"};
+  int count = 6;
+  int types[]   = { DHT11, DHT22 };
+  String typeNames[] = { "DHT11", "DHT22" };
+
+  Serial.println("[SCAN] Thu DHT11 va DHT22 tren tat ca pin...");
+  for (int t = 0; t < 2; t++) {
+    Serial.println("[SCAN] --- Loai: " + typeNames[t] + " ---");
+    for (int i = 0; i < count; i++) {
+      DHT testDHT(pins[i], types[t]);
+      testDHT.begin();
+      delay(1500);
+      float temp = testDHT.readTemperature();
+      float humi = testDHT.readHumidity();
+      if (!isnan(temp) && !isnan(humi)) {
+        Serial.println(">>> [FOUND] Loai: " + typeNames[t] + " | Chan: " + names[i] + " (GPIO" + String(pins[i]) + ")");
+        Serial.println("    Nhiet do: " + String(temp) + "C | Do am: " + String(humi) + "%");
+        Serial.println("    => Doi: #define DHTPIN " + String(pins[i]));
+        Serial.println("    => Doi: #define DHTTYPE " + typeNames[t]);
+        return;
+      } else {
+        Serial.println("    " + typeNames[t] + " pin " + names[i] + ": NaN");
+      }
+    }
+  }
+  Serial.println("[SCAN] KHONG TIM THAY! Nguyen nhan co the:");
+  Serial.println("  - Day DATA cam bien bi long/khong noi");
+  Serial.println("  - Cam bien bi hong");
+  Serial.println("  - Thieu dien tro pull-up 4.7k ohm");
+}
 
 //#define LED_PIN 2
 #define LED_PIN 12
@@ -183,9 +217,25 @@ void setup() {
   digitalWrite(LED_PIN, LOW);
   Serial.println("[OK] LED PIN da khoi tao");
 
-  // Khởi tạo DHT22
+  // Quét tìm đúng chân DHT (xóa hoặc comment dòng này sau khi đã biết DHTPIN đúng)
+  scanDHTPin();
+  // Khởi tạo DHT22 với DHTPIN đã định nghĩa
   dht.begin();
-  Serial.println("[OK] DHT22 da khoi tao");
+  delay(2000);
+  // Thử đọc ngay để kiểm tra
+  float testT = dht.readTemperature();
+  float testH = dht.readHumidity();
+  if (isnan(testT) || isnan(testH)) {
+    Serial.println();
+    Serial.println("[WARN] DHT22 NaN ngay khi bat dau! Co the:");
+    Serial.println("  1. Sai chan DATA: DHTPIN=" + String(DHTPIN) + " (D" + String(DHTPIN==14?5:DHTPIN==12?6:DHTPIN==13?7:0) + ")");
+    Serial.println("  2. Sai loai cam bien (DHT11 vs DHT22)");
+    Serial.println("  3. Thieu dien tro pull-up 4.7k tren day DATA");
+  } else {
+    Serial.print("[OK] DHT22 ok: ");
+    Serial.print(testT); Serial.print("C, ");
+    Serial.print(testH); Serial.println("%");
+  }
 
   // Khởi tạo I2C với đúng pin của NodeMCU
   Wire.begin(I2C_SDA, I2C_SCL); // SDA=D2(GPIO4), SCL=D1(GPIO5)
