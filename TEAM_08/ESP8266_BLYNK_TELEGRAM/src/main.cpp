@@ -2,7 +2,7 @@
 THÔNG TIN NHÓM 08
 1. Nguyễn Ngọc Thành Tài - Telegram : ntainguyenit
 2. Trần Văn Quốc Khánh
-3. Hồ Nguyễn Huyền Trang
+3. Hồ Nguyễn Huyền Trang - Telegram : hnhtrang81
 4. Nguyễn Diệu Hằng
 5. Võ Thị Hằng Nga - Telegram : vhanga17
 */
