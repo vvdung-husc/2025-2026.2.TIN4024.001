@@ -1,8 +1,9 @@
 /*
 	THÔNG TIN NHÓM 11
-	1. Đào Văn Lợi
+	1. Đào Văn Lợi - Lemon Water
 	2. Phan Minh Nhật Khoa
-	3. Phạm Mạnh Lân
+	3. Phạm Mạnh Lân - Tele: Mạnh Lân
+  4. Võ Thanh Toàn - Tele: toanvo0933
   
 	*/
 #define BLYNK_TEMPLATE_ID "TMPL6g5wadXBg"
@@ -18,7 +19,7 @@
 #include <Wire.h>
 #include <DHT.h>
 
-// --- CẤU HÌNH HỆ THỐNG - ĐÀO VĂN LỢI - HUE ---
+// --- CẤU HÌNH HỆ THỐNG - NHÓM 11- HUE ---
 #define LED_BOARD 2    // D4 (GPIO2)
 #define DHTPIN 0       // D3 (GPIO0)
 #define PIRPIN 4       // D2 (GPIO4)
@@ -27,8 +28,8 @@
 
 // Cấu hình mạng và Telegram
 char auth[] = BLYNK_AUTH_TOKEN;
-char ssid[] = "loi"; 
-char pass[] = "11111111";
+char ssid[] = "Toàn"; 
+char pass[] = "99999999";
 #define BOTtoken "8482351137:AAG3HGrN3ofuROEq9GzZgOMKYjh4nTKgft8"
 #define GROUP_ID "-5204265134" 
 
@@ -48,7 +49,7 @@ unsigned long lastTimeBotRan;
 void updateOLED() {
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_6x12_tf);
-  u8g2.drawStr(0, 10, "DAO VAN LOI - HUE"); 
+  u8g2.drawStr(0, 10, "NHÓM 11 - HUE"); 
   
   u8g2.setCursor(0, 24); u8g2.print("Temp: "); u8g2.print(t, 1); u8g2.print(" C");
   u8g2.setCursor(0, 34); u8g2.print("Humi: "); u8g2.print(h, 1); u8g2.print(" %");
@@ -72,20 +73,20 @@ void handleTelegramMessages(int numNewMessages) {
       ledStatus = true;
       digitalWrite(LED_BOARD, LOW); // Bật LED (logic âm)
       Blynk.virtualWrite(V3, 1);
-      bot.sendMessage(GROUP_ID, "Lợi thông báo: Đèn đã BẬT ✅", "");
+      bot.sendMessage(GROUP_ID, "NHÓM 11 thông báo: Đèn đã BẬT ✅", "");
     } 
     else if (text == "/led_off") {
       ledStatus = false;
       digitalWrite(LED_BOARD, HIGH); // Tắt LED
       Blynk.virtualWrite(V3, 0);
-      bot.sendMessage(GROUP_ID, "Lợi thông báo: Đèn đã TẮT 🌑", "");
+      bot.sendMessage(GROUP_ID, "NHÓM 11 thông báo: Đèn đã TẮT 🌑", "");
     }
     else if (text == "/get_weather") {
-      String msg = "🌤 Thời tiết (Đào Văn Lợi):\n🌡 Nhiệt độ: " + String(t, 1) + "°C\n💧 Độ ẩm: " + String(h, 1) + "%";
+      String msg = "🌤 Thời tiết (NHÓM 11):\n🌡 Nhiệt độ: " + String(t, 1) + "°C\n💧 Độ ẩm: " + String(h, 1) + "%";
       bot.sendMessage(GROUP_ID, msg, "");
     }
     else if (text == "/status") {
-      String msg = "Hệ thống Đào Văn Lợi:\n";
+      String msg = "Hệ thống NHÓM 11:\n";
       msg += "🌡 Nhiệt độ: " + String(t, 1) + "°C\n";
       msg += "💧 Độ ẩm: " + String(h, 1) + "%\n";
       msg += "💨 Gas: " + String(gasValue) + "\n";
@@ -115,7 +116,7 @@ void sensorJob() {
 
   // Tự động báo Telegram khi phát hiện người
   if (currentMotion == HIGH && motion == LOW) {
-    bot.sendMessage(GROUP_ID, "⚠️ CẢNH BÁO: Phát hiện người xâm nhập! (Đào Văn Lợi)", "");
+    bot.sendMessage(GROUP_ID, "⚠️ CẢNH BÁO: Phát hiện người xâm nhập! (NHÓM 11)", "");
   }
   motion = currentMotion;
 
@@ -145,7 +146,7 @@ void setup() {
   timer.setInterval(2000L, sensorJob); // Đọc cảm biến mỗi 2s
   timer.setInterval(1000L, updateOLED); // Cập nhật OLED mỗi 1s
   
-  Serial.println("\n--- HE THONG DAO VAN LOI READY ---");
+  Serial.println("\n--- HE THONG NHÓM 11 READY ---");
 }
 
 void loop() {
