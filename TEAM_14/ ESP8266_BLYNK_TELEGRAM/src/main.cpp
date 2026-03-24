@@ -9,9 +9,9 @@
 =========================================
 */
 
-#define BLYNK_TEMPLATE_ID "TMPL6MyJqLjlR"
-#define BLYNK_TEMPLATE_NAME "ESP32 BLYNK TELEGRAM"
-#define BLYNK_AUTH_TOKEN "fBNHYJzgk3zrq1qWd1qkCL34SfrY7pmF"
+#define BLYNK_TEMPLATE_ID "TMPL61TMBQWcc"
+#define BLYNK_TEMPLATE_NAME "ESP8266 BLYNK TELEGRAM"
+#define BLYNK_AUTH_TOKEN "D3rVJiuXLBL6njHeiWBqi74qwxaGTEkk"
 
 #define BLYNK_PRINT Serial
 
@@ -26,8 +26,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
 
-char ssid[] = "123";
-char pass[] = "12345";
+char ssid[] = "OPPO A58";
+char pass[] = "44444444";
 
 // ===================== TELEGRAM =====================
 #define BOT_TOKEN "8320632205:AAETm2lhX3N0Wsr2B9CKaMZYnrvZVBbOVTk"
