@@ -1,6 +1,6 @@
 /*
 THONG TIN NHOM 04
-1. Le Van Thuan
+1. Le Van Thuan - Telegram: Lê Thuần
 2. Tran Khanh
 3. Nguyen Cong Thanh
 4. Hoang Van Quoc Thinh
