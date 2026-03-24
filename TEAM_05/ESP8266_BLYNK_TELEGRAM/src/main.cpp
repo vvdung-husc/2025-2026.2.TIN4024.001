@@ -1,7 +1,7 @@
 /*
 THÔNG TIN NHÓM 05
 1. Nguyễn Công Hiếu
-2. Phạm Đức Thành Đạt - Telegram : Thanh Dat Pham Duc
+2. Phạm Đức Thành Đạt - Telegram : thanhdat21
 3. Trần Văn Tiến
 4.
 */
