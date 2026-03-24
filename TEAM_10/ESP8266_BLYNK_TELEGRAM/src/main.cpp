@@ -1,5 +1,5 @@
 /*
-1. Phạm Năng - 22T1020253
+1. Phạm Năng - 22T1020253 - Telegram: pnangg
 2. Ngô Thị Cẩm Ly - 22T1020662
 3. Lê Thị Khánh Ly - Telegram: lklyy
 4. Trần Thị Quỳnh Anh - 22T1020016
@@ -46,7 +46,7 @@ unsigned long lastTimeBotRan;
 void updateOLED() {
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_ncenB08_tr); 
-  u8g2.drawStr(0, 15, "IoT - Team XY.001");
+  u8g2.drawStr(0, 15, "IoT - Team 10.001");
   u8g2.drawHLine(0, 18, 128);
 
   u8g2.setCursor(0, 32);
