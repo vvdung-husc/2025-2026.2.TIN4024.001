@@ -1,7 +1,7 @@
 /*
 THÔNG TIN NHÓM 05
 1. Nguyễn Công Hiếu
-2. Phạm Đức Thành Đạt
+2. Phạm Đức Thành Đạt - Telegram : Thanh Dat Pham Duc
 3. Trần Văn Tiến
 4.
 */
@@ -136,7 +136,9 @@ void sendSensorData() {
 
   // Gửi thông tin Team (V5, V6, V7)
   Blynk.virtualWrite(V5, "1. Nguyen Cong Hieu");
+  Blynk.virtualWrite(V6, "2. Pham Duc Thanh Dat");
   Blynk.virtualWrite(V7, "3. Tran Van Tien");
+  Blynk.virtualWrite(V8, "4. Dau Thien Nhat");
 }
 
 void setup() {
@@ -171,9 +173,9 @@ void setup() {
   Serial.println("Dang ket noi WiFi va Blynk...");
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
 
-  timer.setInterval(500L, sendUptime);
-  timer.setInterval(2500L, sendSensorData);
-  timer.setInterval(200L, checkTelegram); 
+  timer.setInterval(1000L, sendUptime);
+  timer.setInterval(2000L, sendSensorData);
+  timer.setInterval(1500L, checkTelegram); 
 }
 
 void loop() {
