@@ -40,6 +40,10 @@ DHT dht(DHTPIN, DHTTYPE);
 #define SCREEN_HEIGHT 64
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
+// I2C pins cho NodeMCU ESP8266: SDA = D2 (GPIO4), SCL = D1 (GPIO5)
+#define I2C_SDA 4
+#define I2C_SCL 5
+
 BlynkTimer timer;
 
 // Biến lưu trạng thái để Telegram và Blynk đồng bộ
@@ -47,7 +51,21 @@ float lastTemp = 0.0;
 float lastHum = 0.0;
 bool ledState = false;
 
-// Hàm cập nhật chữ LED trên màn hình OLED
+// Hàm cập nhật nhiệt độ & độ ẩm lên OLED (dòng 2 và 3)
+void updateOLED_Sensor(float t, float h) {
+  display.fillRect(0, 16, 128, 24, SSD1306_BLACK); // Xóa vùng giữa
+  display.setCursor(0, 16);
+  display.print("Temp: ");
+  display.print(t, 1);
+  display.println(" C");
+  display.setCursor(0, 28);
+  display.print("Humi: ");
+  display.print(h, 1);
+  display.println(" %");
+  display.display();
+}
+
+// Hàm cập nhật trạng thái LED lên OLED (dòng 4)
 void updateOLED_LED() {
   display.fillRect(0, 40, 128, 24, SSD1306_BLACK); // Xóa vùng dưới của OLED
   display.setCursor(0, 45);
@@ -121,17 +139,24 @@ void sendSensorData() {
     Blynk.virtualWrite(V2, t);
     Blynk.virtualWrite(V3, h);
 
+    // Cập nhật OLED hiển thị nhiệt độ & độ ẩm mới nhất
+    updateOLED_Sensor(t, h);
+    Serial.print("[Sensor] Temp: "); Serial.print(t);
+    Serial.print(" C | Humi: "); Serial.print(h); Serial.println(" %");
+
     // Gửi cảnh báo Telegram nếu nhiệt độ lệch 1 độ, hoặc độ ẩm lệch 2%
     if (abs(t - lastTemp) >= 1.0 || abs(h - lastHum) >= 2.0) {
       if (lastTemp != 0.0) { // Bỏ qua lần báo rác khi mới khởi động
-        String msg = "Cập nhật thời tiết thay đổi!\n";
-        msg += "Nhiệt độ: " + String(t) + "°C\n";
-        msg += "Độ ẩm: " + String(h) + "%";
+        String msg = "Cap nhat thoi tiet thay doi!\n";
+        msg += "Nhiet do: " + String(t) + " C\n";
+        msg += "Do am: " + String(h) + "%";
         bot.sendMessage(CHAT_ID, msg, "");
       }
       lastTemp = t;
       lastHum = h;
     }
+  } else {
+    Serial.println("[WARN] Doc DHT22 that bai (NaN)! Kiem tra chan cam bien.");
   }
 
   // Sinh ngẫu nhiên dữ liệu khí ga (V4) - Do Wokwi không có MQ2
@@ -162,23 +187,32 @@ void setup() {
   dht.begin();
   Serial.println("[OK] DHT22 da khoi tao");
 
+  // Khởi tạo I2C với đúng pin của NodeMCU
+  Wire.begin(I2C_SDA, I2C_SCL); // SDA=D2(GPIO4), SCL=D1(GPIO5)
+  Serial.println("[OK] I2C da khoi tao (SDA=D2, SCL=D1)");
+
   // Khởi tạo OLED
-  Serial.println("[..] Dang khoi tao OLED...");
+  Serial.println("[..] Dang khoi tao OLED tai 0x3C...");
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println(F("[FAIL] OLED khong phan hoi! Kiem tra dia chi I2C (0x3C hoac 0x3D)"));
-    // Không for(;;) — tiếp tục chạy dù không có OLED để còn debug được
+    Serial.println(F("[FAIL] 0x3C that bai, thu 0x3D..."));
+    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3D)) {
+      Serial.println(F("[FAIL] OLED khong phan hoi ca 0x3C lan 0x3D! Kiem tra day I2C."));
+    } else {
+      Serial.println("[OK] OLED da khoi tao tai 0x3D!");
+    }
   } else {
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0, 0);
-    display.println("TEAM 05 - IOT");
-    display.println("1. Nguyen Cong Hieu");
-    display.println("2. Pham Thanh Dat");
-    display.println("3. Tran Van Tien");
-    display.display();
-    Serial.println("[OK] OLED da khoi tao");
+    Serial.println("[OK] OLED da khoi tao tai 0x3C");
   }
+  // Hiển thị màn hình chào
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.println("TEAM 05 - IOT");
+  display.println("Temp: --.- C");
+  display.println("Humi: --.- %");
+  display.println("LED: OFF");
+  display.display();
 
   // Kết nối WiFi trước (có debug)
   Serial.print("[..] Dang ket noi WiFi: ");
@@ -213,7 +247,7 @@ void setup() {
 
   timer.setInterval(1000L, sendUptime);
   timer.setInterval(2000L, sendSensorData);
-  timer.setInterval(1500L, checkTelegram);
+  timer.setInterval(5000L, checkTelegram); // 5 giây/lần — tránh blocking HTTP làm hỏng timer
   Serial.println("=== KHOI DONG HOAN TAT ===");
 }
 
