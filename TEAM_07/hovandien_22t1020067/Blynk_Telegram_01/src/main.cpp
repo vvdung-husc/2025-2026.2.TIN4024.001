@@ -1,5 +1,7 @@
 /* * Thông tin thành viên nhóm:
- 1. Hồ Văn Diễn - Telegram: Hồ Văn Diễn
+ * 1. Phan Thanh Trưởng
+ * 2. Lê Khắc Thức 
+ * Team: IoT - Team12
  */
 
 #include <Arduino.h>
