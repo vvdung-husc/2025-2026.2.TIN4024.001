@@ -2,7 +2,7 @@
 	THÔNG TIN NHÓM 11
 	1. Đào Văn Lợi - Lemon Water
 	2. Phan Minh Nhật Khoa
-	3. Phạm Mạnh Lân
+	3. Phạm Mạnh Lân - Tele: Mạnh Lân
   4. Võ Thanh Toàn - Tele: toanvo0933
   
 	*/
