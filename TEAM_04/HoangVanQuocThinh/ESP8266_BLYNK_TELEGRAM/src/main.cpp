@@ -15,7 +15,7 @@
 #define LED_PIN D4 
 #define GAS_PIN A0
 
-char ssid[] = "HostpotThuan"; 
+char ssid[] = "abc"; 
 char pass[] = "12345678";
 String botToken = "8618224007:AAFkL2FH9sNNCbmfc0fsHXIYqv2Qy3KW1Yg";
 
