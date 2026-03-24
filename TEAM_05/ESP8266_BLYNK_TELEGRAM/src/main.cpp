@@ -1,6 +1,6 @@
 /*
 THÔNG TIN NHÓM 05
-1. Nguyễn Công Hiếu
+1. Nguyễn Công Hiếu - Telegram: hiieucn
 2. Phạm Đức Thành Đạt
 3. Trần Văn Tiến
 4.
@@ -20,9 +20,9 @@ THÔNG TIN NHÓM 05
 #include <UniversalTelegramBot.h> 
 #include <ArduinoJson.h>
 
-// --- CẤU HÌNH WIFI THẬT (đổi thành đúng tên WiFi và mật khẩu của bạn) ---
-char ssid[] = "LAB502-02-8247";
-char pass[] = "24032026";
+// --- CẤU HÌNH WIFI ---
+char ssid[] = "CongHieu";   
+char pass[] = "hiiEu1357";  
 
 WiFiClientSecure secured_client;
 UniversalTelegramBot bot(BOT_TOKEN, secured_client);
