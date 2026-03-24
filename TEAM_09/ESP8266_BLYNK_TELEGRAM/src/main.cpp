@@ -24,8 +24,8 @@ THONG TIN NHOM 09
 #include <Adafruit_SH110X.h>
 
 // ===================== WIFI =====================
-const char* ssid = "Wokwi-GUEST";
-const char* password = "";
+const char* ssid = "abcdabcd";
+const char* password = "12345678";
 
 // ===================== TELEGRAM =====================
 #define BOTtoken "8692886537:AAEU2IsE_BAVi0gjn5im2NHNBpNaD1spAJk"
