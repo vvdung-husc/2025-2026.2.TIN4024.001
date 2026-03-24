@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
 // --- THAY THÔNG SỐ BLYNK CỦA BẠN VÀO ĐÂY ---
-#define BLYNK_TEMPLATE_ID "TMPL6uNMmwyUq"
-#define BLYNK_TEMPLATE_NAME "ESP32 API"
-#define BLYNK_AUTH_TOKEN "nGC0dD_EYsPyLopJPgRn9FdqXXoZ8JJB" 
+#define BLYNK_TEMPLATE_ID "TMPL6T4dFQAwc"
+#define BLYNK_TEMPLATE_NAME "BlynkAPI"
+#define BLYNK_AUTH_TOKEN "3ze8jWS_gkyVF75v0hVWT1lqmCBg5ukC"
 
 #include <WiFi.h>
 #include <WiFiClient.h>
