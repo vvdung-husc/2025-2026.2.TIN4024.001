@@ -1,9 +1,16 @@
 /*
 THONG TIN NHOM 04
+<<<<<<< HEAD
 1. Le Van Thuan
 2. Tran Khanh - telegram : Hansk
 3. Nguyen Cong Thanh - telegram : VeNom
 4. Hoang Van Quoc Thinh
+=======
+1. Le Van Thuan - Telegram: Lê Thuần
+2. Tran Khanh
+3. Nguyen Cong Thanh
+4. Hoang Van Quoc Thinh - Telegram: Lemon Tree
+>>>>>>> f507e39881f13339e490ff7b92d3ddf3a35151a8
 5. ...
 */
 
