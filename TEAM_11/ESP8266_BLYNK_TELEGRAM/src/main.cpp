@@ -3,7 +3,7 @@
 	1. Đào Văn Lợi
 	2. Phan Minh Nhật Khoa
 	3. Phạm Mạnh Lân
-  4. Võ Thanh Toàn - toanvo0933
+  4. Võ Thanh Toàn - Tele: toanvo0933
   
 	*/
 #define BLYNK_TEMPLATE_ID "TMPL6g5wadXBg"
