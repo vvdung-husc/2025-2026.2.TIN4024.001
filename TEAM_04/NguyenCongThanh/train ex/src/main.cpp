@@ -1,7 +1,7 @@
 
-#define BLYNK_TEMPLATE_ID "TMPL6MyJqLjlR"
-#define BLYNK_TEMPLATE_NAME "ESP32 BLYNK TELEGRAM"
-// #define BLYNK_AUTH_TOKEN "IjYOhlTwfLPUKOrUiGVBpqjPbuBtXMm1"
+#define BLYNK_TEMPLATE_ID "TMPL60cNjNeYd"
+#define BLYNK_TEMPLATE_NAME "esp32 blynk tele"
+#define BLYNK_AUTH_TOKEN "qeZ3RQ_7yMYA_wyGonwOaKVsUIiwakxc"
 #define BLYNK_PRINT Serial
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -40,7 +40,7 @@ const char* WIFI_SSID     = "Wokwi-GUEST";
 const char* WIFI_PASS     = "";
 
 
-const char* BLYNK_AUTH    = "IjYOhlTwfLPUKOrUiGVBpqjPbuBtXMm1";
+const char* BLYNK_AUTH    = "qeZ3RQ_7yMYA_wyGonwOaKVsUIiwakxc";
 #define BOT_TOKEN "8629442956:AAF8YBmH05p94b6TYRJh29mo_Fpgvs4pPuI"
 #define ADMIN_CHAT_ID  "6839585914"   
 
