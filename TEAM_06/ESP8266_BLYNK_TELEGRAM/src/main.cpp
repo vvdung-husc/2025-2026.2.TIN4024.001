@@ -2,6 +2,8 @@
 THÔNG TIN NHÓM 6
 1. Bùi Hữu Quốc - Telegram : Duy Pham
 2. Lê Văn Tài - Telegram : Tài Lee
+3. Hồ Tiến Bảo
+4. Phạm Thanh Hiếu
 */
 
 //===== BLYNK =====
@@ -9,8 +11,8 @@ THÔNG TIN NHÓM 6
 #define BLYNK_TEMPLATE_NAME "TELEGRAM BLYNK"
 #define BLYNK_AUTH_TOKEN "djyHz7_pY8ST0I3LuNkAoMW4ZFDCpIP8"
 
-#include <WiFi.h>
-#include <BlynkSimpleEsp32.h>
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
 #include <DHT.h>
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
@@ -30,14 +32,14 @@ WiFiClientSecure client;
 UniversalTelegramBot bot(BOT_TOKEN, client);
 
 //===== PIN =====
-#define DHTPIN 16
+#define DHTPIN D4
 #define DHTTYPE DHT22
-#define LED_PIN 21
-#define BUTTON_PIN 23
-#define PIR_PIN 27
-#define GAS_PIN 34
-#define CLK 18
-#define DIO 19
+#define LED_PIN D1
+#define BUTTON_PIN D3
+#define PIR_PIN D5
+#define GAS_PIN A0
+#define CLK D6
+#define DIO D7
 
 //===== OBJECT =====
 DHT dht(DHTPIN, DHTTYPE);
@@ -54,7 +56,6 @@ unsigned long lastButtonPress = 0;
 BlynkTimer timer;
 
 //==================================
-//MÀN HÌNH
 void updateDisplays()
 {
   display.clearDisplay();
@@ -77,28 +78,24 @@ void updateDisplays()
   display.println(ledState ? "ON" : "OFF");
 
   display.print("Up: ");
-  display.print(millis() / 1000); // Hiển thị theo giây
+  display.print(millis() / 1000);
   display.println(" s");
 
-  display.println("Team 6");
   display.display();
 
-  // 7 segment hiển thị nhiệt độ
   sevseg.showNumberDec((int)temp);
 }
 
 //==================================
-// GỬI DATA LÊN BLYNK
 void sendBlynk()
 {
-  Blynk.virtualWrite(V5, temp);             // Nhiệt độ (V5)
-  Blynk.virtualWrite(V7, hum);              // Độ ẩm (V7)
-  Blynk.virtualWrite(V8, gasValue);         // Gas (V8)
-  Blynk.virtualWrite(V11, millis() / 1000); // Thời gian (V11) - Tính bằng giây
+  Blynk.virtualWrite(V5, temp);
+  Blynk.virtualWrite(V7, hum);
+  Blynk.virtualWrite(V8, gasValue);
+  Blynk.virtualWrite(V11, millis() / 1000);
 }
 
 //==================================
-// NHẬN BLYNK (LED - V0)
 BLYNK_WRITE(V0)
 {
   ledState = param.asInt();
@@ -106,7 +103,6 @@ BLYNK_WRITE(V0)
 }
 
 //==================================
-// TELEGRAM
 void handleTelegram()
 {
   int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
@@ -123,14 +119,14 @@ void handleTelegram()
     {
       ledState = true;
       digitalWrite(LED_PIN, HIGH);
-      Blynk.virtualWrite(V0, 1); // Đồng bộ nút nhấn trên Blynk
+      Blynk.virtualWrite(V0, 1);
       bot.sendMessage(CHAT_ID, "LED ON", "");
     }
     else if (text == "/led_off")
     {
       ledState = false;
       digitalWrite(LED_PIN, LOW);
-      Blynk.virtualWrite(V0, 0); // Đồng bộ nút nhấn trên Blynk
+      Blynk.virtualWrite(V0, 0);
       bot.sendMessage(CHAT_ID, "LED OFF", "");
     }
     else if (text == "/led_status")
@@ -139,14 +135,13 @@ void handleTelegram()
     }
     else if (text == "/get_weather")
     {
-      String msg = "Temp: " + String(temp) + "°C\nHum: " + String(hum) + "%";
+      String msg = "Temp: " + String(temp) + "C\nHum: " + String(hum) + "%";
       bot.sendMessage(CHAT_ID, msg, "");
     }
   }
 }
 
 //==================================
-// ĐỌC SENSOR
 void readSensor()
 {
   float t = dht.readTemperature();
@@ -158,12 +153,11 @@ void readSensor()
     hum = h;
   }
 
-  int rawGas = analogRead(GAS_PIN);
-  gasValue = map(rawGas, 0, 4095, 0, 100);
+  int rawGas = analogRead(A0);
+  gasValue = map(rawGas, 0, 1023, 0, 100);
 }
 
 //==================================
-// XỬ LÝ NÚT NHẤN VẬT LÝ
 void checkButton()
 {
   if (digitalRead(BUTTON_PIN) == LOW)
@@ -172,7 +166,7 @@ void checkButton()
     {
       ledState = !ledState;
       digitalWrite(LED_PIN, ledState);
-      Blynk.virtualWrite(V0, ledState); // Báo trạng thái lên Blynk
+      Blynk.virtualWrite(V0, ledState);
       lastButtonPress = millis();
     }
   }
@@ -187,29 +181,45 @@ void setup()
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   pinMode(PIR_PIN, INPUT);
 
-  Wire.begin(13, 12);
+  // I2C OLED
+  Wire.begin(D2, D1);
+
+  // TEST OLED
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+  {
+    Serial.println("OLED 0x3C FAIL");
+    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3D))
+    {
+      Serial.println("OLED 0x3D FAIL");
+      while (1); // dừng nếu không nhận
+    }
+  }
+
+  display.setTextColor(SSD1306_WHITE);
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("OLED OK");
+  display.display();
+  delay(2000);
 
   // Blynk
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
 
   // Telegram
   client.setInsecure();
+  client.setTimeout(1500);
 
   // Sensor
   dht.begin();
 
-  // OLED
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  display.setTextColor(SSD1306_WHITE); // Sửa lỗi màn hình đen
-
   // 7 segment
   sevseg.setBrightness(7);
 
-  // Thiết lập Timer 
-  timer.setInterval(1000L, updateDisplays);
-  timer.setInterval(2000L, readSensor);
-  timer.setInterval(1000L, sendBlynk);      
-  timer.setInterval(8000L, handleTelegram); 
+  // Timer
+  timer.setInterval(2000L, updateDisplays);
+  timer.setInterval(3000L, readSensor);
+  timer.setInterval(3000L, sendBlynk);
+  timer.setInterval(10000L, handleTelegram);
 
   Serial.println("READY!");
 }
