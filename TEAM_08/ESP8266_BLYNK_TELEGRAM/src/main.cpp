@@ -9,7 +9,7 @@ THÔNG TIN NHÓM 08
 // --- THÔNG SỐ BLYNK ---
 #define BLYNK_TEMPLATE_ID "TMPL60jzGNK9O"
 #define BLYNK_TEMPLATE_NAME "ESP8266 Team 08"
-#define BLYNK_AUTH_TOKEN "Your_Blynk_Auth_Token_Here" // Điền token Blynk của bạn vào đây
+#define BLYNK_AUTH_TOKEN "Token-Blynk" // Điền token Blynk của bạn vào đây
 
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
@@ -24,8 +24,8 @@ THÔNG TIN NHÓM 08
 const char* ssid = "LAB502-29 5164";
 const char* password = "68686868";
 
-#define BOT_TOKEN "Your_Telegram_Bot_Token_Here" // Điền token Bot của bạn vào đây
-#define GROUP_ID "Your_Telegram_Group_ID_Here"   // Điền ID nhóm Telegram của bạn vào đây
+#define BOT_TOKEN "Token-Bot" // Điền token Bot của bạn vào đây
+#define GROUP_ID "ID-Group"   // Điền ID nhóm Telegram của bạn vào đây
 
 X509List cert(TELEGRAM_CERTIFICATE_ROOT);
 WiFiClientSecure secured_client;
