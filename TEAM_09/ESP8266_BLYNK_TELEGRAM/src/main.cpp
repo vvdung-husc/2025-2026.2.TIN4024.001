@@ -2,7 +2,7 @@
 THONG TIN NHOM 09
 1. Nguyen Hoang Huyen Tran - 22T1020770
 2. Ho Van Tan Phat - 22T1020306
-3. ...
+3. Hoang Anh Minh - 22T1020669
 */
 
 #define BLYNK_TEMPLATE_ID "TMPL62kk3uTHb"
