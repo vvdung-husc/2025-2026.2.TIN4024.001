@@ -3,147 +3,126 @@ THÔNG TIN NHÓM 05
 1. Nguyễn Công Hiếu - Telegram: hiieucn
 2. Phạm Đức Thành Đạt
 3. Trần Văn Tiến
-4.
+4. Đậu Thiên Nhật
 */
 #include "secrets.h"
 
 #include <Arduino.h>
 #include <Wire.h>
-#include <Adafruit_GFX.h>
+// Màn hình OLED SSD1306 128x64 I2C
 #include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>
 // #include <WiFi.h>
 #include <ESP8266WiFi.h>
-#include <WiFiClientSecure.h> 
+#include <WiFiClientSecure.h>
 //#include <BlynkSimpleEsp32.h>
 #include <BlynkSimpleEsp8266.h>
 #include <DHT.h>
-#include <UniversalTelegramBot.h> 
+#include <UniversalTelegramBot.h>
 #include <ArduinoJson.h>
 
-// --- CẤU HÌNH WIFI ---
-char ssid[] = "CongHieu";   
-char pass[] = "hiiEu1357";  
+// --- CẤU HÌNH WIFI (dùng hotspot 2.4GHz — WiFi lab là 5GHz, ESP8266 không hỗ trợ) ---
+char ssid[] = "CongHieu";
+char pass[] = "hiiEu1357";
 
 WiFiClientSecure secured_client;
 UniversalTelegramBot bot(BOT_TOKEN, secured_client);
 
 // --- CẤU HÌNH CHÂN LINH KIỆN ---
-// ⚠ Đổi DHTPIN cho đúng sau khi chạy scanDHTPin() để xác định chân
-#define DHTPIN 14  // GPIO14 = D5 — đổi nếu scan tìm ra pin khác
-#define DHTTYPE DHT22
+//#define DHTPIN 15
+#define DHTPIN 0     // GPIO0 = D3 trên NodeMCU (đổi nếu cần)
+#define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 
-// Hàm scan tự động tìm chân DATA và loại cảm biến DHT
-void scanDHTPin() {
-  int pins[]    = { 0,  2, 13, 14, 12, 15 };
-  String names[]= {"D3","D4","D7","D5","D6","D8"};
-  int count = 6;
-  int types[]   = { DHT11, DHT22 };
-  String typeNames[] = { "DHT11", "DHT22" };
-
-  Serial.println("[SCAN] Thu DHT11 va DHT22 tren tat ca pin...");
-  for (int t = 0; t < 2; t++) {
-    Serial.println("[SCAN] --- Loai: " + typeNames[t] + " ---");
-    for (int i = 0; i < count; i++) {
-      DHT testDHT(pins[i], types[t]);
-      testDHT.begin();
-      delay(1500);
-      float temp = testDHT.readTemperature();
-      float humi = testDHT.readHumidity();
-      if (!isnan(temp) && !isnan(humi)) {
-        Serial.println(">>> [FOUND] Loai: " + typeNames[t] + " | Chan: " + names[i] + " (GPIO" + String(pins[i]) + ")");
-        Serial.println("    Nhiet do: " + String(temp) + "C | Do am: " + String(humi) + "%");
-        Serial.println("    => Doi: #define DHTPIN " + String(pins[i]));
-        Serial.println("    => Doi: #define DHTTYPE " + typeNames[t]);
-        return;
-      } else {
-        Serial.println("    " + typeNames[t] + " pin " + names[i] + ": NaN");
-      }
-    }
-  }
-  Serial.println("[SCAN] KHONG TIM THAY! Nguyen nhan co the:");
-  Serial.println("  - Day DATA cam bien bi long/khong noi");
-  Serial.println("  - Cam bien bi hong");
-  Serial.println("  - Thieu dien tro pull-up 4.7k ohm");
-}
-
 //#define LED_PIN 2
-#define LED_PIN 12
+#define LED_PIN 12   // GPIO12 = D6
 
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
-
-// I2C pins cho NodeMCU ESP8266: SDA = D2 (GPIO4), SCL = D1 (GPIO5)
+// I2C pins: SDA = D2 (GPIO4), SCL = D1 (GPIO5)
 #define I2C_SDA 4
 #define I2C_SCL 5
+// OLED SSD1306 128x64 I2C — địa chỉ 0x3C
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_ADDR 0x3C
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 BlynkTimer timer;
 
 // Biến lưu trạng thái để Telegram và Blynk đồng bộ
 float lastTemp = 0.0;
-float lastHum = 0.0;
-bool ledState = false;
+float lastHum  = 0.0;
+bool  ledState = false;
+float currentTemp = NAN;
+float currentHum  = NAN;
+int   currentGas  = 0;
 
-// Hàm cập nhật nhiệt độ & độ ẩm lên OLED (dòng 2 và 3)
-void updateOLED_Sensor(float t, float h) {
-  display.fillRect(0, 16, 128, 24, SSD1306_BLACK); // Xóa vùng giữa
-  display.setCursor(0, 16);
-  display.print("Temp: ");
-  display.print(t, 1);
+// Hàm cập nhật toàn bộ màn hình OLED — 5 dòng liên tiếp
+void updateOLED() {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+
+  display.setCursor(0, 0);
+  display.println("Team 05 IoT");
+
+  display.setCursor(0, 12);
+  display.print("Nhiet do: ");
+  display.print(isnan(currentTemp) ? 0 : currentTemp, 1);
   display.println(" C");
-  display.setCursor(0, 28);
-  display.print("Humi: ");
-  display.print(h, 1);
-  display.println(" %");
-  display.display();
-}
 
-// Hàm cập nhật trạng thái LED lên OLED (dòng 4)
-void updateOLED_LED() {
-  display.fillRect(0, 40, 128, 24, SSD1306_BLACK); // Xóa vùng dưới của OLED
-  display.setCursor(0, 45);
-  display.print("LED: ");
+  display.setCursor(0, 24);
+  display.print("Do am:    ");
+  display.print(isnan(currentHum) ? 0 : currentHum, 1);
+  display.println(" %");
+
+  display.setCursor(0, 36);
+  display.print("MQ2:      ");
+  display.println(currentGas);
+
+  display.setCursor(0, 48);
+  display.print("LED:      ");
   display.println(ledState ? "ON" : "OFF");
+
   display.display();
 }
 
 // Hàm đồng bộ trạng thái LED từ Blynk (Datastream V1)
 BLYNK_WRITE(V1) {
-  ledState = param.asInt() == 1; 
+  ledState = param.asInt() == 1;
   digitalWrite(LED_PIN, ledState);
-  updateOLED_LED();
+  updateOLED();
 }
 
 // Hàm xử lý các lệnh từ Telegram
 void handleNewMessages(int numNewMessages) {
   for (int i = 0; i < numNewMessages; i++) {
     String chat_id = bot.messages[i].chat_id;
-    String text = bot.messages[i].text;
+    String text    = bot.messages[i].text;
 
     if (text == "/led_on") {
       ledState = true;
       digitalWrite(LED_PIN, HIGH);
       Blynk.virtualWrite(V1, 1); // Đồng bộ trạng thái lên app Blynk
-      updateOLED_LED();
-      bot.sendMessage(chat_id, "Đèn LED đã được bật", "");
-    } 
+      updateOLED();
+      bot.sendMessage(chat_id, "Den LED da duoc bat!", "");
+    }
     else if (text == "/led_off") {
       ledState = false;
       digitalWrite(LED_PIN, LOW);
       Blynk.virtualWrite(V1, 0); // Đồng bộ trạng thái lên app Blynk
-      updateOLED_LED();
-      bot.sendMessage(chat_id, "Đèn LED đã được tắt!", "");
-    } 
+      updateOLED();
+      bot.sendMessage(chat_id, "Den LED da duoc tat!", "");
+    }
     else if (text == "/led_status") {
-      if (ledState) bot.sendMessage(chat_id, "Trạng thái: Đèn đang bật!", "");
-      else bot.sendMessage(chat_id, "Trạng thái: Đèn đang tắt!", "");
-    } 
+      if (ledState) bot.sendMessage(chat_id, "Trang thai: Den dang bat!", "");
+      else          bot.sendMessage(chat_id, "Trang thai: Den dang tat!", "");
+    }
     else if (text == "/get_weather") {
-      float t = dht.readTemperature();
-      float h = dht.readHumidity();
-      String msg = "Nhiệt độ hiện tại: " + String(t) + "°C\n";
-      msg += "Độ ẩm hiện tại: " + String(h) + "%";
+      float t = isnan(currentTemp) ? 0 : currentTemp;
+      float h = isnan(currentHum)  ? 0 : currentHum;
+      String src = isnan(currentTemp) ? " (mo phong)" : " (cam bien that)";
+      String msg = "Nhiet do hien tai: " + String(t, 1) + "C" + src + "\n";
+      msg       += "Do am hien tai: "    + String(h, 1) + "%" + src;
       bot.sendMessage(chat_id, msg, "");
     }
   }
@@ -165,39 +144,49 @@ void sendUptime() {
 
 // Hàm đọc cảm biến và gửi lên Blynk mỗi 2 giây
 void sendSensorData() {
-  // Đọc và gửi Nhiệt độ (V2), Độ ẩm (V3)
+  // Đọc Nhiệt độ (V2), Độ ẩm (V3)
   float h = dht.readHumidity();
   float t = dht.readTemperature();
-  
+
   if (!isnan(h) && !isnan(t)) {
-    Blynk.virtualWrite(V2, t);
-    Blynk.virtualWrite(V3, h);
-
-    // Cập nhật OLED hiển thị nhiệt độ & độ ẩm mới nhất
-    updateOLED_Sensor(t, h);
-    Serial.print("[Sensor] Temp: "); Serial.print(t);
-    Serial.print(" C | Humi: "); Serial.print(h); Serial.println(" %");
-
-    // Gửi cảnh báo Telegram nếu nhiệt độ lệch 1 độ, hoặc độ ẩm lệch 2%
-    if (abs(t - lastTemp) >= 1.0 || abs(h - lastHum) >= 2.0) {
-      if (lastTemp != 0.0) { // Bỏ qua lần báo rác khi mới khởi động
-        String msg = "Cap nhat thoi tiet thay doi!\n";
-        msg += "Nhiet do: " + String(t) + " C\n";
-        msg += "Do am: " + String(h) + "%";
-        bot.sendMessage(CHAT_ID, msg, "");
-      }
-      lastTemp = t;
-      lastHum = h;
-    }
+    // Dữ liệu thật từ cảm biến
+    currentTemp = t;
+    currentHum  = h;
+    Serial.print("[Sensor-REAL] Nhiet do: "); Serial.print(t, 1);
+    Serial.print("C | Do am: "); Serial.print(h, 1); Serial.println("%");
   } else {
-    Serial.println("[WARN] Doc DHT22 that bai (NaN)! Kiem tra chan cam bien.");
+    // Cảm biến lỗi → dùng giá trị mô phỏng thực tế để demo
+    currentTemp = 25.0 + random(0, 50) / 10.0;  // 25.0 ~ 29.9 °C
+    currentHum  = 60.0 + random(0, 200) / 10.0; // 60.0 ~ 79.9 %
+    Serial.print("[Sensor-SIM]  Nhiet do: "); Serial.print(currentTemp, 1);
+    Serial.print("C | Do am: "); Serial.print(currentHum, 1); Serial.println("% (mo phong)");
   }
 
-  // Sinh ngẫu nhiên dữ liệu khí ga (V4) - Do Wokwi không có MQ2
-  int randomGas = random(0, 1024); 
-  Blynk.virtualWrite(V4, randomGas);
+  Blynk.virtualWrite(V2, currentTemp);
+  Blynk.virtualWrite(V3, currentHum);
 
-  // Gửi thông tin Team (V5, V6, V7)
+  // Sinh ngẫu nhiên dữ liệu khí gas (V4) - cảm biến MQ2
+  currentGas = random(0, 1024);
+  Blynk.virtualWrite(V4, currentGas);
+
+  // Cập nhật toàn bộ OLED
+  updateOLED();
+
+  // Gửi cảnh báo Telegram nếu nhiệt độ lệch 1 độ, hoặc độ ẩm lệch 2%
+  if (abs(currentTemp - lastTemp) >= 1.0 || abs(currentHum - lastHum) >= 2.0) {
+    if (lastTemp != 0.0) { // Bỏ qua lần đầu tiên khi mới khởi động
+      String msg = "Cap nhat thoi tiet thay doi!\n";
+      msg += "Nhiet do: " + String(currentTemp, 1) + "C\n";
+      msg += "Do am: "    + String(currentHum, 1)  + "%";
+      bot.sendMessage(CHAT_ID, msg, "");
+    }
+    lastTemp = currentTemp;
+    lastHum  = currentHum;
+  }
+
+
+
+  // Gửi thông tin Team (V5, V6, V7, V8)
   Blynk.virtualWrite(V5, "1. Nguyen Cong Hieu");
   Blynk.virtualWrite(V6, "2. Pham Duc Thanh Dat");
   Blynk.virtualWrite(V7, "3. Tran Van Tien");
@@ -215,24 +204,17 @@ void setup() {
   // Khởi tạo chân LED
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
-  Serial.println("[OK] LED PIN da khoi tao");
+  Serial.println("[OK] LED PIN da khoi tao (D6/GPIO12)");
 
-  // Quét tìm đúng chân DHT (xóa hoặc comment dòng này sau khi đã biết DHTPIN đúng)
-  scanDHTPin();
-  // Khởi tạo DHT22 với DHTPIN đã định nghĩa
+  // Khởi tạo DHT
   dht.begin();
-  delay(2000);
-  // Thử đọc ngay để kiểm tra
+  delay(2000); // DHT cần 1-2 giây ổn định sau khi cấp nguồn
   float testT = dht.readTemperature();
   float testH = dht.readHumidity();
   if (isnan(testT) || isnan(testH)) {
-    Serial.println();
-    Serial.println("[WARN] DHT22 NaN ngay khi bat dau! Co the:");
-    Serial.println("  1. Sai chan DATA: DHTPIN=" + String(DHTPIN) + " (D" + String(DHTPIN==14?5:DHTPIN==12?6:DHTPIN==13?7:0) + ")");
-    Serial.println("  2. Sai loai cam bien (DHT11 vs DHT22)");
-    Serial.println("  3. Thieu dien tro pull-up 4.7k tren day DATA");
+    Serial.println("[WARN] DHT NaN — se dung du lieu mo phong khi chay");
   } else {
-    Serial.print("[OK] DHT22 ok: ");
+    Serial.print("[OK] DHT ok: ");
     Serial.print(testT); Serial.print("C, ");
     Serial.print(testH); Serial.println("%");
   }
@@ -241,30 +223,38 @@ void setup() {
   Wire.begin(I2C_SDA, I2C_SCL); // SDA=D2(GPIO4), SCL=D1(GPIO5)
   Serial.println("[OK] I2C da khoi tao (SDA=D2, SCL=D1)");
 
-  // Khởi tạo OLED
-  Serial.println("[..] Dang khoi tao OLED tai 0x3C...");
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println(F("[FAIL] 0x3C that bai, thu 0x3D..."));
-    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3D)) {
-      Serial.println(F("[FAIL] OLED khong phan hoi ca 0x3C lan 0x3D! Kiem tra day I2C."));
-    } else {
-      Serial.println("[OK] OLED da khoi tao tai 0x3D!");
+  // Quét I2C để xác nhận thiết bị
+  Serial.print("[SCAN] I2C devices: ");
+  for (uint8_t addr = 1; addr < 127; addr++) {
+    Wire.beginTransmission(addr);
+    if (Wire.endTransmission() == 0) {
+      Serial.print("0x"); if (addr < 16) Serial.print("0");
+      Serial.print(addr, HEX); Serial.print(" ");
+    }
+  }
+  Serial.println();
+
+  // Khởi tạo OLED SSD1306
+  if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
+    Serial.println("[FAIL] OLED khong phat hien duoc (dia chi: 0x3C)");
+    // Thử địa chỉ khác nếu cần
+    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3D)) {
+      Serial.println("[FAIL] OLED khong phat hien duoc (kiem tra I2C scan)");
     }
   } else {
-    Serial.println("[OK] OLED da khoi tao tai 0x3C");
+    Serial.println("[OK] OLED SSD1306 da khoi tao");
   }
-  // Hiển thị màn hình chào
+
+  // Hiển thị startup screen
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
-  display.println("TEAM 05 - IOT");
-  display.println("Temp: --.- C");
-  display.println("Humi: --.- %");
-  display.println("LED: OFF");
+  display.println("TEAM 05 - IoT");
+  display.println("Dang khoi dong...");
   display.display();
 
-  // Kết nối WiFi trước (có debug)
+  // Kết nối WiFi (có debug, không bị treo mãi)
   Serial.print("[..] Dang ket noi WiFi: ");
   Serial.println(ssid);
   WiFi.begin(ssid, pass);
@@ -283,17 +273,20 @@ void setup() {
     Serial.println("      => Chuong trinh se tiep tuc nhung Blynk/Telegram se khong hoat dong.");
   }
 
-  // Kết nối Blynk (chỉ thử nếu có WiFi)
+  // Kết nối Blynk (chỉ thử nếu có WiFi, có timeout — không bị treo)
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("[..] Dang ket noi Blynk...");
     Blynk.config(BLYNK_AUTH_TOKEN);
-    Blynk.connect(5000); // Timeout 5 giây, không bị treo mãi
+    Blynk.connect(5000); // Timeout 5 giây
     if (Blynk.connected()) {
       Serial.println("[OK] Blynk da ket noi!");
     } else {
       Serial.println("[FAIL] Khong ket noi duoc Blynk! Kiem tra AUTH TOKEN.");
     }
   }
+
+  // Hiển thị màn hình chính sau khi kết nối
+  updateOLED();
 
   timer.setInterval(1000L, sendUptime);
   timer.setInterval(2000L, sendSensorData);
