@@ -21,8 +21,8 @@ THÔNG TIN NHÓM 05
 #include <ArduinoJson.h>
 
 // --- CẤU HÌNH WIFI THẬT (đổi thành đúng tên WiFi và mật khẩu của bạn) ---
-char ssid[] = "CNTT-MMT";
-char pass[] = "13572468";
+char ssid[] = "LAB502-02-8247";
+char pass[] = "24032026";
 
 WiFiClientSecure secured_client;
 UniversalTelegramBot bot(BOT_TOKEN, secured_client);
