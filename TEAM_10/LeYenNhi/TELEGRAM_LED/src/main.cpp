@@ -5,16 +5,17 @@
 #include <UniversalTelegramBot.h>
 #include <ArduinoJson.h>
 
+
 // WIFI
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 
 // TELEGRAM BOT TOKEN
-#define BOTtoken "8235124253:AAHt8WxIYQEdb9a_EwdyQEUjPe2jKgYrpmU"
+#define BOTtoken "8538019543:AAFkThEunUaQyBmzCd0i6B27bk7_uelVwKg"
 
 // GROUP ID
-#define GROUP_ID "-4663178968"
-
+#define GROUP_ID "7956969064"
+ 
 WiFiClientSecure client;
 UniversalTelegramBot bot(BOTtoken, client);
 
@@ -147,3 +148,4 @@ void loop() {
     lastTimeBotRan = millis();
   }
 }
+
