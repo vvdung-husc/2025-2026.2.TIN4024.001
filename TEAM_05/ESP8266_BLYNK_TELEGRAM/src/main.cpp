@@ -1,6 +1,6 @@
 /*
 THÔNG TIN NHÓM 05
-1. Nguyễn Công Hiếu
+1. Nguyễn Công Hiếu - Telegram: hiieunc
 2. Phạm Đức Thành Đạt
 3. Trần Văn Tiến
 4.
@@ -11,26 +11,30 @@ THÔNG TIN NHÓM 05
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <WiFi.h>
+// #include <WiFi.h>
+#include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h> 
-#include <BlynkSimpleEsp32.h>
+//#include <BlynkSimpleEsp32.h>
+#include <BlynkSimpleEsp8266.h>
 #include <DHT.h>
 #include <UniversalTelegramBot.h> 
 #include <ArduinoJson.h>
 
-// --- CẤU HÌNH WIFI WOKWI ---
-char ssid[] = "Wokwi-GUEST";
-char pass[] = "";
+// --- CẤU HÌNH WIFI THẬT (đổi thành đúng tên WiFi và mật khẩu của bạn) ---
+char ssid[] = "CNTT-MMT";
+char pass[] = "13572468";
 
 WiFiClientSecure secured_client;
 UniversalTelegramBot bot(BOT_TOKEN, secured_client);
 
 // --- CẤU HÌNH CHÂN LINH KIỆN ---
-#define DHTPIN 15
+//#define DHTPIN 15
+#define DHTPIN 14
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
-#define LED_PIN 2
+//#define LED_PIN 2
+#define LED_PIN 12
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -143,6 +147,8 @@ void sendSensorData() {
 
 void setup() {
   Serial.begin(115200);
+  delay(500); // Cho Serial ổn định trước khi in
+  Serial.println("\n\n=== KHOI DONG THIET BI ===");
 
   // Cấu hình chứng chỉ bảo mật cho kết nối Telegram
   secured_client.setInsecure();
@@ -150,32 +156,65 @@ void setup() {
   // Khởi tạo chân LED
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
+  Serial.println("[OK] LED PIN da khoi tao");
 
   // Khởi tạo DHT22
   dht.begin();
+  Serial.println("[OK] DHT22 da khoi tao");
 
   // Khởi tạo OLED
+  Serial.println("[..] Dang khoi tao OLED...");
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println(F("Khởi tạo OLED thất bại!"));
-    for(;;);
+    Serial.println(F("[FAIL] OLED khong phan hoi! Kiem tra dia chi I2C (0x3C hoac 0x3D)"));
+    // Không for(;;) — tiếp tục chạy dù không có OLED để còn debug được
+  } else {
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.println("TEAM 05 - IOT");
+    display.println("1. Nguyen Cong Hieu");
+    display.println("2. Pham Thanh Dat");
+    display.println("3. Tran Van Tien");
+    display.display();
+    Serial.println("[OK] OLED da khoi tao");
   }
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, 0);
-  display.println("TEAM 05 - IOT");
-  display.println("1. Nguyen Cong Hieu");
-  display.println("2. Pham Thanh Dat");
-  display.println("3. Tran Van Tien");
-  display.display(); 
 
-  // Kết nối WiFi và Blynk
-  Serial.println("Dang ket noi WiFi va Blynk...");
-  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+  // Kết nối WiFi trước (có debug)
+  Serial.print("[..] Dang ket noi WiFi: ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, pass);
+  int timeout = 0;
+  while (WiFi.status() != WL_CONNECTED && timeout < 20) {
+    delay(500);
+    Serial.print(".");
+    timeout++;
+  }
+  Serial.println();
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("[OK] WiFi da ket noi! IP: ");
+    Serial.println(WiFi.localIP());
+  } else {
+    Serial.println("[FAIL] Khong ket noi duoc WiFi! Kiem tra ten/mat khau WiFi.");
+    Serial.println("      => Chuong trinh se tiep tuc nhung Blynk/Telegram se khong hoat dong.");
+  }
+
+  // Kết nối Blynk (chỉ thử nếu có WiFi)
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("[..] Dang ket noi Blynk...");
+    Blynk.config(BLYNK_AUTH_TOKEN);
+    Blynk.connect(5000); // Timeout 5 giây, không bị treo mãi
+    if (Blynk.connected()) {
+      Serial.println("[OK] Blynk da ket noi!");
+    } else {
+      Serial.println("[FAIL] Khong ket noi duoc Blynk! Kiem tra AUTH TOKEN.");
+    }
+  }
 
   timer.setInterval(1000L, sendUptime);
   timer.setInterval(2000L, sendSensorData);
-  timer.setInterval(1500L, checkTelegram); 
+  timer.setInterval(1500L, checkTelegram);
+  Serial.println("=== KHOI DONG HOAN TAT ===");
 }
 
 void loop() {
