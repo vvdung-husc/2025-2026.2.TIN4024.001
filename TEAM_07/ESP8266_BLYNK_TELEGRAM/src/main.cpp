@@ -248,3 +248,111 @@ void updateBlueButton() {
   digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
   Blynk.virtualWrite(V1, blueButtonON);
 }
+
+//=========== UPTIME ===========
+void uptimeBlynk() {
+
+  static ulong lastTime = 0;
+  if (!IsReady(lastTime, 1000)) return;
+
+  if (startTime == 0) startTime = millis();
+
+  unsigned long currentTime;
+
+  if (blueButtonON) {
+    currentTime = (millis() - startTime) / 1000 + savedTime;
+  } else {
+    currentTime = savedTime;
+  }
+
+  Blynk.virtualWrite(V0, currentTime);
+
+  if (blueButtonON) {
+    display.showNumberDec(currentTime);
+  } else {
+    display.clear();
+  }
+}
+
+//=========== DHT22 ===========
+void readDHT22() {
+
+  static ulong lastTime = 0;
+  if (!IsReady(lastTime, 2000)) return;
+
+  TempAndHumidity data = dht.getTempAndHumidity();
+
+  if (isnan(data.temperature) || isnan(data.humidity)) return;
+
+  temperature = data.temperature;
+  humidity = data.humidity;
+
+  Blynk.virtualWrite(V2, temperature);
+  Blynk.virtualWrite(V3, humidity);
+
+  // ✅ GỬI TELEGRAM KHI CÓ THAY ĐỔI
+  if (abs(temperature - lastTemp) > 0.5 || abs(humidity - lastHumi) > 1) {
+
+    String msg = "📡 Cập nhật môi trường\n";
+    msg += "🌡 Nhiệt độ: " + String(temperature) + " °C\n";
+    msg += "💧 Độ ẩm: " + String(humidity) + " %";
+
+    bot.sendMessage(CHAT_ID, msg, "");
+
+    lastTemp = temperature;
+    lastHumi = humidity;
+  }
+}
+//=========== GAS ===========
+void readGas() {
+
+  static ulong lastTime = 0;
+  if (!IsReady(lastTime, 2000)) return;
+
+  gasValue = analogRead(MQ2_PIN);
+
+  Blynk.virtualWrite(V4, gasValue);
+}
+
+//=========== OLED ===========
+void displayOLED() {
+
+  static ulong lastTime = 0;
+  if (!IsReady(lastTime, 1000)) return;
+
+  oled.clearDisplay();
+
+  oled.setCursor(0,0);
+  oled.print("Nhiet Do: ");
+  oled.print(temperature);
+  oled.println(" C");
+
+  oled.setCursor(0,20);
+  oled.print("Do am: ");
+  oled.print(humidity);
+  oled.println(" %");
+
+  oled.setCursor(0,40);
+  oled.print("Gas: ");
+  oled.println(gasValue);
+
+  oled.display();
+}
+
+//=========== BLYNK ===========
+BLYNK_WRITE(V1) {
+
+  bool newState = param.asInt();
+
+  if (newState && !blueButtonON) {
+    startTime = millis();
+  }
+
+  if (!newState && blueButtonON) {
+    savedTime += (millis() - startTime) / 1000;
+    display.clear();
+  }
+
+  blueButtonON = newState;
+  digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
+}
