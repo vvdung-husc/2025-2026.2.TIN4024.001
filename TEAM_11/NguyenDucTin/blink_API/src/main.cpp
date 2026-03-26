@@ -2,7 +2,7 @@
 
 //Thay thông số BLYNK của bạn vào đây
 #define BLYNK_TEMPLATE_ID "TMPL6dZHfslOO"
-#define BLYNK_TEMPLATE_NAME "LeVanTaiAPI"
+#define BLYNK_TEMPLATE_NAME "NguyenDucTinAPI"
 #define BLYNK_AUTH_TOKEN "zdyZQRe0ZIKQmBMNVVvcbxvd3yfNEmOE"
 
 
