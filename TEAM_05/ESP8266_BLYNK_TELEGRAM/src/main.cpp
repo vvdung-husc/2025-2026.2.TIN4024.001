@@ -2,7 +2,7 @@
 THÔNG TIN NHÓM 05
 1. Nguyễn Công Hiếu - Telegram: hiieucn
 2. Phạm Đức Thành Đạt - Telegram: thanhdat21
-3. Trần Văn Tiến
+3. Trần Văn Tiến -Telegram: tientran0603
 4. Đậu Thiên Nhật
 */
 #include "secrets.h"
