@@ -1,9 +1,10 @@
 /*
 THÔNG TIN NHÓM 08
 1. Nguyễn Ngọc Thành Tài - Telegram : ntainguyenit
-2. Trần Văn Quốc Khánh
-3. Hồ Nguyễn Huyền Trang
-4. Nguyễn Diệu Hằng
+2. Trần Văn Quốc Khánh - Telegram : tvqkhanh1104
+3. Hồ Nguyễn Huyền Trang - Telegram : hnhtrang81
+4. Nguyễn Diệu Hằng - Telegram : dieuhang2707
+5. Võ Thị Hằng Nga - Telegram : vhanga17
 */
 
 // --- THÔNG SỐ BLYNK ---
