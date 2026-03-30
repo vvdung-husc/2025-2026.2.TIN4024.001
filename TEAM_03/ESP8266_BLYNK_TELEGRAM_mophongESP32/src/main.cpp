@@ -44,7 +44,7 @@ void showOLED(float t, float h, int gas, unsigned long uptimeSec) {
     display.setTextColor(SSD1306_WHITE);
 
     display.setCursor(0, 0);
-    display.println("IOT Team X");
+    display.println("IOT Team 3");
 
     display.setCursor(0, 12);
     display.print("Temp: ");
