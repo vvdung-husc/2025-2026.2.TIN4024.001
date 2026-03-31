@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "author": "Năng Phạm",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 9.6, "left": 187.24, "attrs": {} },
+    { "type": "board-mfrc522", "id": "rfid1", "top": -165.85, "left": 531.44, "attrs": {} },
+    { "type": "wokwi-servo", "id": "servo1", "top": 209.2, "left": -134.4, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -28.5, "left": -63, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -205.2,
+      "left": 109.4,
+      "attrs": { "color": "red" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led2",
+      "top": -205.2,
+      "left": 32.6,
+      "attrs": { "color": "green" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": -62.4,
+      "left": 95.45,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": -62.4,
+      "left": 18.65,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": 290.4,
+      "left": 203.4,
+      "attrs": { "volume": "0.1" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "rfid1:3.3V", "esp:3V3", "red", [ "h-374.4", "v96" ] ],
+    [ "rfid1:SDA", "esp:5", "blue", [ "h-19.2", "v249.6" ] ],
+    [ "rfid1:SCK", "esp:18", "violet", [ "h-38.4", "v230.4" ] ],
+    [ "rfid1:MISO", "esp:19", "orange", [ "h-105.6", "v201.6" ] ],
+    [ "rfid1:RST", "esp:22", "green", [ "h-57.6", "v124.8", "h-192" ] ],
+    [ "rfid1:GND", "esp:GND.3", "black", [ "h-86.4", "v172.8" ] ],
+    [ "servo1:V+", "esp:3V3", "red", [ "h-19.2", "v-67.1", "h345.45" ] ],
+    [ "servo1:GND", "esp:GND.1", "black", [ "v-76.8", "h326.25" ] ],
+    [ "servo1:PWM", "esp:13", "blue", [ "h-48", "v-57.4", "h374.25" ] ],
+    [ "rfid1:MOSI", "esp:23", "gold", [ "h-124.8", "v153.6" ] ],
+    [ "dht1:VCC", "esp:3V3", "red", [ "v19.2", "h211.2", "v-67.2" ] ],
+    [ "dht1:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "dht1:SDA", "esp:15", "green", [ "v57.6", "h355.3", "v38.4" ] ],
+    [ "led2:A", "esp:12", "green", [ "v0" ] ],
+    [ "led2:C", "r2:1", "black", [ "v0" ] ],
+    [ "r2:2", "esp:GND.1", "black", [ "v200.4", "h143.85" ] ],
+    [ "led1:A", "esp:14", "red", [ "v278.4", "h57.45" ] ],
+    [ "led1:C", "r1:1", "black", [ "v28.8", "h0.4" ] ],
+    [ "r1:2", "esp:GND.1", "black", [ "v238.8" ] ],
+    [ "bz1:1", "esp:27", "violet", [ "h-67.2", "v-240" ] ],
+    [ "bz1:2", "esp:GND.3", "black", [ "h86", "v-278.4" ] ]
+  ],
+  "dependencies": {}
+}
