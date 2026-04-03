@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "author": "Trần Hữu Bảo Anh, Lương Gia Mẫn, Nguyễn Trung Quân",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp8266-nodemcu-v2", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-dht11", "id": "dht", "top": -150, "left": -100, "attrs": {} },
+    { "type": "wokwi-ssd1306", "id": "oled", "top": -180, "left": 100, "attrs": {} },
+    { "type": "wokwi-led", "id": "led_red", "top": 100, "left": 150, "attrs": { "color": "red" } },
+    { "type": "wokwi-potentiometer", "id": "pot_gas", "top": 150, "left": -150, "attrs": { "label": "MQ2 Sim" } }
+  ],
+  "connections": [
+    [ "esp:GND.1", "dht:GND", "black", [ "v0" ] ],
+    [ "esp:3V3.1", "dht:VCC", "red", [ "v0" ] ],
+    [ "esp:D4", "dht:SDA", "green", [ "v0" ] ],
+
+    [ "esp:GND.2", "oled:GND", "black", [ "v0" ] ],
+    [ "esp:3V3.2", "oled:VCC", "red", [ "v0" ] ],
+    [ "esp:D2", "oled:SDA", "blue", [ "v0" ] ],
+    [ "esp:D1", "oled:SCL", "yellow", [ "v0" ] ],
+
+    [ "esp:D5", "led_red:A", "red", [ "v0" ] ],
+    [ "esp:GND.3", "led_red:C", "black", [ "v0" ] ],
+
+    [ "esp:A0", "pot_gas:SIG", "orange", [ "v0" ] ],
+    [ "esp:GND.4", "pot_gas:GND", "black", [ "v0" ] ],
+    [ "esp:3V3.3", "pot_gas:VCC", "red", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

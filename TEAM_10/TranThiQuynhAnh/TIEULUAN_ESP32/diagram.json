@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "author": "Uri Shaked",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": -144, "left": -33.56, "attrs": {} },
+    { "type": "wokwi-microsd-card", "id": "sd1", "top": 67.43, "left": -163.13, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -249.3, "left": -139.8, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "dht1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "dht1:GND", "esp:GND.2", "black", [ "v0" ] ],
+    [ "dht1:SDA", "esp:4", "green", [ "v0" ] ],
+    [ "sd1:GND", "esp:GND.2", "black", [ "h0" ] ],
+    [ "sd1:VCC", "esp:5V", "red", [ "h0" ] ],
+    [ "sd1:CS", "esp:5", "green", [ "h0" ] ],
+    [ "sd1:SCK", "esp:18", "green", [ "h0" ] ],
+    [ "sd1:DI", "esp:23", "green", [ "h0" ] ],
+    [ "sd1:DO", "esp:19", "green", [ "h0" ] ]
+  ],
+  "dependencies": {}
+}
