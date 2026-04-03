@@ -1,10 +1,9 @@
 /*
 THONG TIN NHOM 04
-1. Le Van Thuan
-2. Tran Khanh
-3. ...
-4. ...
-5. ...
+1. Le Van Thuan - Telegram : Lê Thuần
+2. Tran Khanh - Telegram : Hansk
+3. Nguyen Cong Thanh - Telegram : VeNom
+4. Hoang Van Quoc Thinh - Telegram: Lemon Tree
 */
 
 #define BLYNK_TEMPLATE_ID   "TMPL6scT0Job2"
