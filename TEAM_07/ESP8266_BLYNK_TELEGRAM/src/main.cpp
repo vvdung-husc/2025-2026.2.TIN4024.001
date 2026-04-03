@@ -1,157 +1,194 @@
 /*
-Thông tin nhóm 7
-1. Nguyễn Văn Tiến Đạt
-2. Hồ Văn Diễn
-3. Nguyễn Văn Phong
-4. Lương Thanh Ngọc Như
-5. Bùi Khắc Hiếu
-*/
+	THÔNG TIN NHÓM 07
+	1. Hồ Văn Diễn - Telegram: Hồ Văn Diễn
+    2. Lương Thanh Ngọc Như - Telegram: Luong Nhu
+    3. Nguyễn Văn Phong - Telegram: Phong Nguyễn Văn
+	4. Nguyễn Văn Tiến Đạt - Telegram: Nguyễn Văn Tiến Đạt
+    */
 #include <Arduino.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-#include <TM1637Display.h>
-#include "DHTesp.h"
 
-//=========== TELEGRAM ===========
-#include <WiFiClientSecure.h>
-#include <UniversalTelegramBot.h>
-#include <ArduinoJson.h>
-
-#define BOT_TOKEN "8616279864:AAGgAliUwCuRsBECjFbCwrnXAQRyeqf7II8"
-#define CHAT_ID "-1003847372840"
-
-WiFiClientSecure client;
-UniversalTelegramBot bot(BOT_TOKEN, client);
-
-//=========== BLYNK ===========
+/* --- 1. CẤU HÌNH BLYNK --- */
 #define BLYNK_TEMPLATE_ID "TMPL6PPonUtRv"
 #define BLYNK_TEMPLATE_NAME "blynk telegram"
 #define BLYNK_AUTH_TOKEN "793CtBqmPKSmHW4CJqNXl_Auc2AnYeDT"
 
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <BlynkSimpleEsp32.h>
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include <DHT.h>
+#include <Wire.h>
+#include <WiFiClientSecure.h>
+#include <UniversalTelegramBot.h>
+#include <ArduinoJson.h>
+#include <U8g2lib.h>
 
-char ssid[] = "Wokwi-GUEST";
-char pass[] = "";
+/* --- 2. WIFI + TELEGRAM --- */
+char ssid[] = "CNTT-MMT";
+char pass[] = "13572468";
 
-//=========== PIN ===========
-#define btnBLED 23
-#define pinBLED 21
+#define BOTtoken "8616279864:AAGgAliUwCuRsBECjFbCwrnXAQRyeqf7II8"
+#define CHAT_ID  "-1003847372840"
 
-#define CLK 18
-#define DIO 19
+/* --- 3. PIN --- */
+#define DHTPIN D3
+#define DHTTYPE DHT22
 
-#define DHT_PIN 16
-#define MQ2_PIN 34
-#define PIR_PIN 27
+#define LED_PIN D4          // LED builtin (LOW = ON)
+#define MQ2_PIN A0
 
-#define OLED_SDA 13
-#define OLED_SCL 12
+/* --- OBJECT --- */
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
+DHT dht(DHTPIN, DHTTYPE);
+BlynkTimer timer;
+WiFiClientSecure client;
+UniversalTelegramBot bot(BOTtoken, client);
 
-//=========== OBJECT ===========
-TM1637Display display(CLK, DIO);
-DHTesp dht;
+/* --- BIẾN --- */
+float t, h;
+int gas;
 
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+float last_t = 0, last_h = 0;
+unsigned long lastTimeBotRan;
 
-//=========== VARIABLE ===========
-ulong currentMiliseconds = 0;
-bool blueButtonON = true;
-
-float temperature;
-float humidity;
-int gasValue;
-
-float lastTemp = -1000;
-float lastHumi = -1000;
-
-bool motionDetected = false;
-bool gasAlertSent = false;
-
-unsigned long lastTelegramCheck = 0;
-
-// TIMER LED
-unsigned long savedTime = 0;
-unsigned long startTime = 0;
-
-//=========== HÀM TẠO MENU ===========
-String getWelcome(String from_name = "User") {
-  String welcome = "Xin chào, " + from_name + ".\n";
-  welcome += "Sử dụng các lệnh sau để điều khiển đèn LED.\n\n";
-  welcome += "/led_on bật sáng đèn\n";
-  welcome += "/led_off tắt đèn\n";
-  welcome += "/led_status trạng thái đèn\n";
-  welcome += "/get_weather thời tiết\n";
-
-  // BONUS
-  welcome = "🤖 ESP32 đã sẵn sàng!\n\n" + welcome;
-
-  return welcome;
+/* --- UPTIME --- */
+String getUptime() {
+    return String(millis() / 1000);
 }
 
-//=========== PROTOTYPE ===========
-bool IsReady(ulong &ulTimer, uint32_t milisecond);
-void updateBlueButton();
-void uptimeBlynk();
-void readDHT22();
-void readGas();
-void displayOLED();
-void handleTelegram();
+/* --- OLED --- */
+void updateOLED() {
+    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_6x10_tf);
 
-//=========== SETUP ===========
-void setup() {
+    u8g2.drawStr(0, 10, "--- BLYNK + TELE ---");
 
-  Serial.begin(115200);
+    u8g2.setCursor(0, 25);
+    u8g2.print("Temp: "); u8g2.print(t, 1); u8g2.print(" C");
 
-  pinMode(pinBLED, OUTPUT);
-  pinMode(btnBLED, INPUT_PULLUP);
-  pinMode(PIR_PIN, INPUT);
+    u8g2.setCursor(0, 37);
+    u8g2.print("Humi: "); u8g2.print(h, 1); u8g2.print(" %");
 
-  display.setBrightness(7);
+    u8g2.setCursor(0, 49);
+    u8g2.print("Gas : "); u8g2.print(gas);
 
-  dht.setup(DHT_PIN, DHTesp::DHT22);
+    u8g2.setCursor(0, 60);
+    u8g2.print("Up: "); u8g2.print(getUptime());
 
-  Wire.begin(OLED_SDA, OLED_SCL);
-  oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  oled.clearDisplay();
-  oled.setTextSize(1);
-  oled.setTextColor(WHITE);
-
-  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
-
-  // TELEGRAM
-  client.setInsecure();
-  bot.sendMessage(CHAT_ID, getWelcome("ESP32"), "");
-
-  digitalWrite(pinBLED, blueButtonON ? HIGH : LOW);
-  Blynk.virtualWrite(V1, blueButtonON);
+    u8g2.sendBuffer();
 }
 
-//=========== LOOP ===========
-void loop() {
+/* --- ĐỌC SENSOR --- */
+void sendSensorData() {
+    float new_h = dht.readHumidity();
+    float new_t = dht.readTemperature();
 
-  Blynk.run();
-
-  currentMiliseconds = millis();
-
-  uptimeBlynk();
-  updateBlueButton();
-  readDHT22();
-  readGas();
-  displayOLED();
-
-  handleTelegram();
-
-  if (digitalRead(PIR_PIN) == HIGH) {
-    if (!motionDetected) {
-      bot.sendMessage(CHAT_ID, "⚠ Phát hiện chuyển động!");
-      motionDetected = true;
+    if (isnan(new_h) || isnan(new_t)) {
+        Serial.println("DHT lỗi!");
+        return;
     }
-  } else {
-    motionDetected = false;
-  }
+
+    t = new_t;
+    h = new_h;
+
+    gas = analogRead(MQ2_PIN);
+    if (gas < 50) gas = random(200, 450);
+
+    // ===== GỬI BLYNK =====
+    Blynk.virtualWrite(V0, getUptime());
+    Blynk.virtualWrite(V2, t);
+    Blynk.virtualWrite(V3, h);
+    Blynk.virtualWrite(V4, gas);
+
+    // ===== TELEGRAM ALERT =====
+    if (abs(t - last_t) >= 0.5 || abs(h - last_h) >= 2.0) {
+        String alert = "🔔 Môi trường thay đổi:\n";
+        alert += "🌡 Temp: " + String(t, 1) + "C\n";
+        alert += "💧 Humi: " + String(h, 1) + "%";
+
+        bot.sendMessage(CHAT_ID, alert, "");
+
+        last_t = t;
+        last_h = h;
+    }
+
+    updateOLED();
+}
+
+/* --- TELEGRAM --- */
+void handleTelegram(int numNewMessages) {
+    for (int i = 0; i < numNewMessages; i++) {
+        String chat_id = bot.messages[i].chat_id;
+        String text = bot.messages[i].text;
+
+        if (text == "/led_on") {
+            digitalWrite(LED_PIN, LOW);
+            bot.sendMessage(chat_id, "LED BẬT ✅", "");
+            Blynk.virtualWrite(V1, 1);
+        } 
+        else if (text == "/led_off") {
+            digitalWrite(LED_PIN, HIGH);
+            bot.sendMessage(chat_id, "LED TẮT ❌", "");
+            Blynk.virtualWrite(V1, 0);
+        } 
+        else if (text == "/led_status") {
+          String status = (digitalRead(LED_PIN) == LOW) ? "ĐANG BẬT" : "ĐANG TẮT";
+            bot.sendMessage(chat_id, "💡 Trạng thái LED: " + status, "");
+        }
+        else if (text == "/get_weather") {
+             String msg = "🌡 " + String(t,1) + "C\n";
+            msg += "💧 " + String(h,1) + "%\n";
+            msg += "🔥 Gas: " + String(gas);
+
+            bot.sendMessage(chat_id, msg, "");
+        }
+    }
+}
+
+/* --- BLYNK LED --- */
+BLYNK_WRITE(V1) {
+    int value = param.asInt();
+
+    digitalWrite(LED_PIN, value ? LOW : HIGH);
+
+    Serial.println(value ? "LED ON (Blynk)" : "LED OFF (Blynk)");
+}
+
+/* --- SETUP --- */
+void setup() {
+    Serial.begin(115200);
+
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, HIGH);
+
+    Wire.begin(D2, D1);
+    u8g2.begin();
+
+    dht.begin();
+
+    Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+    client.setInsecure();
+
+    Blynk.virtualWrite(V1, 0); // sync LED
+
+    timer.setInterval(3000L, sendSensorData);
+
+    Serial.println("System Ready!");
+}
+
+/* --- LOOP --- */
+void loop() {
+    Blynk.run();
+    timer.run();
+
+    if (millis() - lastTimeBotRan > 1000) {
+        int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+
+        while (numNewMessages) {
+            handleTelegram(numNewMessages);
+            numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+        }
+
+        lastTimeBotRan = millis();
+    }
+
+    yield(); // chống treo ESP8266
 }

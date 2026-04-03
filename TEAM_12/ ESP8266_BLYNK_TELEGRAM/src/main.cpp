@@ -1,7 +1,7 @@
 /* * Thông tin thành viên nhóm:
  * 1. Phan Thanh Trưởng
  * 2. Lê Khắc Thức 
- * Team: IoT - Team12
+ * Telegram : IoT - Team12
  */
 
 #include <Arduino.h>
@@ -23,7 +23,7 @@
 /* --- 2. CẤU HÌNH KẾT NỐI WIFI VÀ TELEGRAM --- */
 char ssid[] = "anh pha1";             // Tên WiFi 
 char pass[] = "bietlaaichua";     // Mật khẩu WiFi 
-
+/* TOKEN BOT VÀ ID GROUP CHAT TRÊN TELEGRAM */
 #define BOTtoken "8287839417:AAEOvQT5pOLuYn040-xZUX5JG5Ta7rXo2iA"
 #define CHAT_ID  "-1003568357475"
 
