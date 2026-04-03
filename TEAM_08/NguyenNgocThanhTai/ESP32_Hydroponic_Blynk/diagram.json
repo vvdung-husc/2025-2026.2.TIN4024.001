@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "author": "Tài Nguyễn Ngọc Thành",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-ntc-temperature-sensor", "id": "ntc", "top": -120, "left": -250, "attrs": {} },
+    { "type": "wokwi-photoresistor-sensor", "id": "ldr", "top": 20, "left": -250, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot", "top": 160, "left": -250, "attrs": {} },
+    { "type": "wokwi-relay-module", "id": "relay_fan", "top": -120, "left": 250, "attrs": {} },
+    { "type": "wokwi-relay-module", "id": "relay_pump", "top": 20, "left": 250, "attrs": {} },
+    { "type": "wokwi-relay-module", "id": "relay_lamp", "top": 160, "left": 250, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:3V3", "ntc:VCC", "red", [] ],
+    [ "esp:GND.1", "ntc:GND", "black", [] ],
+    [ "ntc:OUT", "esp:32", "green", [] ],
+    [ "esp:3V3", "ldr:VCC", "red", [] ],
+    [ "esp:GND.1", "ldr:GND", "black", [] ],
+    [ "ldr:AO", "esp:34", "yellow", [] ],
+    [ "esp:3V3", "pot:VCC", "red", [] ],
+    [ "esp:GND.1", "pot:GND", "black", [] ],
+    [ "pot:SIG", "esp:35", "blue", [] ],
+    [ "esp:5V", "relay_fan:VCC", "red", [] ],
+    [ "esp:GND.2", "relay_fan:GND", "black", [] ],
+    [ "esp:18", "relay_fan:IN", "orange", [] ],
+    [ "esp:5V", "relay_pump:VCC", "red", [] ],
+    [ "esp:GND.2", "relay_pump:GND", "black", [] ],
+    [ "esp:19", "relay_pump:IN", "purple", [] ],
+    [ "esp:5V", "relay_lamp:VCC", "red", [] ],
+    [ "esp:GND.2", "relay_lamp:GND", "black", [] ],
+    [ "esp:21", "relay_lamp:IN", "white", [] ]
+  ]
+}
