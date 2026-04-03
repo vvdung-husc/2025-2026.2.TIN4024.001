@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "author": "Phan Thanh Trưởng",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -200, "left": -200, "attrs": {} },
+    { "type": "wokwi-slide-potentiometer", "id": "pot1", "top": -200, "left": 150, "attrs": { "travelLength": "30" } },
+    { "type": "wokwi-ssd1306", "id": "oled1", "top": 200, "left": -250, "attrs": {} },
+    { "type": "wokwi-relay-module", "id": "relay1", "top": -50, "left": 250, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": 50, "left": 200, "attrs": { "color": "red" } },
+    { "type": "wokwi-buzzer", "id": "buzzer1", "top": 120, "left": 250, "attrs": {} },
+    { "type": "wokwi-servo", "id": "servo1", "top": 200, "left": 150, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:3V3", "dht1:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.1", "dht1:GND", "black", [ "v0" ] ],
+    [ "esp:15", "dht1:SDA", "green", [ "v0" ] ],
+    [ "esp:3V3", "pot1:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.1", "pot1:GND", "black", [ "v0" ] ],
+    [ "esp:34", "pot1:SIG", "yellow", [ "v0" ] ],
+    [ "esp:3V3", "oled1:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.2", "oled1:GND", "black", [ "v0" ] ],
+    [ "esp:21", "oled1:SDA", "green", [ "v0" ] ],
+    [ "esp:22", "oled1:SCL", "green", [ "v0" ] ],
+    [ "esp:3V3", "relay1:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.3", "relay1:GND", "black", [ "v0" ] ],
+    [ "esp:4", "relay1:IN", "green", [ "v0" ] ],
+    [ "esp:GND.3", "led1:C", "black", [ "v0" ] ],
+    [ "esp:2", "led1:A", "green", [ "v0" ] ],
+    [ "esp:GND.3", "buzzer1:1", "black", [ "v0" ] ],
+    [ "esp:5", "buzzer1:2", "green", [ "v0" ] ],
+    [ "esp:3V3", "servo1:V+", "red", [ "v0" ] ],
+    [ "esp:GND.3", "servo1:GND", "black", [ "v0" ] ],
+    [ "esp:18", "servo1:PWM", "green", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

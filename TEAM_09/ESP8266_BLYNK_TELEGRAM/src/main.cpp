@@ -1,8 +1,8 @@
 /*
 THONG TIN NHOM 09
 1. Nguyen Hoang Huyen Tran - 22T1020770
-2. ...
-3. ...
+2. Ho Van Tan Phat - 22T1020306
+3. Hoang Anh Minh - 22T1020669
 */
 
 #define BLYNK_TEMPLATE_ID "TMPL62kk3uTHb"
@@ -24,8 +24,8 @@ THONG TIN NHOM 09
 #include <Adafruit_SH110X.h>
 
 // ===================== WIFI =====================
-const char* ssid = "Wokwi-GUEST";
-const char* password = "";
+const char* ssid = "abcdabcd";
+const char* password = "12345678";
 
 // ===================== TELEGRAM =====================
 #define BOTtoken "8692886537:AAEU2IsE_BAVi0gjn5im2NHNBpNaD1spAJk"
