@@ -3,3 +3,7 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+
+# Local secrets (never commit real tokens/keys)
+src/secrets.h
+!src/secrets.example.h
