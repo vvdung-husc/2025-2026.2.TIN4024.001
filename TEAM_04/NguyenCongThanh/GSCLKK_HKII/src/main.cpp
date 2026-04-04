@@ -1,18 +1,12 @@
 /*
  * ĐỀ TÀI: Giám sát chất lượng không khí với ESP32 và cảm biến MQ
  * Phiên bản: Wokwi Optimized v2.0
- * Fix: Telegram nhanh hơn + Serial Terminal hiển thị đúng trên Wokwi/VS Code
+ 
  */
-
-<<<<<<< HEAD
 #define BLYNK_TEMPLATE_ID "TMPL6nn2gjF7c"       
 #define BLYNK_TEMPLATE_NAME "AIR QUALITY" 
 #define BLYNK_AUTH_TOKEN "m_JnU9yh0VsAMW8u51VtEfWeBD2cbSx_"    
-=======
-#define BLYNK_TEMPLATE_ID "TMPL_ID_CUA_BAN"       
-#define BLYNK_TEMPLATE_NAME "Air Quality Monitor" 
-#define BLYNK_AUTH_TOKEN "TOKEN_BLYNK_CUA_BAN"    
->>>>>>> 0765b0d2511d474a75a85dab515cc51a1b80ff2d
+
 
 #include <WiFi.h>
 #include <WiFiClient.h>
