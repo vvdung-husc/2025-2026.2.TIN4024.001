@@ -49,7 +49,6 @@ void sendData() {
   // ===== GỬI LÊN BLYNK =====
   Blynk.virtualWrite(V0, temperature);
   Blynk.virtualWrite(V1, humidity);
-  Blynk.virtualWrite(V2, 1); // báo cho Blynk là LED đang ON
 
   // ===== OLED =====
   u8g2.clearBuffer();
@@ -66,6 +65,15 @@ void sendData() {
   u8g2.drawStr(10, 55, humStr);
 
   u8g2.sendBuffer();
+
+  // ===== CẢNH BÁO NHIỆT ĐỘ =====
+  if (temperature > 30) {   // ngưỡng 30 độ
+    digitalWrite(LED_PIN, HIGH);
+    Blynk.virtualWrite(V2, 1);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+    Blynk.virtualWrite(V2, 0);
+  }
 }
 
 // ===== SETUP =====
@@ -75,19 +83,22 @@ void setup() {
   dht.begin();
   u8g2.begin();
 
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW); // mặc định tắt
+
   // Kết nối Blynk
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
 
   // Gửi mỗi 2 giây
   timer.setInterval(2000L, sendData);
-
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, HIGH); // mặc định bật
 }
+
+// ===== KẾT NỐI BLYNK =====
 BLYNK_CONNECTED() {
   Blynk.syncVirtual(V2);
 }
 
+// ===== ĐIỀU KHIỂN LED TỪ APP =====
 BLYNK_WRITE(V2) {
   int value = param.asInt();
 
@@ -96,6 +107,7 @@ BLYNK_WRITE(V2) {
   if (value == 1) Serial.println("LED ON");
   else Serial.println("LED OFF");
 }
+
 // ===== LOOP =====
 void loop() {
   Blynk.run();
