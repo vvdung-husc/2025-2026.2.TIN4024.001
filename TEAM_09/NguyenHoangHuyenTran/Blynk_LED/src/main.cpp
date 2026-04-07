@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
+// 1. [MỚI] THÊM THƯ VIỆN CHO CẢM BIẾN DHT
+#include "DHT.h" 
 
 #define BLYNK_TEMPLATE_ID "TMPL6ASlZf_Q8"
 #define BLYNK_TEMPLATE_NAME "esp32"
@@ -21,6 +23,10 @@ char pass[] = "";             //Mật khẩu mạng WiFi
 #define CLK 18  //Chân kết nối CLK của TM1637
 #define DIO 19  //Chân kết nối DIO của TM1637
 
+// 2. [MỚI] ĐỊNH NGHĨA CHÂN VÀ LOẠI CẢM BIẾN
+#define DHTPIN 16     // Chân SDA của DHT22 nối vào chân 16 của ESP32 (khớp với diagram)
+#define DHTTYPE DHT22   // Loại cảm biến là DHT22
+
 //Biến toàn cục
 ulong currentMiliseconds = 0; //Thời gian hiện tại - miliseconds 
 bool blueButtonON = true;     //Trạng thái của nút bấm ON -> đèn Xanh sáng và hiển thị LED TM1637
@@ -28,9 +34,13 @@ bool blueButtonON = true;     //Trạng thái của nút bấm ON -> đèn Xanh 
 //Khởi tạo mà hình TM1637
 TM1637Display display(CLK, DIO);
 
+// 3. [MỚI] KHỞI TẠO ĐỐI TƯỢNG DHT
+DHT dht(DHTPIN, DHTTYPE); 
+
 bool IsReady(ulong &ulTimer, uint32_t milisecond);
 void updateBlueButton();
 void uptimeBlynk();
+void sendDHTData(); // 4. [MỚI] KHAI BÁO HÀM ĐỌC VÀ GỬI DỮ LIỆU DHT
 
 void setup() {
   // put your setup code here, to run once:
@@ -40,6 +50,9 @@ void setup() {
     
   display.setBrightness(0x0f);
   
+  // 5. [MỚI] BẮT ĐẦU CHẠY CẢM BIẾN DHT
+  dht.begin(); 
+
   // Start the WiFi connection
   Serial.print("Connecting to ");Serial.println(ssid);
   Blynk.begin(BLYNK_AUTH_TOKEN,ssid, pass); //Kết nối đến mạng WiFi
@@ -60,6 +73,7 @@ void loop() {
   currentMiliseconds = millis();
   uptimeBlynk();
   updateBlueButton();
+  sendDHTData(); // 6. [MỚI] CHẠY HÀM DHT TRONG VÒNG LẶP
 }
 
 // put function definitions here:
@@ -76,7 +90,9 @@ void updateBlueButton(){
   int v = digitalRead(btnBLED);
   if (v == lastValue) return;
   lastValue = v;
-  if (v == LOW) return;
+  
+  // 7. [TINH CHỈNH] ĐỔI THÀNH HIGH ĐỂ CHẠM LÀ ĐÈN BẬT/TẮT NGAY
+  if (v == HIGH) return; 
 
   if (!blueButtonON){
     Serial.println("Blue Light ON");
@@ -101,6 +117,33 @@ void uptimeBlynk(){
   if (blueButtonON){
     display.showNumberDec(value);
   }
+}
+
+// 8. [MỚI] VIẾT ĐỊNH NGHĨA HÀM ĐỌC VÀ GỬI DỮ LIỆU DHT
+void sendDHTData() {
+  static ulong lastTime = 0;
+  // Chỉ đọc cảm biến 2 giây một lần để tránh làm nóng cảm biến và nghẽn mạng
+  if (!IsReady(lastTime, 2000)) return; 
+
+  // Đọc độ ẩm (%)
+  float h = dht.readHumidity();
+  // Đọc nhiệt độ (°C)
+  float t = dht.readTemperature(); 
+
+  // Kiểm tra nếu đọc thất bại (NAN - Not A Number)
+  if (isnan(h) || isnan(t)) {
+    Serial.println("Failed to read from DHT sensor!");
+    return;
+  }
+
+  // In ra Serial để kiểm tra
+  Serial.print("Humidity: "); Serial.print(h); Serial.print("% ");
+  Serial.print("Temperature: "); Serial.print(t); Serial.println("°C");
+
+  // Gửi giá trị lên Blynk.
+  // Công chúa nhớ tạo Datastream V2 cho Nhiệt độ và V3 cho Độ ẩm trên Web Blynk nhé!
+  Blynk.virtualWrite(V2, t); // Chân ảo V2 cho Nhiệt độ
+  Blynk.virtualWrite(V3, h); // Chân ảo V3 cho Độ ẩm
 }
 
 //được gọi mỗi khi có dữ liệu mới được gửi từ ứng dụng Blynk đến thiết bị.
