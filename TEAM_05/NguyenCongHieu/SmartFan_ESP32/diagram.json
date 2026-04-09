@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "author": "Nguyen Cong Hieu",
+  "editor": "wokwi",
+  "serialMonitor": {
+    "display": "terminal",
+    "collapse": false,
+    "newline": "lf",
+    "convertEol": true
+  },
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 4.7, "left": 4.6, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -105.3, "left": 157.8, "attrs": {} },
+    { "type": "wokwi-relay-module", "id": "relay1", "top": 144.2, "left": 230.4, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "esp:GND.1", "dht1:GND", "black", [ "h95.7", "v-144.1" ] ],
+    [ "esp:3V3", "dht1:VCC", "red", [ "h66.9", "v-153.6" ] ],
+    [ "esp:D4", "dht1:SDA", "blue", [ "h76.5", "v-134.6" ] ],
+    [ "esp:GND.2", "relay1:GND", "black", [ "h-19.2", "v76.7", "h192" ] ],
+    [ "esp:VIN", "relay1:VCC", "red", [ "h-28.8", "v76.8", "h230.4", "v-76.8" ] ],
+    [ "esp:D23", "relay1:IN", "green", [ "v-0.7", "h86.1", "v48.2" ] ]
+  ],
+  "dependencies": {}
+}
