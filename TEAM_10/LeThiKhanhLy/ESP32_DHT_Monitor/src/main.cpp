@@ -1,4 +1,4 @@
-// ===== BLYNK =====
+// BLYNK
 #define BLYNK_TEMPLATE_ID "TMPL6TIHfwtOz"
 #define BLYNK_TEMPLATE_NAME "ESP32 DHT OLED"
 #define BLYNK_AUTH_TOKEN "aOK7MUu4NeC7KgKix9ic0ZYyp32xcnCK"
@@ -15,27 +15,27 @@
 char ssid[] = "Wokwi-GUEST";
 char pass[] = "";
 
-// ===== DHT =====
+// DHT
 #define DHTPIN 4
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
-// ===== LED =====
+// LED 
 #define LED_PIN 2
 
-// ===== OLED =====
+// OLED 
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
 
-// ===== TIMER =====
+// TIMER 
 BlynkTimer timer;
 
-// ===== BIẾN =====
+// BIẾN 
 bool systemEnabled = false;
 bool ledBlinkState = false;
 float temperature = 0;
 float humidity = 0;
 
-// ===== ĐỌC DỮ LIỆU (CHẬM) =====
+// ĐỌC DỮ LIỆU (CHẬM) 
 void sendData() {
   temperature = dht.readTemperature();
   humidity = dht.readHumidity();
@@ -73,7 +73,7 @@ void sendData() {
   u8g2.sendBuffer();
 }
 
-// ===== NHẤP NHÁY LED (NHANH) =====
+// NHẤP NHÁY LED 
 void blinkLED() {
   if (!systemEnabled) {
     digitalWrite(LED_PIN, LOW);
@@ -88,7 +88,7 @@ void blinkLED() {
   }
 }
 
-// ===== SETUP =====
+// SETUP 
 void setup() {
   Serial.begin(115200);
 
@@ -103,11 +103,11 @@ void setup() {
   // Đọc DHT mỗi 2 giây
   timer.setInterval(2000L, sendData);
 
-  // LED nháy nhanh
-  timer.setInterval(150L, blinkLED); // 🔥 nhanh hơn
+  // LED nhấp nháy
+  timer.setInterval(150L, blinkLED); 
 }
 
-// ===== BLYNK =====
+// BLYNK
 BLYNK_WRITE(V2) {
   systemEnabled = param.asInt();
 
@@ -115,7 +115,7 @@ BLYNK_WRITE(V2) {
   Serial.println(systemEnabled ? "ON" : "OFF");
 }
 
-// ===== LOOP =====
+// LOOP 
 void loop() {
   Blynk.run();
   timer.run();
