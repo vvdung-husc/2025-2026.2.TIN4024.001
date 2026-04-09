@@ -1,6 +1,6 @@
 #include <Arduino.h> 
 
-// Khai báo chân (Khớp với file diagram.json 3 đèn)
+// Khai báo chân 
 #define LED_RED     4   
 #define LED_YELLOW  2   
 #define LED_GREEN   15  
