@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "author": "Pham Thanh Hieu",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-v1",
+      "id": "esp32",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-pir-motion-sensor",
+      "id": "pir1",
+      "top": -120,
+      "left": 330,
+      "attrs": {
+        "label": "PIR HC-SR501"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 150,
+      "left": 330,
+      "attrs": {
+        "color": "red",
+        "label": "LED Cảnh Báo"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 196,
+      "left": 270,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": 280,
+      "left": 330,
+      "attrs": {
+        "label": "Buzzer"
+      }
+    }
+  ],
+  "connections": [
+    ["esp32:GND.1", "pir1:GND", "black", []],
+    ["esp32:VIN", "pir1:VCC", "red", []],
+    ["esp32:D13", "pir1:OUT", "orange", []],
+
+    ["esp32:D26", "r1:1", "yellow", []],
+    ["r1:2", "led1:A", "yellow", []],
+    ["led1:C", "esp32:GND.2", "black", []],
+
+    ["esp32:D27", "bz1:1", "green", []],
+    ["bz1:2", "esp32:GND.2", "black", []]
+  ],
+  "dependencies": {}
+}
