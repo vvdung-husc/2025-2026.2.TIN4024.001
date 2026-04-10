@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0 },
+    { "type": "wokwi-relay-module", "id": "relay", "top": -100, "left": 150 },
+    { "type": "wokwi-pushbutton", "id": "btn", "top": 150, "left": 50, "params": { "color": "red" } }
+  ],
+  "connections": [
+    [ "esp:GND.1", "relay:GND", "black", [ "v0" ] ],
+    [ "esp:VIN", "relay:VCC", "red", [ "v0" ] ],
+    [ "esp:D2", "relay:IN", "green", [ "v0" ] ],
+    [ "esp:GND.2", "btn:1.L", "black", [ "v0" ] ],
+    [ "esp:D0", "btn:2.R", "blue", [ "v0" ] ]
+  ]
+}
