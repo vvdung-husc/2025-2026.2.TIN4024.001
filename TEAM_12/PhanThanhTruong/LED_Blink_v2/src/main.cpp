@@ -1,4 +1,4 @@
-#include <Arduino.h> // <--- DÒNG NÀY SẼ SỬA TOÀN BỘ LỖI CỦA BẠN
+#include <Arduino.h> 
 
 // Khai báo chân (Khớp với file diagram.json 3 đèn)
 #define LED_RED     4   
