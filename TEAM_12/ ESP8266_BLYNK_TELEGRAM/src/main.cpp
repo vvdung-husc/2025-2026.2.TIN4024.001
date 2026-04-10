@@ -1,7 +1,7 @@
 /* * Thông tin thành viên nhóm:
  * 1. Phan Thanh Trưởng
  * 2. Lê Khắc Thức 
- * Team: IoT - Team12
+ * Telegram : IoT - Team12
  */
 
 #include <Arduino.h>
