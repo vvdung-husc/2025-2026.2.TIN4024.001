@@ -34,29 +34,22 @@ int lastBtnState = HIGH;
 
 /**
  * 1. ĐỒNG BỘ NÚT NHẤN (V0)
- * Chân V0 dùng cho Switch trên Blynk
  */
-BLYNK_WRITE(V0)
-{
-  isDeviceOn = param.asInt(); 
+BLYNK_WRITE(V0) {
+  isDeviceOn = param.asInt();
   digitalWrite(LED_PIN, isDeviceOn ? HIGH : LOW);
-
-  if (!isDeviceOn) {
-    display.clear(); 
-  }
+  if (!isDeviceOn) display.clear();
 }
 
 /**
- * 2. ĐỌC CẢM BIẾN VÀ GỬI DỮ LIỆU (V1, V2, V3)
- * Chạy mỗi 1 giây
+ * 2. HÀM GỬI DỮ LIỆU (Đã sửa để luôn gửi Nhiệt độ/Độ ẩm)
  */
-void sendDataToBlynk()
-{
-  // Tăng và gửi thời gian hoạt động lên V3
+void sendDataToBlynk() {
+  // Gửi thời gian hoạt động lên V3
   uptime++;
   Blynk.virtualWrite(V3, uptime);
 
-  // Hiển thị TM1637 nếu đang BẬT
+  // Hiển thị TM1637 nếu trạng thái là ON
   if (isDeviceOn) {
     display.showNumberDec(uptime);
   }
@@ -65,60 +58,50 @@ void sendDataToBlynk()
   float t = dht.readTemperature();
   float h = dht.readHumidity();
 
+  // Kiểm tra lỗi cảm biến và GỬI LUÔN (Không cần check isDeviceOn)
   if (!isnan(t) && !isnan(h)) {
     Blynk.virtualWrite(V1, t); 
     Blynk.virtualWrite(V2, h); 
+    Serial.print("Nhiet do: "); Serial.print(t);
+    Serial.print(" - Do am: "); Serial.println(h);
+  } else {
+    Serial.println("Loi doc cam bien DHT!");
   }
 }
 
 /**
  * 3. XỬ LÝ NÚT NHẤN CỨNG
- * Đồng bộ trạng thái với Widget V0 trên App
  */
-void checkPhysicalButton()
-{
+void checkPhysicalButton() {
   int btnState = digitalRead(BTN_PIN);
-
-  // Phát hiện cạnh xuống (nhấn nút)
   if (lastBtnState == HIGH && btnState == LOW) {
-    delay(50); // Khử rung nút nhấn
+    delay(50);
     if (digitalRead(BTN_PIN) == LOW) {
       isDeviceOn = !isDeviceOn; 
       digitalWrite(LED_PIN, isDeviceOn ? HIGH : LOW);
-
       if (!isDeviceOn) display.clear();
-
-      // CẬP NHẬT TRẠNG THÁI LÊN APP (Đồng bộ Switch V0)
-      Blynk.virtualWrite(V0, isDeviceOn);
+      Blynk.virtualWrite(V0, isDeviceOn ? 1 : 0);
     }
   }
   lastBtnState = btnState;
 }
 
-void setup()
-{
+void setup() {
   Serial.begin(115200);
-
-  // Cấu hình chân
   pinMode(LED_PIN, OUTPUT);
   pinMode(BTN_PIN, INPUT_PULLUP);
-
-  // Khởi động thiết bị
+  
   dht.begin();
-  display.setBrightness(0x0f); 
-  display.clear();
-
-  // Kết nối Blynk
-  Serial.println("Dang ket noi WiFi va Blynk...");
+  display.setBrightness(0x0f);
+  
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
-
-  // Thiết lập Timer
-  timer.setInterval(1000L, sendDataToBlynk);    
-  timer.setInterval(100L, checkPhysicalButton); 
+  
+  // Chạy hàm sendDataToBlynk mỗi 1 giây (1000L)
+  timer.setInterval(1000L, sendDataToBlynk);
+  timer.setInterval(100L, checkPhysicalButton);
 }
 
-void loop()
-{
+void loop() {
   Blynk.run();
   timer.run();
 }
