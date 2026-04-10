@@ -1,88 +1,122 @@
+// BLYNK
+#define BLYNK_TEMPLATE_ID "TMPL6TIHfwtOz"
+#define BLYNK_TEMPLATE_NAME "ESP32 DHT OLED"
+#define BLYNK_AUTH_TOKEN "aOK7MUu4NeC7KgKix9ic0ZYyp32xcnCK"
+
+#define BLYNK_PRINT Serial
+
 #include <Arduino.h>
-#include <WiFi.h>
-#include <HTTPClient.h>
+#include <Wire.h>
+#include <U8g2lib.h>
 #include "DHT.h"
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
 
-// ===== WIFI =====
-const char* ssid = "Wokwi-GUEST";
-const char* password = "";
+char ssid[] = "Wokwi-GUEST";
+char pass[] = "";
 
-// ===== THINGSPEAK =====
-String apiKey = "YOUR_API_KEY";
-const char* server = "http://api.thingspeak.com/update";
-
-// ===== DHT =====
+// DHT
 #define DHTPIN 4
-#define DHTTYPE DHT22   
+#define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
-// ===== LED =====
+// LED 
 #define LED_PIN 2
 
-void connectWiFi() {
-  Serial.print("Connecting to WiFi");
+// OLED 
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
 
-  WiFi.begin(ssid, password);
+// TIMER 
+BlynkTimer timer;
 
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+// BIẾN 
+bool systemEnabled = false;
+bool ledBlinkState = false;
+float temperature = 0;
+float humidity = 0;
+
+// ĐỌC DỮ LIỆU (CHẬM) 
+void sendData() {
+  temperature = dht.readTemperature();
+  humidity = dht.readHumidity();
+
+  if (isnan(temperature) || isnan(humidity)) {
+    Serial.println("Loi doc DHT!");
+    return;
   }
 
-  Serial.println("\nWiFi Connected!");
+  // Debug
+  Serial.print("Nhiet do: ");
+  Serial.print(temperature);
+  Serial.print(" *C | Do am: ");
+  Serial.print(humidity);
+  Serial.println(" %");
+
+  // Blynk
+  Blynk.virtualWrite(V0, temperature);
+  Blynk.virtualWrite(V1, humidity);
+
+  // OLED
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB08_tr);
+
+  u8g2.drawStr(10, 15, "ESP32 + DHT22");
+
+  char tempStr[20];
+  sprintf(tempStr, "Temp: %.1f C", temperature);
+  u8g2.drawStr(10, 35, tempStr);
+
+  char humStr[20];
+  sprintf(humStr, "Humi: %.1f %%", humidity);
+  u8g2.drawStr(10, 55, humStr);
+
+  u8g2.sendBuffer();
 }
 
+// NHẤP NHÁY LED 
+void blinkLED() {
+  if (!systemEnabled) {
+    digitalWrite(LED_PIN, LOW);
+    return;
+  }
+
+  if (temperature > 35) {
+    ledBlinkState = !ledBlinkState;
+    digitalWrite(LED_PIN, ledBlinkState);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
+}
+
+// SETUP 
 void setup() {
   Serial.begin(115200);
+
+  dht.begin();
+  u8g2.begin();
 
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
 
-  dht.begin();
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
 
-  connectWiFi();
+  // Đọc DHT mỗi 2 giây
+  timer.setInterval(2000L, sendData);
+
+  // LED nhấp nháy
+  timer.setInterval(150L, blinkLED); 
 }
 
+// BLYNK
+BLYNK_WRITE(V2) {
+  systemEnabled = param.asInt();
+
+  Serial.print("System: ");
+  Serial.println(systemEnabled ? "ON" : "OFF");
+}
+
+// LOOP 
 void loop() {
-  float temp = dht.readTemperature();
-  float hum  = dht.readHumidity();
-
-  if (isnan(temp) || isnan(hum)) {
-    Serial.println("DHT error!");
-    delay(2000);
-    return;
-  }
-
-  Serial.print("Temp: ");
-  Serial.print(temp);
-  Serial.print(" °C | Hum: ");
-  Serial.print(hum);
-  Serial.println(" %");
-
-  // ===== LED cảnh báo =====
-  if (temp > 30) {
-    digitalWrite(LED_PIN, HIGH);
-  } else {
-    digitalWrite(LED_PIN, LOW);
-  }
-
-  // ===== Gửi ThingSpeak =====
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-
-    String url = String(server) +
-                 "?api_key=" + apiKey +
-                 "&field1=" + String(temp) +
-                 "&field2=" + String(hum);
-
-    http.begin(url);
-    int httpCode = http.GET();
-
-    Serial.print("HTTP Code: ");
-    Serial.println(httpCode);
-
-    http.end();
-  }
-
-  delay(15000); // bắt buộc >=15s
+  Blynk.run();
+  timer.run();
 }
