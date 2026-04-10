@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "author": "Dao Van Loi",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": -20, "left": -190, "attrs": { "color": "red" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 32.8, "left": -144, "attrs": { "value": "220" } },
+    { "type": "wokwi-led", "id": "led2", "top": -20, "left": 190, "attrs": { "color": "green" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": 32.8, "left": 144, "attrs": { "value": "220" } },
+    { "type": "wokwi-pir-motion-sensor", "id": "pir1", "top": -156, "left": 160, "attrs": {} },
+    { "type": "wokwi-photoresistor-sensor", "id": "ldr1", "top": 180, "left": 170, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:5V", "pir1:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.2", "pir1:GND", "black", [ "v0" ] ],
+    [ "esp:13", "pir1:OUT", "blue", [ "v0" ] ],
+
+    [ "esp:3V3", "ldr1:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.1", "ldr1:GND", "black", [ "v0" ] ],
+    [ "esp:34", "ldr1:AO", "orange", [ "v0" ] ],
+
+    [ "esp:2", "led1:A", "green", [ "h-38", "v-19" ] ],
+    [ "led1:C", "r1:1", "black", [ "v0" ] ],
+    [ "r1:2", "esp:GND.1", "black", [ "h0" ] ],
+
+    [ "esp:15", "led2:A", "green", [ "h40", "v-20" ] ],
+    [ "led2:C", "r2:1", "black", [ "v0" ] ],
+    [ "r2:2", "esp:GND.2", "black", [ "h0" ] ]
+  ]
+}

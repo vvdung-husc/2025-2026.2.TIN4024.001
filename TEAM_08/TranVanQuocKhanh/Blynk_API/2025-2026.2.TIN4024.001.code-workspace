@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"path": "../../.."
+		},
+		{
+			"name": "LED_Blink",
+			"path": "../LED_Blink"
+		},
+		{
+			"name": "tvquockhanh",
+			"path": "../tvquockhanh"
+		},
+		{
+			"name": "Traffic_Light.md",
+			"path": "../Traffic_Light.md"
+		},
+		{
+			"name": "Blynk_LED",
+			"path": "../Blynk_LED"
+		},
+		{
+			"name": "Blynk_API",
+			"path": "."
+		}
+	],
+	"settings": {}
+}
