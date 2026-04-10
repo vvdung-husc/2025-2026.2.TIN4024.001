@@ -1,16 +1,19 @@
-/* --- THÔNG TIN THÀNH VIÊN NHÓM ---
+/* * Thông tin thành viên nhóm:
+ 
  * Team: IoT - Team03
- * 1. Nguyễn Trung Quân 
- * 2. Trần Hữu Bảo Anh
- * 3. Lương Gia Mẫn 
+      1.Nguyễn Trung Quân - Telegram: Ntq781
+      2.Trần Hữu Bảo Anh  - Telegram: Banh547
+      3.Lương Gia Mẫn     - Telegram: giamam2104
+      4.Cao Khả Tài       - Telegram: taikha0708
+      5.
  */
 
 #include <Arduino.h>
 
 /* --- 1. CẤU HÌNH BLYNK --- */
-#define BLYNK_TEMPLATE_ID "TMPL60f44c9Ug"
-#define BLYNK_TEMPLATE_NAME "TEAM3ESP8266BLYNKTELEGRAM"
-#define BLYNK_AUTH_TOKEN "3MdKdoIvVZG08QCZTKddpVssBgPR7fnh"
+#define BLYNK_TEMPLATE_ID "TMPL6yWzNchHz"
+#define BLYNK_TEMPLATE_NAME "ESP8266 BLYNK TELEGRAM TEAM03"
+#define BLYNK_AUTH_TOKEN "8npl-293kkvn35anH_DDqzrtkhdWZr1s"
 
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
@@ -23,15 +26,16 @@
 
 /* --- 2. CẤU HÌNH KẾT NỐI WIFI VÀ TELEGRAM --- */
 char ssid[] = "CNTT-MMT"; 
-char pass[] = "13572468";
+char pass[] = "13572468";    // Mật khẩu WiFi 
+/* TOKEN BOT VÀ ID GROUP CHAT TRÊN TELEGRAM */
 #define BOTtoken "8741572482:AAHqrH7NIV7Eg9A51THsuuCbqV3T_VOKF1w"
 #define CHAT_ID "-5274752582" 
 
 /* --- 3. ĐỊNH NGHĨA CHÂN CẮM (PIN) --- */
 #define DHTPIN D3
-#define DHTTYPE DHT22
-#define LED_PIN D4 
-#define MQ2_PIN A0 
+#define DHTTYPE DHT22                 // Cảm biến DHT22 (màu trắng)
+#define LED_PIN D4                    // LED trên board NodeMCU (D4)
+#define MQ2_PIN A0                    // Cảm biến khí Gas
 
 /* --- KHỞI TẠO ĐỐI TƯỢNG --- */
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
@@ -69,7 +73,7 @@ void updateOLED() {
     u8g2.print(" GAS : "); u8g2.print(gas);
     u8g2.print("|Up:"); u8g2.print(millis()/60000); u8g2.print("m");
     u8g2.setFont(u8g2_font_profont11_tr); 
-    u8g2.drawStr(0, 64, "TEAM 03: Quan, Anh, Man"); // Cập nhật tên team trên OLED
+    u8g2.drawStr(0, 64, "TEAM: IoT - Team03"); 
     u8g2.sendBuffer();
 }
 
@@ -86,16 +90,14 @@ void sendSensorData() {
     t = new_t;
     h = new_h;
     gas = analogRead(MQ2_PIN);
-    if (gas < 50) gas = random(200, 450); 
+    if (gas < 50) gas = random(200, 450); // Giả lập nếu không có cảm biến
 
-    // --- CẬP NHẬT DỮ LIỆU LÊN BLYNK ---
-    Blynk.virtualWrite(V1, t);               // Nhiệt độ
-    Blynk.virtualWrite(V2, h);               // Độ ẩm
-    Blynk.virtualWrite(V3, gas);             // Khí Gas
-    Blynk.virtualWrite(V4, getUptime());     // Thời gian hoạt động
-    Blynk.virtualWrite(V5, "Quan, Anh, Man"); // THÊM V5: Tên thành viên
+    Blynk.virtualWrite(V1, t);
+    Blynk.virtualWrite(V2, h);
+    Blynk.virtualWrite(V3, gas);
+    Blynk.virtualWrite(V4, getUptime());
 
-    // Thông báo Telegram khi môi trường thay đổi
+    // Yêu cầu: Thông báo khi có thay đổi nhiệt độ hoặc độ ẩm
     if (abs(t - last_t) >= 0.5 || abs(h - last_h) >= 2.0) {
         String alert = "🌱 Cập nhật môi trường:\n🌡 Nhiệt độ: " + String(t, 1) + "C\n💧 Độ ẩm: " + String(h, 1) + "%";
         bot.sendMessage(CHAT_ID, alert, "");
@@ -110,17 +112,16 @@ void sendSensorData() {
 void handleTelegram(int numNewMessages) {
     for (int i = 0; i < numNewMessages; i++) {
         String chat_id = String(bot.messages[i].chat_id);
-        if (chat_id != CHAT_ID) continue; // Chỉ nhận tin nhắn từ nhóm chỉ định
-
         String text = bot.messages[i].text;
+
         if (text == "/led_on") {
-            digitalWrite(LED_PIN, LOW); 
-            bot.sendMessage(chat_id, "Đèn LED đã BẬT ✅", "");
+            digitalWrite(LED_PIN, LOW); // Bật LED
+            bot.sendMessage(chat_id, "Đèn LED đã BẬT", "");
             Blynk.virtualWrite(V0, 1);
         } 
         else if (text == "/led_off") {
-            digitalWrite(LED_PIN, HIGH); 
-            bot.sendMessage(chat_id, "Đèn LED đã TẮT ❌", "");
+            digitalWrite(LED_PIN, HIGH); // Tắt LED
+            bot.sendMessage(chat_id, "Đèn LED đã TẮT", "");
             Blynk.virtualWrite(V0, 0);
         } 
         else if (text == "/led_status") {
@@ -143,23 +144,24 @@ BLYNK_WRITE(V0) {
 void setup() {
     Serial.begin(115200);
     pinMode(LED_PIN, OUTPUT);
-    digitalWrite(LED_PIN, HIGH); 
+    digitalWrite(LED_PIN, HIGH); // Mặc định tắt LED
 
     u8g2.begin();
     dht.begin();
     
+    // --- BẮT ĐẦU KẾT NỐI WIFI VÀ BLYNK ---
     Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
-    client.setInsecure(); 
-    client.setBufferSizes(512, 512); // Tối ưu RAM tránh sập WiFi khi chạy Telegram
+    client.setInsecure(); // QUAN TRỌNG: Để kết nối Telegram an toàn
 
-    timer.setInterval(3000L, sendSensorData); 
+    timer.setInterval(3000L, sendSensorData); // Gửi dữ liệu mỗi 3 giây
 }
 
 void loop() {
     Blynk.run();
     timer.run();
 
-    if (millis() - lastTimeBotRan > 2000) { // Quét Telegram mỗi 2 giây để tránh nóng chip
+    // Kiểm tra tin nhắn Telegram mỗi 1 giây
+    if (millis() - lastTimeBotRan > 1000) {
         int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
         while(numNewMessages) {
             handleTelegram(numNewMessages);

@@ -1,6 +1,6 @@
-#define BLYNK_TEMPLATE_ID "TMPL62kk3uTHb"
-#define BLYNK_TEMPLATE_NAME "ESP32 API"
-#define BLYNK_AUTH_TOKEN "_wN3X6vyLAMbVGSniJjSAIQDCKAwtCbe"
+#define BLYNK_TEMPLATE_ID "TMPL6UYLCgh3A"
+#define BLYNK_TEMPLATE_NAME "BlynkAPI"
+#define BLYNK_AUTH_TOKEN "-8UZNaukBlqlEBgJbVAT8NnWmPi9SGq-"
 
 #include <WiFi.h>
 #include <HTTPClient.h>

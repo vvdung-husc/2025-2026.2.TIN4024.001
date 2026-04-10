@@ -1,15 +1,18 @@
 /*
 THONG TIN NHOM 04
-1. Le Van Thuan - Telegram: Lê Thuần
-2. Tran Khanh
-3. Nguyen Cong Thanh
+1. Le Van Thuan - Telegram : Lê Thuần
+2. Tran Khanh - Telegram : Hansk
+3. Nguyen Cong Thanh - Telegram : VeNom
 4. Hoang Van Quoc Thinh - Telegram: Lemon Tree
-5. ...
 */
 
-#define BLYNK_TEMPLATE_ID   "TMPL6scT0Job2"
-#define BLYNK_TEMPLATE_NAME "ESP8266 BLYNK TELEGRAM"
-#define BLYNK_AUTH_TOKEN    "RC4iydZWVV92FAZFII_Zf_MDGsbC5pSb"
+// #define BLYNK_TEMPLATE_ID   "TMPL6scT0Job2"
+// #define BLYNK_TEMPLATE_NAME "ESP8266 BLYNK TELEGRAM"
+// #define BLYNK_AUTH_TOKEN    "RC4iydZWVV92FAZFII_Zf_MDGsbC5pSb"
+
+#define BLYNK_TEMPLATE_ID "TMPL6rfpcDj-W"
+#define BLYNK_TEMPLATE_NAME "8266"
+#define BLYNK_AUTH_TOKEN "2GHSJyGQZxdEA3zheG69wR1yrK6tfaaB"
 
 #define BLYNK_PRINT Serial
 
