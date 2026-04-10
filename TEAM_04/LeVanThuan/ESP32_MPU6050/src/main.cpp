@@ -5,6 +5,19 @@
 #include <Adafruit_Sensor.h>
 #include <LiquidCrystal_I2C.h>
 
+// WIFI + TELEGRAM
+#include <WiFi.h>
+#include <HTTPClient.h>
+
+// ================= WIFI =================
+const char* ssid = "Wokwi-GUEST";
+const char* password = "";
+
+// ================= TELEGRAM =================
+String botToken = "8791087879:AAEIkG9nYjvSM0__4QdFcHjs5VWLur_A9M4";
+String chatID   = "-5252683483";
+
+// ================= HARDWARE =================
 Adafruit_MPU6050 mpu;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -12,6 +25,7 @@ const int LED_PIN = 2;
 const int BUZZER_PIN = 4;
 const int BUZZER_CHANNEL = 0;
 
+// ================= THRESHOLD =================
 float baseline = 0.0;
 
 const float NGUONG_YEU  = 0.8;
@@ -20,17 +34,59 @@ const float NGUONG_MANH = 4.0;
 
 const int SO_MAU = 20;
 
-// Thoi gian in Serial
-const unsigned long TG_IN_ON_DINH = 3000;
-const unsigned long TG_IN_RUNG    = 300;
-
-// Thoi gian cap nhat LCD
-const unsigned long TG_LCD_ON_DINH = 1500;
-const unsigned long TG_LCD_RUNG    = 400;
-
-unsigned long lanInCuoi = 0;
+// ================= CONTROL =================
+String trangThaiCu = ""; // lưu trạng thái trước
 unsigned long lanCapNhatLCD = 0;
 
+// ================= ENCODE =================
+String urlEncode(String msg) {
+  String encoded = "";
+  char c;
+  char code0;
+  char code1;
+
+  for (int i = 0; i < msg.length(); i++) {
+    c = msg.charAt(i);
+
+    if (isalnum(c)) {
+      encoded += c;
+    } else {
+      encoded += '%';
+      code0 = (c >> 4) & 0xF;
+      code1 = c & 0xF;
+      encoded += (code0 > 9) ? char(code0 + 'A' - 10) : char(code0 + '0');
+      encoded += (code1 > 9) ? char(code1 + 'A' - 10) : char(code1 + '0');
+    }
+  }
+  return encoded;
+}
+
+// ================= TELEGRAM =================
+void guiTelegram(String message) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+
+    String url = "https://api.telegram.org/bot" + botToken +
+                 "/sendMessage?chat_id=" + chatID +
+                 "&text=" + urlEncode(message);
+
+    http.begin(url);
+    int httpCode = http.GET();
+
+    Serial.print("HTTP Code: ");
+    Serial.println(httpCode);
+
+    if (httpCode > 0) {
+      Serial.println("✅ Gui Telegram thanh cong");
+    } else {
+      Serial.println("❌ Loi gui Telegram");
+    }
+
+    http.end();
+  }
+}
+
+// ================= MPU =================
 float tinhDoRung() {
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
@@ -53,14 +109,10 @@ float locTrungBinh() {
   return tong / SO_MAU;
 }
 
+// ================= CALIB =================
 void hieuChuanCamBien() {
-  Serial.println("Dang hieu chuan, giu cam bien dung yen...");
-
   lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Dang hieu chuan");
-  lcd.setCursor(0, 1);
-  lcd.print("Giu yen cam bien");
+  lcd.print("Hieu chuan...");
 
   float tong = 0;
 
@@ -80,23 +132,16 @@ void hieuChuanCamBien() {
 
   baseline = tong / 100.0;
 
-  Serial.print("Baseline = ");
-  Serial.println(baseline, 3);
-
   lcd.clear();
-  lcd.setCursor(0, 0);
   lcd.print("Baseline:");
   lcd.setCursor(0, 1);
   lcd.print(baseline, 2);
+
   delay(1500);
 }
 
+// ================= ALERT =================
 void tatCanhBao() {
-  digitalWrite(LED_PIN, LOW);
-  ledcWriteTone(BUZZER_CHANNEL, 0);
-}
-
-void canhBaoNhe() {
   digitalWrite(LED_PIN, LOW);
   ledcWriteTone(BUZZER_CHANNEL, 0);
 }
@@ -111,7 +156,8 @@ void canhBaoManh() {
   ledcWriteTone(BUZZER_CHANNEL, 2000);
 }
 
-void hienThiLCD(float doRung, const String &muc) {
+// ================= LCD =================
+void hienThiLCD(float doRung, String muc) {
   lcd.setCursor(0, 0);
   lcd.print("Do rung:        ");
   lcd.setCursor(8, 0);
@@ -123,39 +169,36 @@ void hienThiLCD(float doRung, const String &muc) {
   lcd.print(muc);
 }
 
+// ================= SETUP =================
 void setup() {
   Serial.begin(115200);
   Wire.begin(21, 22);
 
   pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
 
   lcd.init();
   lcd.backlight();
 
   ledcSetup(BUZZER_CHANNEL, 2000, 8);
   ledcAttachPin(BUZZER_PIN, BUZZER_CHANNEL);
-  ledcWriteTone(BUZZER_CHANNEL, 0);
 
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("He thong giam");
-  lcd.setCursor(0, 1);
-  lcd.print("sat do rung");
-  delay(1500);
+  // WIFI
+  WiFi.begin(ssid, password);
+  Serial.print("Dang ket noi WiFi");
 
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\n✅ WiFi OK");
+
+  guiTelegram("He thong ESP32 da ket noi thanh cong");
+
+  // MPU
   if (!mpu.begin()) {
-    Serial.println("Khong tim thay MPU6050!");
-
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Khong tim thay");
-    lcd.setCursor(0, 1);
-    lcd.print("MPU6050!");
-
-    while (1) {
-      delay(10);
-    }
+    lcd.print("MPU ERROR!");
+    while (1);
   }
 
   mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
@@ -164,63 +207,46 @@ void setup() {
 
   delay(1000);
   hieuChuanCamBien();
-
-  Serial.println("He thong giam sat do rung bat dau...");
-
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("He thong san");
-  lcd.setCursor(0, 1);
-  lcd.print("sang hoat dong");
-  delay(1500);
 }
 
+// ================= LOOP =================
 void loop() {
   float doRung = locTrungBinh();
   String muc = "ON DINH";
-  bool dangRung = false;
 
   if (doRung >= NGUONG_MANH) {
     muc = "RUNG MANH";
     canhBaoManh();
-    dangRung = true;
   }
   else if (doRung >= NGUONG_VUA) {
     muc = "RUNG VUA";
     canhBaoVua();
-    dangRung = true;
   }
   else if (doRung >= NGUONG_YEU) {
     muc = "RUNG NHE";
-    canhBaoNhe();
-    dangRung = true;
+    tatCanhBao();
   }
   else {
     muc = "ON DINH";
     tatCanhBao();
-    dangRung = false;
   }
 
-  unsigned long tgIn = dangRung ? TG_IN_RUNG : TG_IN_ON_DINH;
-  unsigned long tgLCD = dangRung ? TG_LCD_RUNG : TG_LCD_ON_DINH;
+  // 🔥 CHỈ GỬI KHI TRẠNG THÁI THAY ĐỔI
+  if (muc != trangThaiCu) {
+    String message = "📡 He thong giam sat rung ESP32\n";
+    message += "Trang thai: " + muc + "\n";
+    message += "Do rung: " + String(doRung, 2) + " m/s^2";
 
-  if (millis() - lanInCuoi >= tgIn) {
-    if (dangRung) {
-      Serial.print("[CANH BAO] Do rung: ");
-      Serial.print(doRung, 3);
-      Serial.print(" m/s^2 | ");
-      Serial.println(muc);
-    } else {
-      Serial.print("[Trang thai] ");
-      Serial.print(muc);
-      Serial.print(" | Do rung: ");
-      Serial.print(doRung, 3);
-      Serial.println(" m/s^2");
+    if (muc == "RUNG MANH") {
+      message += "\n🚨 NGUY HIEM !!!";
     }
-    lanInCuoi = millis();
+
+    guiTelegram(message);
+    trangThaiCu = muc;
   }
 
-  if (millis() - lanCapNhatLCD >= tgLCD) {
+  // LCD
+  if (millis() - lanCapNhatLCD > 500) {
     hienThiLCD(doRung, muc);
     lanCapNhatLCD = millis();
   }

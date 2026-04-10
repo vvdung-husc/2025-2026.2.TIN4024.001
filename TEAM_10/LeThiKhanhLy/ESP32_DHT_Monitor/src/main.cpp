@@ -1,4 +1,4 @@
-// ===== BLYNK =====
+// BLYNK
 #define BLYNK_TEMPLATE_ID "TMPL6TIHfwtOz"
 #define BLYNK_TEMPLATE_NAME "ESP32 DHT OLED"
 #define BLYNK_AUTH_TOKEN "aOK7MUu4NeC7KgKix9ic0ZYyp32xcnCK"
@@ -15,24 +15,30 @@
 char ssid[] = "Wokwi-GUEST";
 char pass[] = "";
 
-// ===== DHT =====
+// DHT
 #define DHTPIN 4
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
-// ===== LED =====
+// LED 
 #define LED_PIN 2
 
-// ===== OLED =====
+// OLED 
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
 
-// ===== TIMER =====
+// TIMER 
 BlynkTimer timer;
 
-// ===== HÀM GỬI DỮ LIỆU =====
+// BIẾN 
+bool systemEnabled = false;
+bool ledBlinkState = false;
+float temperature = 0;
+float humidity = 0;
+
+// ĐỌC DỮ LIỆU (CHẬM) 
 void sendData() {
-  float temperature = dht.readTemperature();
-  float humidity = dht.readHumidity();
+  temperature = dht.readTemperature();
+  humidity = dht.readHumidity();
 
   if (isnan(temperature) || isnan(humidity)) {
     Serial.println("Loi doc DHT!");
@@ -46,12 +52,11 @@ void sendData() {
   Serial.print(humidity);
   Serial.println(" %");
 
-  // ===== GỬI LÊN BLYNK =====
+  // Blynk
   Blynk.virtualWrite(V0, temperature);
   Blynk.virtualWrite(V1, humidity);
-  Blynk.virtualWrite(V2, 1); // báo cho Blynk là LED đang ON
 
-  // ===== OLED =====
+  // OLED
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_ncenB08_tr);
 
@@ -68,35 +73,49 @@ void sendData() {
   u8g2.sendBuffer();
 }
 
-// ===== SETUP =====
+// NHẤP NHÁY LED 
+void blinkLED() {
+  if (!systemEnabled) {
+    digitalWrite(LED_PIN, LOW);
+    return;
+  }
+
+  if (temperature > 35) {
+    ledBlinkState = !ledBlinkState;
+    digitalWrite(LED_PIN, ledBlinkState);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
+}
+
+// SETUP 
 void setup() {
   Serial.begin(115200);
 
   dht.begin();
   u8g2.begin();
 
-  // Kết nối Blynk
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
+
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
 
-  // Gửi mỗi 2 giây
+  // Đọc DHT mỗi 2 giây
   timer.setInterval(2000L, sendData);
 
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, HIGH); // mặc định bật
-}
-BLYNK_CONNECTED() {
-  Blynk.syncVirtual(V2);
+  // LED nhấp nháy
+  timer.setInterval(150L, blinkLED); 
 }
 
+// BLYNK
 BLYNK_WRITE(V2) {
-  int value = param.asInt();
+  systemEnabled = param.asInt();
 
-  digitalWrite(LED_PIN, value);
-
-  if (value == 1) Serial.println("LED ON");
-  else Serial.println("LED OFF");
+  Serial.print("System: ");
+  Serial.println(systemEnabled ? "ON" : "OFF");
 }
-// ===== LOOP =====
+
+// LOOP 
 void loop() {
   Blynk.run();
   timer.run();
