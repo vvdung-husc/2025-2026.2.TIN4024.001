@@ -15,31 +15,24 @@ char pass[] = "";
 BlynkTimer timer;
 
 void sendDemoDataToBlynk() {
-    // Random nhịp tim từ 45 đến 125 BPM để có thể kích hoạt ngưỡng <50 và >120
     float bpm = random(45, 126); 
-    // Random SpO2 từ 92 đến 100% để có thể kích hoạt ngưỡng <95%
     float spo2 = random(92, 101); 
-    Serial.print("Nhịp tim (Demo): ");
+
+    Serial.print("Nhịp tim: ");
     Serial.print(bpm);
-    Serial.print(" BPM | SpO2 (Demo): ");
+    Serial.print(" BPM | SpO2: ");
     Serial.print(spo2);
     Serial.println(" %");
+
     Blynk.virtualWrite(V1, bpm);
     Blynk.virtualWrite(V2, spo2);
     Blynk.virtualWrite(V3, "Đang đo...");
-    // Xử lý cảnh báo nhịp tim
-    if (bpm > 120) {
-        Blynk.logEvent("heart_rate_alert", "Cảnh báo: Nhịp tim quá nhanh!");
-        Blynk.virtualWrite(V4, 1);
-    } else if (bpm < 50) {
-        Blynk.logEvent("heart_rate_alert", "Cảnh báo: Nhịp tim quá chậm!");
-        Blynk.virtualWrite(V4, 1);
+
+    // LED cảnh báo
+    if (bpm > 120 || bpm < 50 || spo2 < 95) {
+        Blynk.virtualWrite(V4, 1); // bật LED
     } else {
-        Blynk.virtualWrite(V4, 0);
-    }
-    // Xử lý cảnh báo SpO2
-    if (spo2 < 95) {
-        Blynk.logEvent("spo2_alert", "Cảnh báo: SpO2 thấp bất thường!");
+        Blynk.virtualWrite(V4, 0); // tắt LED
     }
 }
 
