@@ -1,0 +1,10 @@
+{
+  "C_Cpp.default.configurationProvider": "platformio.platformio-ide",
+  "C_Cpp.intelliSenseEngine": "default",
+  "terminal.integrated.gpuAcceleration": "off",
+  "code-runner.showExecutionMessage": false,
+  "code-runner.executorMapByFileExtension": {
+    ".h": "echo Use PlatformIO Build or Wokwi Run (diagram.json)",
+    ".json": "echo Use Wokwi Run from diagram.json"
+  }
+}
