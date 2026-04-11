@@ -29,8 +29,8 @@ int telegramTail = 0;
 int telegramCount = 0;
 
 unsigned long lastTelegramSend = 0;
-const unsigned long telegramGapMs = 2500;
-const unsigned long httpQuietBeforeTelegramMs = 1000;
+const unsigned long telegramGapMs = 4000;
+const unsigned long httpQuietBeforeTelegramMs = 3000;
 
 String urlEncode(const String &str) {
   String encoded = "";
@@ -63,7 +63,6 @@ String urlEncode(const String &str) {
 
 void enqueueTelegramMessage(const String &msg) {
   if (telegramCount >= TELEGRAM_QUEUE_SIZE) {
-    // Bo tin nhan cu nhat neu day hang doi
     telegramHead = (telegramHead + 1) % TELEGRAM_QUEUE_SIZE;
     telegramCount--;
   }
@@ -88,7 +87,7 @@ void sendTelegramMessage(const String &text) {
   client.setInsecure();
 
   HTTPClient https;
-  https.setTimeout(1800);
+  https.setTimeout(1500);
 
   String url = "https://api.telegram.org/bot" + String(TELEGRAM_BOT_TOKEN) +
                "/sendMessage?chat_id=" + String(TELEGRAM_CHAT_ID) +
@@ -205,7 +204,7 @@ function setDeviceStateUI(id, isOn) {
   el.className = isOn ? 'state-on' : 'state-off';
 }
 
-async function fetchWithTimeout(url, ms = 1200) {
+async function fetchWithTimeout(url, ms = 1000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), ms);
   try {
@@ -217,7 +216,7 @@ async function fetchWithTimeout(url, ms = 1200) {
 
 async function loadStatus() {
   try {
-    const res = await fetchWithTimeout('/status', 1200);
+    const res = await fetchWithTimeout('/status', 1000);
     const data = await res.json();
 
     setDeviceStateUI('led', data.led);
@@ -235,15 +234,15 @@ async function loadStatus() {
 async function controlDevice(url, id, isOn) {
   setDeviceStateUI(id, isOn);
   try {
-    await fetchWithTimeout(url, 900);
-    setTimeout(loadStatus, 80);
+    await fetchWithTimeout(url, 500);
+    setTimeout(loadStatus, 100);
   } catch (e) {
     console.log('Khong goi duoc lenh dieu khien', e);
   }
 }
 
 loadStatus();
-setInterval(loadStatus, 4000);
+setInterval(loadStatus, 8000);
 </script>
 </body>
 </html>
@@ -340,7 +339,6 @@ void setup() {
   pinMode(PIR_PIN, INPUT);
 
   applyOutputs();
-
   connectWiFi();
   setupWebServer();
   readSensors();
