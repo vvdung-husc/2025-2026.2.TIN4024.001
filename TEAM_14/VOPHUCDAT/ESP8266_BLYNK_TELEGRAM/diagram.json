@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "author": "Team 14",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-esp8266-nodemcu",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": -120,
+      "left": -140,
+      "attrs": {}
+    },
+
+    {
+      "type": "board-ssd1306",
+      "id": "oled1",
+      "top": 80,
+      "left": -200,
+      "attrs": {}
+    },
+
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -20,
+      "left": 150,
+      "attrs": { "color": "red" }
+    },
+
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 40,
+      "left": 150,
+      "attrs": { "value": "220" }
+    },
+
+    {
+      "type": "wokwi-potentiometer",
+      "id": "mq2",
+      "top": 120,
+      "left": 150,
+      "attrs": {}
+    }
+  ],
+
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+
+    
+    [ "dht1:VCC", "esp:3V3", "red", [] ],
+    [ "dht1:GND", "esp:GND.1", "black", [] ],
+    [ "dht1:SDA", "esp:D3", "green", [] ],
+
+    
+    [ "oled1:VCC", "esp:3V3", "red", [] ],
+    [ "oled1:GND", "esp:GND.2", "black", [] ],
+    [ "oled1:SDA", "esp:D2", "green", [] ],
+    [ "oled1:SCL", "esp:D1", "blue", [] ],
+
+    
+    [ "esp:D4", "led1:A", "green", [] ],
+    [ "led1:C", "r1:1", "black", [] ],
+    [ "r1:2", "esp:GND.3", "black", [] ],
+
+    
+    [ "mq2:VCC", "esp:3V3", "red", [] ],
+    [ "mq2:GND", "esp:GND.4", "black", [] ],
+    [ "mq2:SIG", "esp:A0", "green", [] ]
+  ]
+}

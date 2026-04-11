@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp1",
+      "top": 85.26,
+      "left": 64.1,
+      "rotate": 270,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-stepper-motor",
+      "id": "stepper1",
+      "top": -159.59,
+      "left": 86.83,
+      "attrs": { "size": "17" }
+    },
+    {
+      "type": "wokwi-a4988",
+      "id": "drv1",
+      "top": 43.4,
+      "left": 139.6,
+      "rotate": 270,
+      "attrs": {}
+    },
+    { "type": "wokwi-vcc", "id": "vcc1", "top": 33.6, "left": 82.56, "rotate": 270, "attrs": {} },
+    { "type": "wokwi-gnd", "id": "gnd1", "top": 0.5, "left": 77.1, "rotate": 90, "attrs": {} },
+    { "type": "wokwi-gnd", "id": "gnd2", "top": 0.9, "left": 238.9, "rotate": 270, "attrs": {} }
+  ],
+  "connections": [
+    [ "drv1:2B", "stepper1:A-", "green", [ "v0" ] ],
+    [ "drv1:2A", "stepper1:A+", "green", [ "v0" ] ],
+    [ "drv1:1A", "stepper1:B+", "green", [ "v0" ] ],
+    [ "drv1:1B", "stepper1:B-", "green", [ "v0" ] ],
+    [ "drv1:VMOT", "vcc1:VCC", "green", [ "v0" ] ],
+    [ "drv1:GND.2", "gnd1:GND", "black", [ "v0" ] ],
+    [ "drv1:GND.1", "gnd2:GND", "black", [ "h0.08", "v-38.55" ] ],
+    [ "drv1:VDD", "esp1:5V", "green", [ "v-9.75", "h38.48", "v192" ] ],
+    [ "drv1:SLEEP", "drv1:RESET", "green", [ "v0" ] ],
+    [ "esp1:5", "drv1:ENABLE", "green", [ "v0" ] ],
+    [ "esp1:4", "drv1:STEP", "green", [ "v-19.2", "h38.4" ] ],
+    [ "esp1:2", "drv1:DIR", "green", [ "v-9.6", "h28.8" ] ]
+  ],
+  "dependencies": {}
+}

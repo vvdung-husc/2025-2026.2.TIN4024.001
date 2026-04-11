@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "author": "Toan",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-v1",
+      "id": "esp",
+      "top": -3,
+      "left": 4,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": 18,
+      "left": 310,
+      "attrs": {
+        "temperature": "30",
+        "humidity": "50"
+      }
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "smoke1",
+      "top": 110,
+      "left": -210,
+      "attrs": {
+        "lux": "400",
+        "threshold": "2.5"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -92,
+      "left": 120,
+      "attrs": {
+        "color": "red"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 4,
+      "left": 124,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzz1",
+      "top": -20,
+      "left": 232,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [ "dht1:VCC", "esp:3V3", "red", [ "h0" ] ],
+    [ "dht1:SDA", "esp:D15", "green", [ "h0" ] ],
+    [ "dht1:GND", "esp:GND.1", "black", [ "h0" ] ],
+
+    [ "smoke1:VCC", "esp:VIN", "red", [ "h0" ] ],
+    [ "smoke1:GND", "esp:GND.2", "black", [ "h0" ] ],
+    [ "smoke1:AO", "esp:D34", "blue", [ "h0" ] ],
+    [ "smoke1:DO", "esp:D4", "orange", [ "h0" ] ],
+
+    [ "esp:D2", "r1:1", "green", [ "h0" ] ],
+    [ "r1:2", "led1:A", "green", [ "v0" ] ],
+    [ "led1:C", "esp:GND.3", "black", [ "h0" ] ],
+
+    [ "buzz1:2", "esp:D18", "purple", [ "h0" ] ],
+    [ "buzz1:1", "esp:GND.4", "black", [ "h0" ] ]
+  ],
+  "dependencies": {}
+}
