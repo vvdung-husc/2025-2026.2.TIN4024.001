@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../../vscodetest"
+		},
+		{
+			"name": "BaiTap_Blynk",
+			"path": "."
+		}
+	],
+	"settings": {}
+}
