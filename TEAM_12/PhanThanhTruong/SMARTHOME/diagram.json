@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "author": "Phan Thanh Truong",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-pir-motion-sensor", "id": "pir", "top": 397.6, "left": 50.22, "attrs": {} },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "door_switch",
+      "top": 426.8,
+      "left": -246.5,
+      "attrs": {}
+    },
+    { "type": "wokwi-relay-module", "id": "relay", "top": 403.4, "left": 297.6, "attrs": {} },
+    { "type": "wokwi-buzzer", "id": "buzzer", "top": 396, "left": 184.2, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led_red",
+      "top": -61.2,
+      "left": -121,
+      "attrs": { "color": "red" }
+    },
+    { "type": "wokwi-servo", "id": "servo", "top": 382, "left": -460.8, "attrs": {} },
+    { "type": "wokwi-ssd1306", "id": "oled", "top": 371.5, "left": -151.7, "attrs": {} },
+    {
+      "type": "wokwi-membrane-keypad",
+      "id": "keypad",
+      "top": -270.8,
+      "left": -666.4,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "pir:OUT", "esp:27", "green", [ "v0" ] ],
+    [ "pir:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "pir:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "door_switch:1", "esp:GND.1", "black", [ "v0" ] ],
+    [ "door_switch:2", "esp:14", "green", [ "v0" ] ],
+    [ "relay:IN", "esp:4", "green", [ "v0" ] ],
+    [ "relay:VCC", "esp:5V", "red", [ "v0" ] ],
+    [ "relay:GND", "esp:GND.2", "black", [ "v0" ] ],
+    [ "buzzer:2", "esp:GND.2", "black", [ "v0" ] ],
+    [ "buzzer:1", "esp:26", "green", [ "v0" ] ],
+    [ "led_red:C", "esp:GND.2", "black", [ "v0" ] ],
+    [ "led_red:A", "esp:25", "green", [ "v0" ] ],
+    [ "servo:PWM", "esp:18", "green", [ "v0" ] ],
+    [ "servo:V+", "esp:5V", "red", [ "v0" ] ],
+    [ "servo:GND", "esp:GND.3", "black", [ "v0" ] ],
+    [ "oled:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "oled:GND", "esp:GND.3", "black", [ "v0" ] ],
+    [ "oled:SDA", "esp:21", "green", [ "v0" ] ],
+    [ "oled:SCL", "esp:22", "green", [ "v0" ] ],
+    [ "keypad:R1", "esp:13", "orange", [ "v0" ] ],
+    [ "keypad:R2", "esp:12", "orange", [ "v0" ] ],
+    [ "keypad:R3", "esp:15", "orange", [ "v0" ] ],
+    [ "keypad:R4", "esp:2", "orange", [ "v0" ] ],
+    [ "keypad:C1", "esp:0", "blue", [ "v0" ] ],
+    [ "keypad:C2", "esp:16", "blue", [ "v0" ] ],
+    [ "keypad:C3", "esp:17", "blue", [ "v0" ] ],
+    [ "keypad:C4", "esp:5", "blue", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
