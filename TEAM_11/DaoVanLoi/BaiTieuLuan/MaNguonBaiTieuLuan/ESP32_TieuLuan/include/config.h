@@ -3,11 +3,12 @@
 #define WIFI_SSID       "Wokwi-GUEST"
 #define WIFI_PASSWORD   ""
 
-#define TELEGRAM_BOT_TOKEN "8700950437:AAHW4vRDJbm7dvOr0LgsxwaIyDqH54lsOdA"
+// DOI TOKEN MOI CUA BAN VAO DAY
+#define TELEGRAM_BOT_TOKEN "8700950437:AAE_jVD1ng9j063_HRczki3Ky19e1dByArE"
 #define TELEGRAM_CHAT_ID   "8297209145"
 
-#define LED_PIN   2
-#define FAN_PIN   15
+#define LED_PIN   25
+#define FAN_PIN   26
 #define PIR_PIN   13
 #define LDR_PIN   34
 

@@ -1,0 +1,93 @@
+#define BLYNK_TEMPLATE_ID "TMPL6EsjlYA1y"
+#define BLYNK_TEMPLATE_NAME "ESP32StepMotor"
+#define BLYNK_AUTH_TOKEN "j3ChhLz-WwVkuPY6adR-FpTo7srKk1vs"
+
+#define BLYNK_PRINT Serial
+
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
+#include <AccelStepper.h>
+
+// ====== WiFi ======
+char ssid[] = "Wokwi-GUEST";
+char pass[] = "";
+
+// ====== Stepper ======
+#define STEP_PIN 4
+#define DIR_PIN  2
+#define EN_PIN   5
+
+AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN);
+
+// ====== Control ======
+int motorState = 0;     // 0=STOP, 1=FWD, -1=BWD
+int lastState  = 99;
+
+const int FIXED_SPEED = 500; // tốc độ cố định
+
+// ====== Blynk Buttons ======
+BLYNK_WRITE(V0) {  // STOP
+  if (param.asInt()) motorState = 0;
+}
+
+BLYNK_WRITE(V1) {  // FORWARD
+  if (param.asInt()) motorState = 1;
+}
+
+BLYNK_WRITE(V2) {  // BACKWARD
+  if (param.asInt()) motorState = -1;
+}
+
+// ====== Gửi trạng thái ======
+void sendStatus() {
+  if (motorState != lastState) {
+    lastState = motorState;
+
+    if (motorState == 0)
+      Blynk.virtualWrite(V3, "STOP");
+    else if (motorState == 1)
+      Blynk.virtualWrite(V3, "FORWARD");
+    else if (motorState == -1)
+      Blynk.virtualWrite(V3, "BACKWARD");
+  }
+}
+
+// ====== Reconnect sync ======
+BLYNK_CONNECTED() {
+  lastState = 99; // force update lại
+}
+
+// ====== SETUP ======
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(EN_PIN, OUTPUT);
+  digitalWrite(EN_PIN, LOW);
+
+  stepper.setMaxSpeed(1000);
+  stepper.setSpeed(0);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+}
+
+// ====== LOOP ======
+void loop() {
+  Blynk.run();
+
+  if (motorState == 1) {
+    digitalWrite(EN_PIN, LOW);
+    stepper.setSpeed(FIXED_SPEED);
+    stepper.runSpeed();
+  }
+  else if (motorState == -1) {
+    digitalWrite(EN_PIN, LOW);
+    stepper.setSpeed(-FIXED_SPEED);
+    stepper.runSpeed();
+  }
+  else {
+    stepper.setSpeed(0);
+    digitalWrite(EN_PIN, HIGH); // disable driver
+  }
+
+  sendStatus();
+}
